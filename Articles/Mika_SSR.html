@@ -1,1 +1,24 @@
-<p>Mika SSR</p>
+<h1>Screen Space Reflections</h1>
+<h2>November 19th, 2024 - Mika and the Witch's Mountain</h2>
+
+<p>When it comes to water rendering, there is a physical characteristic that I consider 
+    crucial to achieve convincing results, and that is reflections. However, there are
+    several ways to achieve this in real-time. The first and arguably easiest approach is 
+    using reflection probes. How many reflections probes would be required to achieve
+    good results in an open world like Mika? A lot, and we were already short on memory
+    budget. The ideal technique to solve this issue is raytracing, but that's not supported 
+    on all platforms and is really expensive. So, my best bet was using a screen-space 
+    solution.</p>
+
+<p>During the PS4-era many games introduced Screen-Space Reflections (SSR) as a way
+    to render reflections in real-time very efficiently. Of course, there are caviats
+    to this technique, namely:</p>
+
+<ul>
+    <li>Anything outside the frustrum is undefined, it can't be integrated into the scene.</li>
+    <li>Any surface that is occluded by another is also not available.</li>
+    <li>The depth buffer is used to determine collisions against surfaces, so transparent
+    objects won't be present in reflections.</li>
+</ul>
+
+<p>In this game, we just needed reflections in water, so I implemented SSR with that in mind.</p>

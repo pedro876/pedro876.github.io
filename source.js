@@ -1,8 +1,15 @@
 var elemContent = document.getElementById("articleContent");
 var elemIndex = document.getElementById("index");
+var indexButtons = elemIndex.querySelectorAll("button[data-url]");
+
+function SetEnableAllButtons(enabled) {
+    indexButtons.forEach((indexButton) => {
+        indexButton.disabled = !enabled;
+    });
+}
 
 function AddButtonClickBehaviour(elemButton) {
-    elemButton.addEventListener('click', () => {
+    elemButton.loadContent = function () {
         var articlePath = elemButton.getAttribute("data-url");
         fetch(articlePath).then(response => {
             if (!response.ok) {
@@ -11,13 +18,23 @@ function AddButtonClickBehaviour(elemButton) {
             return response.text();
         }).then(html => {
             elemContent.innerHTML = html;
+            SetEnableAllButtons(true);
+            elemButton.disabled = true;
         }).catch(error => {
             console.error('There was a problem with the fetch operation:', error);
         });
-    });
+
+
+    };
+
+    elemButton.addEventListener('click', elemButton.loadContent);
 }
 
-var indexButtons = elemIndex.querySelectorAll("button[data-url]");
+
 indexButtons.forEach((indexButton) => {
     AddButtonClickBehaviour(indexButton);
 });
+
+//Use this to load a certain page instantly
+indexButtons[0].loadContent();
+
