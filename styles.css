@@ -1,53 +1,44 @@
 /*@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');*/
 
-
+:root{
+    --bottomBarHeight:40px;
+}
 
 body {
-    /*font-family: 'Roboto';*/
-    /*font-family: Arial, sans-serif;*/
     font-family: trebuchet ms, Verdana, verdana ref, segoe ui, Candara, lucida grande, lucida sans unicode, lucida sans, Tahoma, sans-serif;
     background-color: rgb(26, 27, 29);
     margin: 0;
     padding: 0;
     color: white;
-}
-
-header {
-    display: block;
-    height: 10vh;
-}
-
-footer {
-    display: block;
-    height: 10vh;
-}
-
-.container4by3 {
-    margin: 0;
-    padding: 0;
-    height: 100%;
     display: flex;
+    flex-direction:column;
     justify-content: center;
     align-items: center;
 }
 
-.element4by3 {
-    max-width: 133.333vh; /*Maintain a 4:3 aspect ratio*/
-    width: 100%; /*Let it scale to fit*/
+.center {
+    max-width: 1200px;
 }
 
-.containerGrid {
+.topBar {
+    width: 100%;
+}
+
+.bottomBar {
+    width: 100%;
+    height: var(--bottomBarHeight);
+    position: fixed;
+    bottom: 0;
+    background-color: rgb(26, 27, 29);
+}
+
+.grid_index_article {
     display: grid;
-    /*grid-template-columns: 300px 1fr;*/
-    grid-template-columns: 1fr 3fr;
+    grid-template-columns: 300px 1fr;
     grid-gap: 30px;
-    min-height: 80vh;
-    /*height: 100vh;*/ /*Full viewport height*/
-}
-
-#index {
-    /*background-color: rgb(62, 63, 74);*/
-    
+    width: 100%;
+    margin-bottom: calc(var(--bottomBarHeight) + 10px);
+    /*height: 300vh;*/
 }
 
 #index button {
@@ -61,9 +52,10 @@ footer {
     transition: background-color 0.2s ease;
 }
 
-    #index button:hover {
-        color: rgb(180, 180, 180);
-    }
+#index button:hover {
+    color: rgb(180, 180, 180);
+    cursor:pointer;
+}
 
 #index button:disabled {
     background-color: rgb(224, 225, 239);
