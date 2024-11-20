@@ -1,6 +1,7 @@
 var elemContent = document.getElementById("articleContent");
 var elemIndex = document.getElementById("index");
 var indexButtons = elemIndex.querySelectorAll("button[data-url]");
+var isFetching = false;
 
 function SetEnableAllButtons(enabled) {
     indexButtons.forEach((indexButton) => {
@@ -10,6 +11,8 @@ function SetEnableAllButtons(enabled) {
 
 function AddButtonClickBehaviour(elemButton) {
     elemButton.loadContent = function () {
+        if (isFetching) return;
+        isFetching = true;
         var articlePath = elemButton.getAttribute("data-url");
         fetch(articlePath).then(response => {
             if (!response.ok) {
@@ -20,6 +23,7 @@ function AddButtonClickBehaviour(elemButton) {
             elemContent.innerHTML = html;
             SetEnableAllButtons(true);
             elemButton.disabled = true;
+            isFetching = false;
         }).catch(error => {
             console.error('There was a problem with the fetch operation:', error);
         });

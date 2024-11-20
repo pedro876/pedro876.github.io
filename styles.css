@@ -11,9 +11,11 @@ body {
     padding: 0;
     color: white;
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 .center {
@@ -50,6 +52,7 @@ body {
     color: white;
     font-weight: bold;
     transition: background-color 0.2s ease;
+    border-radius: 6px;
 }
 
 #index button:hover {
@@ -60,7 +63,7 @@ body {
 #index button:disabled {
     background-color: rgb(224, 225, 239);
     color: black;
-    border-radius: 6px;
+    
 }
 
 #articleContent {
