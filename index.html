@@ -5,28 +5,52 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Portfolio - Pedro Casas</title>
         <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="styles_topBottomBars.css">
+        <link rel="stylesheet" href="styles_index_article.css">
     </head>
     <body>
 
-        <div class="center topBar">
-            <h1>Pedro Casas</h1>
-            <h2>Graphics Programmer</h2>
+        <div id="topBar">
+            <div id="topBarContent" class="limitWidth">
+                <h1>Pedro Casas</h1>
+                <h2>Graphics Programmer</h2>
+            </div>
         </div>
 
-        <div class="center grid_index_article">
-            <nav id="index">
-                <button data-url="Articles/Mika_SSR.html">Screen Space Reflections in Mika</button>
-                <button data-url="Articles/Unity6_SSAO.html" class="button">SSAO in Unity 6</button>
-            </nav>
+        <div class="centerContainer">
+            <div id="grid_index_article" class="limitWidth">
+                <nav id="index">
+                    <button data-url="Articles/Mika_SSR.html">Screen Space Reflections in Mika</button>
+                    <button data-url="Articles/Unity6_SSAO.html" class="button">SSAO in Unity 6</button>
+                </nav>
 
-            <main id="articleContent">
-                <p>Welcome!</p>
-            </main>
+                <main id="articleContent">
+                    <p>Welcome!</p>
+                </main>
+            </div>
+
+            <div id="bottomBar" class="limitWidth">
+                <a class="logo" href="mailto:pedrocasasdev@gmail.com" target="_blank">
+                    <!--<p>pedrocasasdev@gmail.com</p>-->
+                    <img src="GlobalImages/logo_gmail.png" alt="X" />
+                </a>
+                <a class="logo" href="http://linkedin.com/in/pedrocasasm" target="_blank">
+                    <img src="GlobalImages/LI-In-Bug-cropped.png" alt="LinkedIn" />
+                </a>
+                <a class="logo" href="https://x.com/pedrocasas_dev" target="_blank">
+                    <img src="GlobalImages/x-logo-black.png" alt="GitHub" />
+                </a>
+                <a class="logo" href="https://github.com/pedro876?tab=repositories" target="_blank">
+                    <img src="GlobalImages/github-mark.png" alt="Email" />
+                </a>
+            </div>
         </div>
 
-        <div class="center bottomBar">
+        
+
+        <!--<div class="center bottomBar">
             CONTACT
-        </div>
+        </div>-->
 
         <!--<div class="container4by3">
             <footer class="element4by3">FOOTER</footer>
