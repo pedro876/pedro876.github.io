@@ -2,6 +2,7 @@ var elemContent = document.getElementById("articleContent");
 var elemIndex = document.getElementById("index");
 var indexButtons = elemIndex.querySelectorAll("button[data-url]");
 var isFetching = false;
+const mobileViewAspectRatio = 1.0;
 
 function SetEnableAllButtons(enabled) {
     indexButtons.forEach((indexButton) => {
@@ -42,3 +43,22 @@ indexButtons.forEach((indexButton) => {
 //Use this to load a certain page instantly
 indexButtons[0].loadContent();
 
+
+//RESIZING
+
+function OnResize() {
+    var aspect = window.innerWidth / window.innerHeight;
+    if (aspect <= mobileViewAspectRatio) {
+        elemIndex.hidden = true;
+    }
+    else {
+        elemIndex.hidden = false;
+    }
+
+    console.log('New aspect: ' + aspect);
+    console.log('New width: ' + window.innerWidth);
+    console.log('New height: ' + window.innerHeight);
+}
+
+window.addEventListener('resize', OnResize);
+OnResize();
