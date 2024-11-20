@@ -1,9 +1,55 @@
 var elemContent = document.getElementById("articleContent");
 var elemIndex = document.getElementById("index");
 var indexButtons = elemIndex.querySelectorAll("button[data-url]");
+var elemButtonIndex = document.getElementById("buttonIndex");
+
 var isFetching = false;
+var mobileShowIndex = false;
 const mobileViewAspectRatio = 1.0;
 
+//RESPONSIVE RESIZING
+function OnResize() {
+    var aspect = window.innerWidth / window.innerHeight;
+    //console.log("new aspect ratio: " + aspect);
+    if (aspect <= mobileViewAspectRatio) {
+        //Portrait View
+        elemIndex.hidden = !mobileShowIndex;
+        elemContent.hidden = mobileShowIndex;
+        elemButtonIndex.hidden = false;
+
+        //Portrait Style
+        elemIndex.style.flex = 'auto';
+        elemIndex.style.width = '100%';
+        elemContent.style.paddingLeft = '20px';
+        elemContent.style.paddingRight = '20px';
+    }
+    else {
+        //Landscape View
+        mobileShowIndex = false;
+        elemIndex.hidden = false;
+        elemContent.hidden = false;
+        elemButtonIndex.hidden = true;
+
+
+        //Landscape Style
+        elemIndex.style.flex = '';
+        elemIndex.style.width = '';
+        elemContent.style.paddingLeft = '';
+        elemContent.style.paddingRight = '';
+    }
+}
+
+function ToggleIndex()
+{
+    mobileShowIndex = !mobileShowIndex;
+    OnResize();
+}
+
+elemButtonIndex.addEventListener('click', ToggleIndex);
+window.addEventListener('resize', OnResize);
+OnResize();
+
+//NAVIGATION
 function SetEnableAllButtons(enabled) {
     indexButtons.forEach((indexButton) => {
         indexButton.disabled = !enabled;
@@ -25,6 +71,7 @@ function AddButtonClickBehaviour(elemButton) {
             SetEnableAllButtons(true);
             elemButton.disabled = true;
             isFetching = false;
+            if (mobileShowIndex) ToggleIndex();
         }).catch(error => {
             console.error('There was a problem with the fetch operation:', error);
         });
@@ -42,23 +89,3 @@ indexButtons.forEach((indexButton) => {
 
 //Use this to load a certain page instantly
 indexButtons[0].loadContent();
-
-
-//RESIZING
-
-function OnResize() {
-    var aspect = window.innerWidth / window.innerHeight;
-    if (aspect <= mobileViewAspectRatio) {
-        elemIndex.hidden = true;
-    }
-    else {
-        elemIndex.hidden = false;
-    }
-
-    console.log('New aspect: ' + aspect);
-    console.log('New width: ' + window.innerWidth);
-    console.log('New height: ' + window.innerHeight);
-}
-
-window.addEventListener('resize', OnResize);
-OnResize();

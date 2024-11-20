@@ -26,6 +26,7 @@
     color: white;
     font-weight: bold;
     transition: background-color 0.2s ease;
+    transition: color 0.2s ease;
     border-radius: 6px;
     margin: 0px;
 }
@@ -46,5 +47,5 @@
     padding-right: 40px;
     /*text-align: justify;*/
     border-radius: 10px;
-    width: 700px;
+    width: 100%;
 }

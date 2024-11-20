@@ -1,3 +1,4 @@
+/*TOP BAR*/
 #topBar {
     width: 100%;
     border-width: 0px 0px 2px 0px;
@@ -20,13 +21,37 @@
     padding-right: var(--horizontalPagePadding);
 }
 
+#buttonIndex {
+    margin-right: 20px;
+    height: 100px;
+    width: 100px;
+    flex: none;
+    border-radius: 20px;
+    border-width: 0px;
+    background-color:rgb(231, 232, 238);
+    transition: background-color ease 0.2s;
+    padding: 10px;
+}
+
+#buttonIndex:hover {
+    cursor: pointer;
+    background-color:rgb(182, 183, 188);
+}
+
+#buttonIndex img {
+    height: 80px;
+    width: 80px;
+}
+
+/*BOTTOM BAR*/
 #bottomBar {
     height: var(--bottomBarHeight);
     width: 100%;
     position: fixed;
     bottom: 0;
     /*background-color: rgb(62, 63, 74);*/
-    background-color: rgb(205, 207, 221);
+    /*background-color: rgb(205, 207, 221);*/
+    background-color: rgb(231, 232, 238);
     border-radius: 10px 10px 0px 0px;
     justify-content: center;
     align-items: center;
