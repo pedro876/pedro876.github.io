@@ -45,7 +45,26 @@
     background-color: rgb(62, 63, 74);
     padding-left: 40px;
     padding-right: 40px;
+    padding-top: 30px;
+    padding-bottom: 20px;
     /*text-align: justify;*/
     border-radius: 10px;
     width: 100%;
+}
+
+#articleContent h1 {
+    margin: 0px;
+    padding: 0px;
+    margin-bottom: 10px;
+}
+
+#articleContent h2 {
+    margin: 0px;
+    padding: 0px;
+    font-size: 14px;
+    font-style: italic;
+}
+
+#articleContent h3 {
+    margin: 30px 0px 16px 0px;
 }

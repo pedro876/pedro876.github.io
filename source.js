@@ -2,10 +2,11 @@ var elemContent = document.getElementById("articleContent");
 var elemIndex = document.getElementById("index");
 var indexButtons = elemIndex.querySelectorAll("button[data-url]");
 var elemButtonIndex = document.getElementById("buttonIndex");
+var elemTopBarRightContent = document.getElementById("topBarRightContent");
 
 var isFetching = false;
 var mobileShowIndex = false;
-const mobileViewAspectRatio = 1.0;
+const mobileViewAspectRatio = 1.17;
 
 //RESPONSIVE RESIZING
 function OnResize() {
@@ -16,6 +17,7 @@ function OnResize() {
         elemIndex.hidden = !mobileShowIndex;
         elemContent.hidden = mobileShowIndex;
         elemButtonIndex.hidden = false;
+        //elemTopBarRightContent.hidden = true;
 
         //Portrait Style
         elemIndex.style.flex = 'auto';
@@ -29,6 +31,7 @@ function OnResize() {
         elemIndex.hidden = false;
         elemContent.hidden = false;
         elemButtonIndex.hidden = true;
+        //elemTopBarRightContent.hidden = false;
 
 
         //Landscape Style
@@ -37,6 +40,10 @@ function OnResize() {
         elemContent.style.paddingLeft = '';
         elemContent.style.paddingRight = '';
     }
+
+    console.log(window.innerWidth);
+    elemTopBarRightContent.hidden = window.innerWidth < 700;
+    elemTopBarRightContent.style.display = window.innerWidth < 700 ? 'none' : 'grid';
 }
 
 function ToggleIndex()
