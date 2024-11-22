@@ -30,17 +30,19 @@
 }
 
 #topBarRightContent {
+    margin: 12px 0px 12px 0px;
     flex: none;
     text-align: left;
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto auto auto auto;
     align-items: center;
-    gap: 10px 8px; /*Space between rows, space between columns*/
+    gap: 4px 8px; /*Space between rows, space between columns*/
 }
 
-#topBar img {
+#topBarRightContent img {
     height: 20px;
     width: 20px;
+    margin-left: 20px;
 }
 
 #topBar p {
@@ -56,6 +58,25 @@
     margin: 0px 0px 10px 0px;
     padding: 0px;
     font-style: italic;
+    font-size: 20px;
+}
+
+#topBar a {
+    color: white;
+    text-decoration: none;
+}
+
+#topBar a:visited {
+    color: white;
+}
+
+#topBar a:hover {
+    color: rgb(214, 214, 214);
+    text-decoration: underline;
+}
+
+#topBar a:active {
+    color: white;
 }
 
 #buttonIndex {

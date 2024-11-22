@@ -7,6 +7,7 @@ var elemTopBarRightContent = document.getElementById("topBarRightContent");
 var isFetching = false;
 var mobileShowIndex = false;
 const mobileViewAspectRatio = 1.17;
+const topBarRightContentMinWidth = 850;
 
 //RESPONSIVE RESIZING
 function OnResize() {
@@ -41,9 +42,9 @@ function OnResize() {
         elemContent.style.paddingRight = '';
     }
 
-    console.log(window.innerWidth);
-    elemTopBarRightContent.hidden = window.innerWidth < 700;
-    elemTopBarRightContent.style.display = window.innerWidth < 700 ? 'none' : 'grid';
+    //console.log(window.innerWidth);
+    elemTopBarRightContent.hidden = window.innerWidth < topBarRightContentMinWidth;
+    elemTopBarRightContent.style.display = window.innerWidth < topBarRightContentMinWidth ? 'none' : 'grid';
 }
 
 function ToggleIndex()
