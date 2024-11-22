@@ -68,3 +68,7 @@
 #articleContent h3 {
     margin: 30px 0px 16px 0px;
 }
+
+#articleContent li + li {
+    margin-top: 10px;
+}

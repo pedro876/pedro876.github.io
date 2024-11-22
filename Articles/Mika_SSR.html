@@ -1,10 +1,63 @@
-<h1>Screen Space Reflections</h1>
+<h1>Screen-Space Reflections</h1>
 <h2>
     November 19th, 2024 <br />
     Mika and the Witch's Mountain
 </h2>
 
 <h3>Motivation</h3>
+    
+<p>
+    In modern computer graphics, achieving realistic reflections in crucial for creating
+    visually convincing water. However, in the context of more stylized o cartoonish games, this is
+    not always the case. By the time of release, Mika and the Witch's Mountain had no reflections
+    on any surface, but I always wondered wether water would benefit from this effect or not.
+    There was only one way to find out: test it.
+</p>
+
+<p>
+    Up until this point, I had a lot of experience using reflection probes and had toyed a bit with ray tracing.
+    Sadly, these techniques were not applicable for this game. We couldn't populate the world
+    with dozens of baked probes because that would require a lot of memory, both on disk and 
+    during runtime.
+
+</p>
+
+<ul>
+    <li>
+        <b>Reflection probes</b>: Require too much memory both on disk and during runtime. Besides, dynamic objects can't be reflected (if baked);
+    </li>
+    <li>
+        <b>Ray-Traced reflections</b>: A RTAS (Ray Tracing Acceleration Structure) must be constructed and nothing 
+        had been modeled or shaded with that in mind.
+    </li>
+</ul>
+
+<p>
+    In the end, I decided to learn something new and implement <b>Screen-Space Reflections</b>. This technique was widely used 
+    during the PS4 era and is still very relevant today. It has many <b>positive aspects</b>:
+</p>
+
+<ul>
+    <li>Does not consume additional memory if an opaque buffer was already available.</li>
+    <li>Achieves high quality reflections at a very reasonable cost.</li>
+    <li>Results are correctly aligned with the camera's perspective.</li>
+</ul>
+
+<p>The technique has its <b>downsides</b> too:</p>
+
+<ul>
+    <li>Anything outside the frustrum, and thus outside the screen space, can't be reflected.</li>
+    <li>Any surface that is occluded can't be traced against.</li>
+    <li>Can give a feeling of instability or pop-in in motion.</li>
+</ul>
+
+<h3>Implementation</h3>
+
+<h3>Results</h3>
+
+<h3>Conclusion</h3>
+
+<h3>Going forward</h3>
 
 <p>When it comes to water rendering, there is a physical characteristic that I consider 
     crucial to achieve convincing results, and that is reflections. However, there are
