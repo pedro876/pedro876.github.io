@@ -73,3 +73,25 @@
 #articleContent li + li {
     margin-top: 10px;
 }
+
+#curriculum a {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+#contactLinks {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: left;
+    align-items: center;
+    gap: 8px 10px;
+}
+
+#contactLinks img {
+    height: 20px;
+}
+
+#contactLinks p {
+    margin: 0px;
+}
+

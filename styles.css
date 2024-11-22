@@ -14,6 +14,24 @@ body {
     color: white;
 }
 
+a {
+    color: white;
+    text-decoration: none;
+}
+
+a:visited {
+    color: white;
+}
+
+a:hover {
+    color: rgb(214, 214, 214);
+    text-decoration: underline;
+}
+
+a:active {
+    color: white;
+}
+
 .centerContainer {
     display: flex;
     flex-direction: column;
@@ -26,6 +44,5 @@ body {
 .limitWidth {
     max-width: 1200px;
 }
-
 
 

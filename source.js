@@ -7,7 +7,7 @@ var elemTopBarRightContent = document.getElementById("topBarRightContent");
 var isFetching = false;
 var mobileShowIndex = false;
 const mobileViewAspectRatio = 1.17;
-const topBarRightContentMinWidth = 850;
+const topBarRightContentMinWidth = 800;
 
 //RESPONSIVE RESIZING
 function OnResize() {

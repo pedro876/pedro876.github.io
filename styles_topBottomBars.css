@@ -61,24 +61,6 @@
     font-size: 20px;
 }
 
-#topBar a {
-    color: white;
-    text-decoration: none;
-}
-
-#topBar a:visited {
-    color: white;
-}
-
-#topBar a:hover {
-    color: rgb(214, 214, 214);
-    text-decoration: underline;
-}
-
-#topBar a:active {
-    color: white;
-}
-
 #buttonIndex {
     margin-right: 20px;
     height: 60px;
@@ -88,12 +70,14 @@
     border-width: 0px;
     background-color:rgb(231, 232, 238);
     transition: background-color ease 0.2s;
+    transition: transform ease 0.2s;
     padding: 6px;
 }
 
 #buttonIndex:hover {
     cursor: pointer;
     background-color:rgb(182, 183, 188);
+    transform: scale(1.15);
 }
 
 #buttonIndex img {
