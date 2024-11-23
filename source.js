@@ -96,4 +96,4 @@ indexButtons.forEach((indexButton) => {
 });
 
 //Use this to load a certain page instantly
-indexButtons[0].loadContent();
+indexButtons[1].loadContent();
