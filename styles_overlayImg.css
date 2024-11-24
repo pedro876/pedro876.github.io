@@ -1,0 +1,29 @@
+.image-container {
+    position: relative;
+    display: inline-block; /* Ensures the images are sized by content */
+    margin-top: 4px;
+    margin-bottom: 16px;
+}
+
+.image-container img {
+    margin: 0px;
+}
+
+.base-image {
+    display: block;
+    width: 100%; /* Adjust to fit your layout */
+}
+
+.overlay-image {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%; /* Match the base image */
+    clip-path: inset(0 0 0 50%); /* Adjust the left value to control the cropped portion */
+}
+
+.single-image {
+    width: 100%;
+    margin-top: 4px;
+    margin-bottom: 16px;
+}

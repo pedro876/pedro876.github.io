@@ -51,6 +51,11 @@
 
 <p style="color:red">Poner aquí una imagen representativa</p>
 
+<div class="image-container">
+    <img src="Articles/Mika_SSR/Mika_SSR_0_Off.jpg" class="base-image">
+    <img src="Articles/Mika_SSR/Mika_SSR_0_On.jpg" class="overlay-image">
+</div>
+
 <h3>Implementation</h3>
 
 <p>
@@ -64,7 +69,7 @@
     <li>Opaque Buffer: a texture copy that contains the scene color of all opaque surfaces.</li>
 </ul>
 
-<img src="Articles/Mika_SSR/DepthAndOpaqueBuffers.png" alt="Depth and opaque buffers image" />
+<img class="single-image" src="Articles/Mika_SSR/DepthAndOpaqueBuffers.png" alt="Depth and opaque buffers image" />
 
 <p>
     Firstly, a reflection vector is calculated given the water normal and the direction from
@@ -84,7 +89,7 @@
     a waste of resources.
 </p>
 
-<img src="Articles/Mika_SSR/ReflectionAndRayMarching.png" alt="Depth and opaque buffers image" />
+<img class="single-image" src="Articles/Mika_SSR/ReflectionAndRayMarching.png" alt="Depth and opaque buffers image" />
 
 <p>
     Getting a good result with this basic approach would require using a lot of samples per pixel (spp).
@@ -92,7 +97,7 @@
     very low spp count for a demonstration (6spp):
 </p>
 
-<img src="Articles/Mika_SSR/Demonstration_Initial.jpg" alt="Demonstration initial image" />
+<img class="single-image" src="Articles/Mika_SSR/Demonstration_Initial.jpg" alt="Demonstration initial image" />
 
 <p>
     Can you spot the issue? There is very visible banding, which is even worse in motion. This is
@@ -105,7 +110,7 @@
     affects the loop so that all samples are displaced a fraction of the distance between two iterations.
 </p>
 
-<img src="Articles/Mika_SSR/Demonstration_Dither.jpg" alt="Demonstration dithering image" />
+<img class="single-image" src="Articles/Mika_SSR/Demonstration_Dither.jpg" alt="Demonstration dithering image" />
 
 <p>
     That cleared banding to a great extent, but sacrificed clarity entirely at the same time. This is
@@ -115,14 +120,14 @@
     we could use interpolation to estimate that point:
 </p>
 
-<img src="Articles/Mika_SSR/RaymarchingInterpolation.png" alt="Raymarching interpolation image" />
+<img class="single-image" src="Articles/Mika_SSR/RaymarchingInterpolation.png" alt="Raymarching interpolation image" />
 
 <p>
     Of course, this is just an estimation and won't accurately represent highly irregular shapes. However,
     the geometry in this game isn't that complex and this solution works well enough:
 </p>
 
-<img src="Articles/Mika_SSR/Demonstration_Dither_Interpolation.jpg" alt="Demonstration interpolation image" />
+<img class="single-image" src="Articles/Mika_SSR/Demonstration_Dither_Interpolation.jpg" alt="Demonstration interpolation image" />
 
 <p>
     As you can see, noise is present around the silhouette of objects because that geometry is being skipped
@@ -132,7 +137,7 @@
     from the water shader:
 </p>
 
-<img src="Articles/Mika_SSR/Demonstration_WaterNormals.jpg" alt="Demonstration water normals image" />
+<img class="single-image" src="Articles/Mika_SSR/Demonstration_WaterNormals.jpg" alt="Demonstration water normals image" />
 
 <p>
     Noise is now mitigated even more thanks to the irregularity of the reflection. However, it doesn't eliminate it
@@ -141,7 +146,7 @@
     This is the final result once the reflections are blended with the water color and a screen edge fade is applied:
 </p>
 
-<img src="Articles/Mika_SSR/Demonstration_Final.jpg" alt="Demonstration final image" />
+<img class="single-image" src="Articles/Mika_SSR/Demonstration_Final.jpg" alt="Demonstration final image" />
 
 <h3>Results</h3>
 
