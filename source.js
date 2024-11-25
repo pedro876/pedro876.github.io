@@ -86,11 +86,18 @@ function AddInputToImageComparisons() {
         var rightParagraph = allParagraphs[1];
         var overlayImg = allImages[1];
         var slider = comparison.querySelector(".image-slider");
-        slider.addEventListener("input", (event) => {
-            overlayImg.style.clipPath = `inset(0 0 0 ${event.target.value}%`;
-            rightParagraph.style.clipPath = `inset(0 0 0 ${event.target.value}%`;
-            leftParagraph.style.clipPath = `inset(0 ${100.0 - event.target.value}% 0 0`;
-        });
+        slider.min = 0;
+        slider.max = 100;
+        slider.step = 0.1;
+
+        slider.updateComparisonClip = function () {
+            overlayImg.style.clipPath = `inset(0 0 0 ${slider.value}%`;
+            rightParagraph.style.clipPath = `inset(0 0 0 ${slider.value}%`;
+            leftParagraph.style.clipPath = `inset(0 ${100.0 - slider.value}% 0 0`;
+        };
+        slider.updateComparisonClip();
+
+        slider.addEventListener("input", (event) => slider.updateComparisonClip());
     });
 
 }
