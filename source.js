@@ -8,6 +8,7 @@ var isFetching = false;
 var mobileShowIndex = false;
 const mobileViewAspectRatio = 1.17;
 const topBarRightContentMinWidth = 800;
+const hideLeftIndexAtWidth = 1000;
 
 //RESPONSIVE RESIZING
 window.mobileCheck = function () {
@@ -18,11 +19,14 @@ window.mobileCheck = function () {
 };
 
 function OnResize() {
-    var aspect = window.innerWidth / window.innerHeight;
+    var windowWidth = window.innerWidth;
+    var windowHeight = window.innerHeight;
+
+    var aspect = windowWidth / windowHeight;
     var isMobile = window.mobileCheck();
     //console.log("IsMobile: " + isMobile);
     //console.log("new aspect ratio: " + aspect);
-    if (aspect <= mobileViewAspectRatio || isMobile) {
+    if (aspect <= mobileViewAspectRatio || windowWidth < hideLeftIndexAtWidth || isMobile) {
         //Portrait View
         elemIndex.hidden = !mobileShowIndex;
         elemContent.hidden = mobileShowIndex;
@@ -52,8 +56,8 @@ function OnResize() {
     }
 
     //console.log(window.innerWidth);
-    elemTopBarRightContent.hidden = window.innerWidth < topBarRightContentMinWidth;
-    elemTopBarRightContent.style.display = window.innerWidth < topBarRightContentMinWidth ? 'none' : 'grid';
+    elemTopBarRightContent.hidden = windowWidth < topBarRightContentMinWidth;
+    elemTopBarRightContent.style.display = windowWidth < topBarRightContentMinWidth ? 'none' : 'grid';
 }
 
 function ToggleIndex()

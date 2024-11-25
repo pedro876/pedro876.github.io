@@ -1,6 +1,7 @@
 /*@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');*/
 
 :root {
+    --pageWidth: 1300px;
     --bottomBarHeight: 40px;
     --indexWidth: 300px;
     --horizontalPagePadding:20px;
@@ -47,7 +48,7 @@ a:active {
 }
 
 .limitWidth {
-    max-width: 1200px;
+    max-width: var(--pageWidth);
 }
 
 
