@@ -1,3 +1,9 @@
+.single-image {
+    width: 100%;
+    margin-top: 4px;
+    margin-bottom: 16px;
+}
+
 .image-container {
     position: relative;
     display: inline-block; /* Ensures the images are sized by content */
@@ -7,23 +13,60 @@
 
 .image-container img {
     margin: 0px;
-}
-
-.base-image {
     display: block;
     width: 100%; /* Adjust to fit your layout */
 }
 
-.overlay-image {
+.image-container img + img {
     position: absolute;
     top: 0;
-    right: 0;
-    height: 100%; /* Match the base image */
+    width: 100%; /* Match the base image */
     clip-path: inset(0 0 0 50%); /* Adjust the left value to control the cropped portion */
 }
 
-.single-image {
+.image-container p {
+    margin: 0px;
+    padding: 0px;
+    position: absolute;
+    bottom: calc(var(--sliderHeight) + 10px);
+    left: 16px;
+    width: calc(100% - 32px);
+    clip-path: inset(0 50% 0 0);
+}
+
+.image-container p + p {
+    text-align: right;
+    clip-path: inset(0 0 0 50%);
+}
+
+.image-slider {
+    -webkit-appearance: none;
+    appearance: none;
     width: 100%;
-    margin-top: 4px;
-    margin-bottom: 16px;
+    height: var(--sliderHeight);
+    background: rgb(26, 27, 29);
+    outline: none;
+    -webkit-transition: .2s;
+    transition: background .2s;
+    margin: 0px;
+}
+
+.image-slider:hover {
+    background: rgb(46, 47, 49);
+}
+
+.image-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: var(--sliderHeight);
+    height: var(--sliderHeight);
+    background: rgb(224, 225, 239);
+    cursor: pointer;
+}
+
+.image-slider::-moz-range-thumb {
+    width: var(--sliderHeight);
+    height: var(--sliderHeight);
+    background: rgb(224, 225, 239);
+    cursor: pointer;
 }

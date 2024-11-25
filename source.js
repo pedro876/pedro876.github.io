@@ -73,6 +73,24 @@ function SetEnableAllButtons(enabled) {
     });
 }
 
+function AddInputToImageComparisons() {
+    var allComparisons = elemContent.querySelectorAll(".image-container");
+    allComparisons.forEach((comparison) => {
+        var allImages = comparison.querySelectorAll("img");
+        var allParagraphs = comparison.querySelectorAll("p");
+        var leftParagraph = allParagraphs[0];
+        var rightParagraph = allParagraphs[1];
+        var overlayImg = allImages[1];
+        var slider = comparison.querySelector(".image-slider");
+        slider.addEventListener("input", (event) => {
+            overlayImg.style.clipPath = `inset(0 0 0 ${event.target.value}%`;
+            rightParagraph.style.clipPath = `inset(0 0 0 ${event.target.value}%`;
+            leftParagraph.style.clipPath = `inset(0 ${100.0 - event.target.value}% 0 0`;
+        });
+    });
+
+}
+
 function AddButtonClickBehaviour(elemButton) {
     elemButton.loadContent = function () {
         if (isFetching) return;
@@ -86,6 +104,7 @@ function AddButtonClickBehaviour(elemButton) {
         }).then(html => {
             elemContent.innerHTML = html;
             SetEnableAllButtons(true);
+            AddInputToImageComparisons();
             elemButton.disabled = true;
             isFetching = false;
             if (mobileShowIndex) ToggleIndex();
