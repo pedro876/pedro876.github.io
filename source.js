@@ -13,7 +13,11 @@ var elemButtonIndex = document.getElementById("buttonIndex");
 var elemTopBarRightContent = document.getElementById("topBarRightContent");
 var elemRaccoon = document.getElementById("raccoonImg");
 var elemFullscreen = document.getElementById("fullscreen");
+var elemButtonFullscreenRight = document.getElementById("fullscreenRight");
+var elemButtonFullscreenLeft = document.getElementById("fullscreenLeft");
 var isInFullscreen = false;
+var maximizableElements = [];
+
 
 //FULLSCREEN
 function EnterFullScreen(element) {
@@ -24,11 +28,12 @@ function EnterFullScreen(element) {
     element.style.marginTop = "0px";
     element.style.marginBottom = "0px";
     isInFullscreen = true;
+    CheckFullscreenButtonsVisibility();
 }
 
 function ExitFullScreen() {
     console.log("Exiting full screen mode");
-    var element = elemFullscreen.firstElementChild;
+    var element = elemFullscreen.lastElementChild;
 
     element.style.marginTop = "";
     element.style.marginBottom = "";
@@ -41,11 +46,54 @@ function ExitFullScreen() {
         realParent.insertBefore(element, realParent.children[element.realChildIndex]);
     }
     
-    elemFullscreen.innerHTML = "";
     elemFullscreen.style.display = "none";
     document.body.style.overflow = "";
     isInFullscreen = false;
 }
+
+function NavigateFullscreen(dir) {
+    if (!isInFullscreen) return;
+    var newIndex = elemFullscreen.lastElementChild.maximizableIndex + dir;
+    if (newIndex >= 0 && newIndex < maximizableElements.length) {
+        ExitFullScreen();
+        EnterFullScreen(maximizableElements[newIndex]);
+    }
+}
+
+function CheckFullscreenButtonsVisibility() {
+    if (!isInFullscreen) return;
+    elemButtonFullscreenLeft.hidden = elemFullscreen.lastElementChild.maximizableIndex == 0;
+    elemButtonFullscreenRight.hidden = elemFullscreen.lastElementChild.maximizableIndex == maximizableElements.length-1;
+}
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+        if (isInFullscreen) {
+            ExitFullScreen();
+        }
+    }
+    else if (event.key === "ArrowLeft" && isInFullscreen) {
+        NavigateFullscreen(-1);
+        //if (elemFullscreen.firstElementChild.maximizableIndex > 0) {
+        //    var newIndex = elemFullscreen.firstElementChild.maximizableIndex - 1;
+        //    ExitFullScreen();
+        //    EnterFullScreen(maximizableElements[newIndex]);
+        //}
+    }
+    else if (event.key === "ArrowRight" && isInFullscreen) {
+        NavigateFullscreen(1);
+        //if (elemFullscreen.firstElementChild.maximizableIndex < maximizableElements.length-1) {
+        //    var newIndex = elemFullscreen.firstElementChild.maximizableIndex + 1;
+        //    ExitFullScreen();
+        //    EnterFullScreen(maximizableElements[newIndex]);
+        //}
+    }
+});
+
+elemButtonFullscreenLeft.addEventListener("click", () => NavigateFullscreen(-1));
+elemButtonFullscreenRight.addEventListener("click", () => NavigateFullscreen(1));
+
+
 
 //RESPONSIVE RESIZING
 window.mobileCheck = function () {
@@ -130,6 +178,7 @@ function DataUrlToFileName(dataURL) {
 }
 
 function AddInputToImageComparisons() {
+    maximizableElements = [];
     var allComparisons = elemContent.querySelectorAll(".image-container");
     allComparisons.forEach((comparison) => {
         comparison.realParent = comparison.parentElement;
@@ -139,34 +188,39 @@ function AddInputToImageComparisons() {
         var leftParagraph = allParagraphs[0];
         var rightParagraph = allParagraphs[1];
         var overlayImg = allImages[1];
-        var slider = comparison.querySelector(".image-slider");
+
         var maximize = comparison.querySelector(".image-maximize");
-
-        slider.min = 0;
-        slider.max = 100;
-        slider.step = 0.1;
-
-        slider.updateComparisonClip = function () {
-            overlayImg.style.clipPath = `inset(0 0 0 ${slider.value}%`;
-            rightParagraph.style.clipPath = `inset(0 0 0 ${slider.value}%`;
-            leftParagraph.style.clipPath = `inset(0 ${100.0 - slider.value}% 0 0`;
-        };
-        slider.updateComparisonClip();
-
         if (maximize != null) {
+            comparison.maximizableIndex = maximizableElements.length;
+            maximizableElements.push(comparison);
             maximize.addEventListener("click", () => {
                 if (isInFullscreen) ExitFullScreen();
                 else EnterFullScreen(comparison);
             });
         }
 
-        slider.addEventListener("input", (event) => slider.updateComparisonClip());
+        var slider = comparison.querySelector(".image-slider");
+        if (slider != null) {
+            slider.min = 0;
+            slider.max = 100;
+            slider.step = 0.1;
+
+            slider.updateComparisonClip = function () {
+                overlayImg.style.clipPath = `inset(0 0 0 ${slider.value}%`;
+                rightParagraph.style.clipPath = `inset(0 0 0 ${slider.value}%`;
+                leftParagraph.style.clipPath = `inset(0 ${100.0 - slider.value}% 0 0`;
+            };
+            slider.updateComparisonClip();
+
+            slider.addEventListener("input", (event) => slider.updateComparisonClip());
+        }
     });
 }
 
 function AddButtonClickBehaviour(elemButton) {
     elemButton.loadContent = function () {
         if (isFetching) return;
+        if (isInFullscreen) ExitFullScreen();
         isFetching = true;
         var articlePath = elemButton.getAttribute("data-url");
         fetch(articlePath).then(response => {
@@ -191,8 +245,6 @@ function AddButtonClickBehaviour(elemButton) {
         }).catch(error => {
             console.error('There was a problem with the fetch operation:', error);
         });
-
-
     };
 
     elemButton.addEventListener('click', elemButton.loadContent);
