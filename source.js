@@ -1,9 +1,8 @@
 const mobileViewAspectRatio = 1.17;
 const topBarRightContentMinWidth = 800;
 const hideLeftIndexAtWidth = 1000;
+const baseURL = window.location.href.split("?")[0];
 
-var baseURL = window.location.href.split("?")[0];
-console.log("Base URL: ", baseURL);
 
 var isFetching = false;
 var mobileShowIndex = false;
@@ -81,6 +80,14 @@ function SetEnableAllButtons(enabled) {
     });
 }
 
+function DataUrlToFileName(dataURL) {
+    var articleName = dataURL.split("/");
+    articleName = articleName[articleName.length - 1];
+    articleName = articleName.split(".");
+    articleName = articleName[0];
+    return articleName;
+}
+
 function AddInputToImageComparisons() {
     var allComparisons = elemContent.querySelectorAll(".image-container");
     allComparisons.forEach((comparison) => {
@@ -124,8 +131,12 @@ function AddButtonClickBehaviour(elemButton) {
             isFetching = false;
             if (mobileShowIndex) ToggleIndex();
 
-            var url = `${baseURL}?article=${encodeURIComponent("Mika_SSR")}`;
-            console.log("Generated URL: ", url);
+            var articleName = DataUrlToFileName(articlePath);
+            var url = `${baseURL}?article=${encodeURIComponent(articleName)}`;
+            if (window.location.href != url) {
+                window.history.pushState(null, "", url);
+                console.log("New url: ", url);
+            }
         }).catch(error => {
             console.error('There was a problem with the fetch operation:', error);
         });
@@ -136,10 +147,23 @@ function AddButtonClickBehaviour(elemButton) {
     elemButton.addEventListener('click', elemButton.loadContent);
 }
 
-
 indexButtons.forEach((indexButton) => {
     AddButtonClickBehaviour(indexButton);
 });
 
-//Use this to load a certain page instantly
-indexButtons[1].loadContent();
+function LoadURLArticle()
+{
+    var urlParams = new URLSearchParams(new URL(window.location.href).search);
+    var loadArticle = urlParams.has("article") ? urlParams.get("article") : "contact";
+    console.log("Load article: ", loadArticle);
+
+    indexButtons.forEach((indexButton) => {
+        var articleName = DataUrlToFileName(indexButton.getAttribute("data-url"));
+        if (articleName == loadArticle) {
+            indexButton.loadContent();
+        }
+    });
+}
+
+window.addEventListener("popstate", (event) => LoadURLArticle());
+LoadURLArticle();
