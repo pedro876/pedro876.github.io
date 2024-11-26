@@ -73,3 +73,13 @@
     background: rgb(224, 225, 239);
     cursor: pointer;
 }
+
+.image-maximize {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    height: 16px;
+    width: 16px;
+}
+
+

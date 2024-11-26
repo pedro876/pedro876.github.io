@@ -3,7 +3,6 @@ const topBarRightContentMinWidth = 820;
 const hideLeftIndexAtWidth = 1000;
 const baseURL = window.location.href.split("?")[0];
 
-
 var isFetching = false;
 var mobileShowIndex = false;
 
@@ -13,6 +12,30 @@ var indexButtons = elemIndex.querySelectorAll("button[data-url]");
 var elemButtonIndex = document.getElementById("buttonIndex");
 var elemTopBarRightContent = document.getElementById("topBarRightContent");
 var elemRaccoon = document.getElementById("raccoonImg");
+var elemFullscreen = document.getElementById("fullscreen");
+var isInFullscreen = false;
+
+//FULLSCREEN
+function EnterFullScreen(element) {
+    console.log("Entering full screen mode");
+    elemFullscreen.innerHTML = element.outerHTML;
+    elemFullscreen.style.display = "flex";
+    document.body.style.overflow = "hidden";
+    isInFullscreen = true;
+
+    var maximizeButton = elemFullscreen.querySelector(".image-maximize");
+    if (maximizeButton != null) {
+        maximizeButton.hidden = true;
+    }
+}
+
+function ExitFullScreen() {
+    console.log("Exiting full screen mode");
+    elemFullscreen.innerHTML = "";
+    elemFullscreen.style.display = "none";
+    document.body.style.overflow = "";
+    isInFullscreen = false;
+}
 
 //RESPONSIVE RESIZING
 window.mobileCheck = function () {
@@ -105,6 +128,8 @@ function AddInputToImageComparisons() {
         var rightParagraph = allParagraphs[1];
         var overlayImg = allImages[1];
         var slider = comparison.querySelector(".image-slider");
+        var maximize = comparison.querySelector(".image-maximize");
+
         slider.min = 0;
         slider.max = 100;
         slider.step = 0.1;
@@ -116,9 +141,15 @@ function AddInputToImageComparisons() {
         };
         slider.updateComparisonClip();
 
+        if (maximize != null) {
+            maximize.addEventListener("click", () => {
+                if (isInFullscreen) ExitFullScreen();
+                else EnterFullScreen(comparison);
+            });
+        }
+
         slider.addEventListener("input", (event) => slider.updateComparisonClip());
     });
-
 }
 
 function AddButtonClickBehaviour(elemButton) {
