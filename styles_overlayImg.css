@@ -9,12 +9,14 @@
     display: inline-block; /* Ensures the images are sized by content */
     margin-top: 4px;
     margin-bottom: 16px;
+    max-height: 100vh;
 }
 
 .image-container img {
     margin: 0px;
     display: block;
     width: 100%; /* Adjust to fit your layout */
+    max-height: calc(100vh - var(--sliderHeight));
 }
 
 .image-container img + img {
@@ -43,6 +45,8 @@
 }
 
 .image-slider {
+    padding: 0px;
+    border: 0px;
     -webkit-appearance: none;
     appearance: none;
     width: 100%;

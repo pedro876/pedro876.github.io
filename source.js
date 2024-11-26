@@ -18,19 +18,29 @@ var isInFullscreen = false;
 //FULLSCREEN
 function EnterFullScreen(element) {
     console.log("Entering full screen mode");
-    elemFullscreen.innerHTML = element.outerHTML;
+    elemFullscreen.appendChild(element);
     elemFullscreen.style.display = "flex";
     document.body.style.overflow = "hidden";
+    element.style.marginTop = "0px";
+    element.style.marginBottom = "0px";
     isInFullscreen = true;
-
-    var maximizeButton = elemFullscreen.querySelector(".image-maximize");
-    if (maximizeButton != null) {
-        maximizeButton.hidden = true;
-    }
 }
 
 function ExitFullScreen() {
     console.log("Exiting full screen mode");
+    var element = elemFullscreen.firstElementChild;
+
+    element.style.marginTop = "";
+    element.style.marginBottom = "";
+
+    var realParent = element.realParent;
+    if (element.realChildIndex >= realParent.children.length) {
+        realParent.appendChild(element);
+    }
+    else {
+        realParent.insertBefore(element, realParent.children[element.realChildIndex]);
+    }
+    
     elemFullscreen.innerHTML = "";
     elemFullscreen.style.display = "none";
     document.body.style.overflow = "";
@@ -122,6 +132,8 @@ function DataUrlToFileName(dataURL) {
 function AddInputToImageComparisons() {
     var allComparisons = elemContent.querySelectorAll(".image-container");
     allComparisons.forEach((comparison) => {
+        comparison.realParent = comparison.parentElement;
+        comparison.realChildIndex = Array.prototype.indexOf.call(comparison.realParent.children, comparison);
         var allImages = comparison.querySelectorAll("img");
         var allParagraphs = comparison.querySelectorAll("p");
         var leftParagraph = allParagraphs[0];
