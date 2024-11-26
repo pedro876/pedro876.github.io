@@ -26,7 +26,14 @@
 }
 
 #topBarLeftContent {
-    
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#topBarLeftTexts {
+    display: flex;
+    flex-direction: column;
 }
 
 #topBarRightContent {

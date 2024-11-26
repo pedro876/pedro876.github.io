@@ -1,5 +1,5 @@
 const mobileViewAspectRatio = 1.17;
-const topBarRightContentMinWidth = 800;
+const topBarRightContentMinWidth = 820;
 const hideLeftIndexAtWidth = 1000;
 const baseURL = window.location.href.split("?")[0];
 
@@ -12,6 +12,7 @@ var elemIndex = document.getElementById("index");
 var indexButtons = elemIndex.querySelectorAll("button[data-url]");
 var elemButtonIndex = document.getElementById("buttonIndex");
 var elemTopBarRightContent = document.getElementById("topBarRightContent");
+var elemRaccoon = document.getElementById("raccoonImg");
 
 //RESPONSIVE RESIZING
 window.mobileCheck = function () {
@@ -34,7 +35,7 @@ function OnResize() {
         elemIndex.hidden = !mobileShowIndex;
         elemContent.hidden = mobileShowIndex;
         elemButtonIndex.hidden = false;
-        //elemTopBarRightContent.hidden = true;
+        
 
         //Portrait Style
         elemIndex.style.flex = 'auto';
@@ -48,8 +49,6 @@ function OnResize() {
         elemIndex.hidden = false;
         elemContent.hidden = false;
         elemButtonIndex.hidden = true;
-        //elemTopBarRightContent.hidden = false;
-
 
         //Landscape Style
         elemIndex.style.flex = '';
@@ -59,8 +58,17 @@ function OnResize() {
     }
 
     //console.log(window.innerWidth);
-    elemTopBarRightContent.hidden = windowWidth < topBarRightContentMinWidth;
-    elemTopBarRightContent.style.display = windowWidth < topBarRightContentMinWidth ? 'none' : 'grid';
+
+    if (windowWidth < topBarRightContentMinWidth) {
+        elemTopBarRightContent.hidden = true;
+        elemTopBarRightContent.style.display = "none";
+        if(elemRaccoon != null) elemRaccoon.hidden = true;
+    }
+    else {
+        elemTopBarRightContent.hidden = false;
+        elemTopBarRightContent.style.display = "grid";
+        if (elemRaccoon != null) elemRaccoon.hidden = false;
+    }
 }
 
 function ToggleIndex()
