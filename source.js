@@ -1,14 +1,18 @@
+const mobileViewAspectRatio = 1.17;
+const topBarRightContentMinWidth = 800;
+const hideLeftIndexAtWidth = 1000;
+
+var baseURL = window.location.href.split("?")[0];
+console.log("Base URL: ", baseURL);
+
+var isFetching = false;
+var mobileShowIndex = false;
+
 var elemContent = document.getElementById("articleContent");
 var elemIndex = document.getElementById("index");
 var indexButtons = elemIndex.querySelectorAll("button[data-url]");
 var elemButtonIndex = document.getElementById("buttonIndex");
 var elemTopBarRightContent = document.getElementById("topBarRightContent");
-
-var isFetching = false;
-var mobileShowIndex = false;
-const mobileViewAspectRatio = 1.17;
-const topBarRightContentMinWidth = 800;
-const hideLeftIndexAtWidth = 1000;
 
 //RESPONSIVE RESIZING
 window.mobileCheck = function () {
@@ -119,6 +123,9 @@ function AddButtonClickBehaviour(elemButton) {
             elemButton.disabled = true;
             isFetching = false;
             if (mobileShowIndex) ToggleIndex();
+
+            var url = `${baseURL}?article=${encodeURIComponent("Mika_SSR")}`;
+            console.log("Generated URL: ", url);
         }).catch(error => {
             console.error('There was a problem with the fetch operation:', error);
         });
