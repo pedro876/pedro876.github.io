@@ -17,6 +17,7 @@ var elemButtonFullscreenRight = document.getElementById("fullscreenRight");
 var elemButtonFullscreenLeft = document.getElementById("fullscreenLeft");
 var isInFullscreen = false;
 var maximizableElements = [];
+var elemDraggable = null;
 
 
 //FULLSCREEN
@@ -27,6 +28,9 @@ function EnterFullScreen(element) {
     document.body.style.overflow = "hidden";
     element.style.marginTop = "0px";
     element.style.marginBottom = "0px";
+    var maximizeButton = element.querySelector(".image-maximize");
+    maximizeButton.src = "GlobalImages/minimize.png";
+
     isInFullscreen = true;
     CheckFullscreenButtonsVisibility();
 }
@@ -37,6 +41,8 @@ function ExitFullScreen() {
 
     element.style.marginTop = "";
     element.style.marginBottom = "";
+    var maximizeButton = element.querySelector(".image-maximize");
+    maximizeButton.src = "GlobalImages/maximize.png";
 
     var realParent = element.realParent;
     if (element.realChildIndex >= realParent.children.length) {
@@ -74,25 +80,14 @@ document.addEventListener("keydown", (event) => {
     }
     else if (event.key === "ArrowLeft" && isInFullscreen) {
         NavigateFullscreen(-1);
-        //if (elemFullscreen.firstElementChild.maximizableIndex > 0) {
-        //    var newIndex = elemFullscreen.firstElementChild.maximizableIndex - 1;
-        //    ExitFullScreen();
-        //    EnterFullScreen(maximizableElements[newIndex]);
-        //}
     }
     else if (event.key === "ArrowRight" && isInFullscreen) {
         NavigateFullscreen(1);
-        //if (elemFullscreen.firstElementChild.maximizableIndex < maximizableElements.length-1) {
-        //    var newIndex = elemFullscreen.firstElementChild.maximizableIndex + 1;
-        //    ExitFullScreen();
-        //    EnterFullScreen(maximizableElements[newIndex]);
-        //}
     }
 });
 
 elemButtonFullscreenLeft.addEventListener("click", () => NavigateFullscreen(-1));
 elemButtonFullscreenRight.addEventListener("click", () => NavigateFullscreen(1));
-
 
 
 //RESPONSIVE RESIZING
@@ -178,7 +173,75 @@ function DataUrlToFileName(dataURL) {
 }
 
 function AddInputToImageComparisons() {
+    var isMobile = window.mobileCheck();
     maximizableElements = [];
+
+    var allDataImages = elemContent.querySelectorAll("div[data-image]");
+    allDataImages.forEach((dataImage) => {
+        const attr = dataImage.getAttribute("data-image");
+
+        var isJson = attr.startsWith("{");
+        const data = isJson ? JSON.parse(attr) : null;
+        var isComparison = isJson && data.images != null && data.images.length > 1;
+
+
+        const imageContainer = document.createElement("div");
+        imageContainer.className = "image-container";
+
+        // Add the first image
+        const img1 = document.createElement('img');
+        img1.src = isJson ? data.images[0] : attr;
+        imageContainer.appendChild(img1);
+
+        // Add the second image
+        if (isComparison) {
+            const img2 = document.createElement('img');
+            img2.src = data.images[1];
+            imageContainer.appendChild(img2);
+
+            const slider = document.createElement('input');
+            slider.type = 'range';
+            slider.className = 'image-slider';
+            slider.value = data.sliderValue == null ? 50 : data.sliderValue;
+            imageContainer.appendChild(slider);
+
+            // Add the middle bar div
+            const middleBar = document.createElement('div');
+            middleBar.className = 'image-middleBar';
+            middleBar.appendChild(document.createElement('div')); // Inner div
+            imageContainer.appendChild(middleBar);
+        }
+
+        if (isJson) {
+            if (data.texts != null) {
+                // Add the first text
+                const text1 = document.createElement('p');
+                text1.textContent = data.texts[0];
+                imageContainer.appendChild(text1);
+                if (data.images.length == 1) text1.style.bottom = "0px";
+
+                if (data.texts.length > 1) {
+                    // Add the second text
+                    const text2 = document.createElement('p');
+                    text2.textContent = data.texts[1];
+                    imageContainer.appendChild(text2);
+                    if (data.images.length == 1) text2.style.bottom = "0px";
+                }
+            }
+        }
+
+        if (!isJson || data.maximizable == true) {
+            // Add the maximize button
+            const maximizeButton = document.createElement('input');
+            maximizeButton.type = 'image';
+            maximizeButton.className = 'image-maximize';
+            imageContainer.appendChild(maximizeButton);
+        }
+
+        // Replace the original container with the new structure
+        dataImage.replaceWith(imageContainer);
+    });
+
     var allComparisons = elemContent.querySelectorAll(".image-container");
     allComparisons.forEach((comparison) => {
         comparison.realParent = comparison.parentElement;
@@ -197,10 +260,21 @@ function AddInputToImageComparisons() {
                 if (isInFullscreen) ExitFullScreen();
                 else EnterFullScreen(comparison);
             });
+
+            maximize.src = "GlobalImages/maximize.png";
+            maximize.type = "image";
         }
 
         var slider = comparison.querySelector(".image-slider");
+
         if (slider != null) {
+            comparison.slider = slider;
+            slider.middleBar = comparison.querySelector(".image-middleBar");
+
+            if (isMobile && slider.middleBar != null) {
+                comparison.removeChild(slider.middleBar);
+            }
+
             slider.min = 0;
             slider.max = 100;
             slider.step = 0.1;
@@ -209,13 +283,49 @@ function AddInputToImageComparisons() {
                 overlayImg.style.clipPath = `inset(0 0 0 ${slider.value}%`;
                 rightParagraph.style.clipPath = `inset(0 0 0 ${slider.value}%`;
                 leftParagraph.style.clipPath = `inset(0 ${100.0 - slider.value}% 0 0`;
+                if (slider.middleBar != null) {
+                    slider.middleBar.style.left = `${slider.value}%`;
+                }
             };
             slider.updateComparisonClip();
 
             slider.addEventListener("input", (event) => slider.updateComparisonClip());
+
+            if (slider.middleBar != null) {
+                slider.middleBar.slider = slider;
+                slider.middleBar.addEventListener("mousedown", (e) => {
+                    elemDraggable = slider.middleBar;
+                    document.body.style.userSelect = 'none';
+                });
+            }
         }
     });
 }
+
+document.addEventListener("mouseup", (e) => {
+    elemDraggable = null;
+    document.body.style.userSelect = '';
+});
+
+document.addEventListener("mousemove", (e) => {
+    if (elemDraggable == null) {
+        return;
+    }
+
+    var mouseX = e.clientX;
+    var rect = elemDraggable.parentElement.getBoundingClientRect();
+    var maxWidth = rect.width;
+    var offsetX = rect.left;
+
+    var left = Math.min(100, Math.max(0, ((mouseX - offsetX) / maxWidth) * 100));
+    elemDraggable.style.left = `${left}%`;
+
+    if (left > 99.9) left = 100.0;
+    if (left < 0.01) left = 0.0;
+
+    elemDraggable.slider.value = left;
+    elemDraggable.slider.updateComparisonClip();
+});
 
 function AddButtonClickBehaviour(elemButton) {
     elemButton.loadContent = function () {

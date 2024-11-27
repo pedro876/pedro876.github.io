@@ -52,31 +52,3 @@ a:active {
     max-width: var(--pageWidth);
 }
 
-#fullscreen {
-    position: fixed;
-    left: 0px;
-    top: 0px;
-    width: 100%;
-    height: 100%;
-    background-color: black;
-    z-index: 100;
-    display: none; /*should be flex when visible*/
-    justify-content: center;
-    align-items: center;
-}
-
-.fullscreenInput {
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    margin: 0px;
-    z-index: 200;
-}
-
-#fullscreenRight {
-    right: 0px;
-}
-
-#fullscreenLeft {
-    left: 0px;
-}

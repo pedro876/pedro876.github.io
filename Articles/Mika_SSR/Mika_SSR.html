@@ -14,14 +14,12 @@
     There was only one way to find out: Test it.
 </p>
 
-<div class="image-container">
-    <img src="Articles/Mika_SSR/Mika_SSR_0_Off.jpg">
-    <img src="Articles/Mika_SSR/Mika_SSR_0_On.jpg">
-    <p>Reflections Off</p>
-    <p>Reflections On</p>
-    <input class="image-slider" type="range" value="50" />
-    <input class="image-maximize" type="button" />
-</div>
+<div data-image='{
+    "images": ["Articles/Mika_SSR/Mika_SSR_0_Off.jpg", "Articles/Mika_SSR/Mika_SSR_0_On.jpg"]
+    , "texts": ["Reflections Off", "Reflections On"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
 
 <p>
     Up until this point, I had a lot of experience using reflection probes and had toyed a bit with ray tracing.
@@ -73,7 +71,7 @@
     <li>Opaque Buffer: a texture copy that contains the scene color of all opaque surfaces.</li>
 </ul>
 
-<img class="single-image" src="Articles/Mika_SSR/DepthAndOpaqueBuffers.png" alt="Depth and opaque buffers image" />
+<div data-image="Articles/Mika_SSR/DepthAndOpaqueBuffers.png"></div>
 
 <p>
     Firstly, a reflection vector is calculated given the water normal and the direction from
@@ -93,7 +91,7 @@
     a waste of resources.
 </p>
 
-<img class="single-image" src="Articles/Mika_SSR/ReflectionAndRayMarching.png" alt="Depth and opaque buffers image" />
+<div data-image="Articles/Mika_SSR/ReflectionAndRayMarching.png"></div>
 
 <p>
     Getting a good result with this basic approach would require using a lot of samples per pixel (spp).
@@ -101,7 +99,7 @@
     very low spp count for a demonstration (6spp):
 </p>
 
-<img class="single-image" src="Articles/Mika_SSR/Demonstration_Initial.jpg" alt="Demonstration initial image" />
+<div data-image="Articles/Mika_SSR/Demonstration_Initial.jpg"></div>
 
 <p>
     Can you spot the issue? There is very visible banding, which is even worse in motion. This is
@@ -114,7 +112,7 @@
     affects the loop so that all samples are displaced a fraction of the distance between two iterations.
 </p>
 
-<img class="single-image" src="Articles/Mika_SSR/Demonstration_Dither.jpg" alt="Demonstration dithering image" />
+<div data-image="Articles/Mika_SSR/Demonstration_Dither.jpg"></div>
 
 <p>
     That cleared banding to a great extent, but sacrificed clarity entirely at the same time. This is
@@ -124,14 +122,14 @@
     we can use interpolation to estimate that point:
 </p>
 
-<img class="single-image" src="Articles/Mika_SSR/RaymarchingInterpolation.png" alt="Raymarching interpolation image" />
+<div data-image="Articles/Mika_SSR/RaymarchingInterpolation.png"></div>
 
 <p>
     Of course, this is just an estimation and won't accurately represent highly irregular shapes. However,
     the geometry in this game isn't that complex and this solution works well enough:
 </p>
 
-<img class="single-image" src="Articles/Mika_SSR/Demonstration_Dither_Interpolation.jpg" alt="Demonstration interpolation image" />
+<div data-image="Articles/Mika_SSR/Demonstration_Dither_Interpolation.jpg"></div>
 
 <p>
     As you can see, noise is present around the silhouette of objects because that geometry is being skipped
@@ -141,7 +139,7 @@
     from the water shader:
 </p>
 
-<img class="single-image" src="Articles/Mika_SSR/Demonstration_WaterNormals.jpg" alt="Demonstration water normals image" />
+<div data-image="Articles/Mika_SSR/Demonstration_WaterNormals.jpg"></div>
 
 <p>
     Noise is now mitigated even more thanks to the irregularity of the reflection. However, it doesn't eliminate it
@@ -150,54 +148,44 @@
     This is the final result once the reflections are blended with the water color and a screen edge fade is applied:
 </p>
 
-<img class="single-image" src="Articles/Mika_SSR/Demonstration_Final.jpg" alt="Demonstration final image" />
+<div data-image="Articles/Mika_SSR/Demonstration_Final.jpg"></div>
 
 <h3>Results</h3>
 
-<div class="image-container">
-    <img src="Articles/Mika_SSR/Mika_SSR_1_Off.jpg">
-    <img src="Articles/Mika_SSR/Mika_SSR_1_On.jpg">
-    <p>SSR Off</p>
-    <p>SSR On</p>
-    <input class="image-slider" type="range" value="0" />
-    <input class="image-maximize" type="button" />
-</div>
+<div data-image='{
+    "images": ["Articles/Mika_SSR/Mika_SSR_1_Off.jpg", "Articles/Mika_SSR/Mika_SSR_1_On.jpg"]
+    , "texts": ["SSR Off", "SSR On"]
+    , "sliderValue": 0
+    , "maximizable": true
+}'></div>
 
-<div class="image-container">
-    <img src="Articles/Mika_SSR/Mika_SSR_2_Off.jpg">
-    <img src="Articles/Mika_SSR/Mika_SSR_2_On.jpg">
-    <p>SSR Off</p>
-    <p>SSR On</p>
-    <input class="image-slider" type="range" value="0" />
-    <input class="image-maximize" type="button" />
-</div>
+<div data-image='{
+    "images": ["Articles/Mika_SSR/Mika_SSR_2_Off.jpg", "Articles/Mika_SSR/Mika_SSR_2_On.jpg"]
+    , "texts": ["SSR Off", "SSR On"]
+    , "sliderValue": 0
+    , "maximizable": true
+}'></div>
 
-<div class="image-container">
-    <img src="Articles/Mika_SSR/Mika_SSR_3_Off.jpg">
-    <img src="Articles/Mika_SSR/Mika_SSR_3_On.jpg">
-    <p>SSR Off</p>
-    <p>SSR On</p>
-    <input class="image-slider" type="range" value="0" />
-    <input class="image-maximize" type="button" />
-</div>
+<div data-image='{
+    "images": ["Articles/Mika_SSR/Mika_SSR_3_Off.jpg", "Articles/Mika_SSR/Mika_SSR_3_On.jpg"]
+    , "texts": ["SSR Off", "SSR On"]
+    , "sliderValue": 0
+    , "maximizable": true
+}'></div>
 
-<div class="image-container">
-    <img src="Articles/Mika_SSR/Mika_SSR_4_Off.jpg">
-    <img src="Articles/Mika_SSR/Mika_SSR_4_On.jpg">
-    <p>SSR Off</p>
-    <p>SSR On</p>
-    <input class="image-slider" type="range" value="0" />
-    <input class="image-maximize" type="button" />
-</div>
+<div data-image='{
+    "images": ["Articles/Mika_SSR/Mika_SSR_4_Off.jpg", "Articles/Mika_SSR/Mika_SSR_4_On.jpg"]
+    , "texts": ["SSR Off", "SSR On"]
+    , "sliderValue": 0
+    , "maximizable": true
+}'></div>
 
-<div class="image-container">
-    <img src="Articles/Mika_SSR/Mika_SSR_5_Off.jpg">
-    <img src="Articles/Mika_SSR/Mika_SSR_5_On.jpg">
-    <p>SSR Off</p>
-    <p>SSR On</p>
-    <input class="image-slider" type="range" value="0" />
-    <input class="image-maximize" type="button" />
-</div>
+<div data-image='{
+    "images": ["Articles/Mika_SSR/Mika_SSR_5_Off.jpg", "Articles/Mika_SSR/Mika_SSR_5_On.jpg"]
+    , "texts": ["SSR Off", "SSR On"]
+    , "sliderValue": 0
+    , "maximizable": true
+}'></div>
 
 <h3>Conclusion</h3>
 
