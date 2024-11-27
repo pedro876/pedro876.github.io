@@ -227,6 +227,10 @@ function AddInputToImageComparisons() {
                     imageContainer.appendChild(text2);
                     if (data.images.length == 1) text2.style.bottom = "0px";
                 }
+                else {
+                    text1.style.textAlign = "right";
+                    text1.style.clipPath = "none";
+                }
             }
         }
 
