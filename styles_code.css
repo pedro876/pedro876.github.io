@@ -1,0 +1,7 @@
+.code {
+    background-color: rgb(26, 27, 29);
+    font-family: monospace;
+    white-space: pre-wrap;
+    padding: 20px 8px 20px 8px;
+    width: calc(100% - 16px);
+}
