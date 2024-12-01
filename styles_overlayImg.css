@@ -1,8 +1,12 @@
+.video-container {
+    width: 100%;
+}
+
 .image-container {
     position: relative;
     display: flex; /* Ensures the images are sized by content */
     flex-direction: column;
-    margin-top: 4px;
+    margin-top: 16px;
     margin-bottom: 16px;
     max-height: 100vh;
 }
