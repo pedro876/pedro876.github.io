@@ -61,6 +61,14 @@
     margin: 0px;
 }
 
+#topBar a {
+    text-decoration: none;
+}
+
+#topBar a:hover {
+    text-decoration: underline;
+}
+
 #topBar h1 {
     margin: 10px 0px 0px 0px;
     padding: 0px;
