@@ -1,0 +1,172 @@
+﻿<h1>GPU Instanced Foliage</h1>
+<h2>
+    Januray 24th, 2025 <br />
+    Mika and the Witch's Mountain
+</h2>
+
+<h3>Motivation</h3>
+
+<p>
+    During the initial prototype phase of Mika and the Witch's Mountain, a basic foliage system was developed 
+    that allowed the team to populate the island with grass. However, it was not easy to maintain or configure 
+    and it was expensive to render, specially on weaker hardware. For this reason, I decided to do some research 
+    on foliage rendering that led me to explore different ways to get the results we wanted.
+</p>
+
+<h3>Original implementation</h3>
+
+<p>
+    I wasn't part of the original team that programmed the first foliage system, and they had already left by 
+    the time I came in. However, I checked their implementation and it was very easy to understand:
+</p>
+
+<ul>
+    <li>Use a base mesh for each grass blade.</li>
+    <li>Generate random points on a surface and put the base mesh in each of those points.</li>
+    <li>Create the combined mesh and render it as usual with a material whose color matches their surface.</li>
+</ul>
+
+<p>This seems very straightforward and performant at first since everything except rendering is calculated offline. 
+    However, it doesn't really scale that well:</p>
+
+<ul>
+    <li>There is a limit to the amount of vertices that can be combined into a single mesh in Unity.</li>
+    <li>Having many large meshes just for foliage occupies a ton of memory both on disk and on VRAM.</li>
+    <li>Large surfaces can have varying colors across them. When the blade color doesn't match its surface, it loses 
+    a lot of its appeal.</li>
+</ul>
+
+<h3>Possible implementations</h3>
+
+<p>Taking into account the limitations of the original system, I focused on finding ways to overcome them. These 
+    are some of the possible solutions I found:</p>
+
+<ul>
+    <li><b>Geometry shaders:</b> Using a geometry shader, it is possible to create geometry in the GPU, without it ever requiring to be
+    stored or loaded from disk. Once set up, it is very easy to configure, understand and iterate for artists 
+    because the foliage becomes part of the ground surface itself. Additionally, it is very easy to render each blade with the 
+    surface color because it's part of the same shader with the same properties. The geometry shader can sample the ground color 
+    where the blade is located and pass that as vertex color for the generated foliage geometry. There is a catch to this, 
+    and it's the fact that geometry shaders are very slow, specially when they do high amplification (the ratio of 
+    primitives outputed for each original primitive).</li>
+    <li><b>Compute shaders:</b> Similarly to how geometry shaders work, it could be possible to generate blades of grass in runtime 
+    taking into account the camera transform to only populate with grass whatever's visible for the player in that frame. However, 
+    it is not that easy to sample the surface color in this case and compute shaders are not that performant on some systems.</li>
+    <li><b>GPU Instancing:</b> This render method is very efficient because it consists in storing only the instance (blade) specific data 
+    in a buffer, and then use the same mesh to render all the instances in a single draw call. Everything possible is precalculated (baked),
+    which makes GPU Instancing very efficient. It is not as simple to get a working system that is easy to iterate as it was with 
+    geometry shaders, but the benefits outweight the costs by a large margin.</li>
+</ul>
+
+After reviewing the solutions described above, I decided to give GPU Instancing a try because it would allow us to render a lot
+more foliage in the long run.
+
+<h3>The GPU Instancing system</h3>
+
+There were some gaps to fill at first, like defining how to generate the blades, how to color them, and how to store them. The resulting 
+workflow that I defined was:
+
+<ul>
+    <li>Create a mesh on which blades will be placed randomly.</li>
+    <li>Add a reference to the actual visible surfaces where the blades are placed. This is needed later to obtain the surface colors.</li>
+    <li>
+        Generate blades:
+        <ul>
+            <li>Calculate random position, rotation and scale in the mesh surface.</li>
+            <li>
+                Raycast towards the visual surface mesh, retrieve barycentric coordinates and mesh data. Use that information to
+                obtain the vertex color and sample the base map texture. Store this color as the blade color.
+            </li>
+            <li>
+                Use the generation mesh vertex color to indicate different properties of blades across its surface. For example, we used 
+                the RG channels to define density and height respectively.
+            </li>
+            <li>
+                Apply a scale modification for all blades based on world space perlin noise. This is optional but
+                adds a bit of variety to the grass in general.
+            </li>
+            <li>
+                Calculate the bounds of the resulting set of blades and subdivide it into a 3D grid of smaller groups that can be
+                later culled using the camera frustrum. This will  help reduce vertex and rasterization processing load for the GPU
+                at the expense of a few extra draw calls.
+            </li>
+        </ul>
+    </li>
+    <li>
+        Serialize the array of data into a compressed byte array. This is much faster than using Unity's default 
+        serializer and occupies just a fraction of the disk memory.
+    </li>
+</ul>
+
+<p>
+    That entire process is automated using buttons in the inspector once the required references are set up.
+    This way, it becomes very easy to iterate. When the game starts, it just needs to deserialize the blades,
+    set a compute buffer with their data and issue a gpu instanced draw call for the amount of blades required.
+
+    The shader uses a keyword to identify that it is using GPU Instancing, and then retrieves each instance data 
+    accordingly in the vertex shader.
+
+    We ended up storing the next variables for each instance:
+</p>
+
+<ul>
+    <li>Model matrix.</li>
+    <li>Inversed model matrix.</li>
+    <li>Surface color.</li>
+    <li>Blade height.</li>
+    <li>Random value.</li>
+</ul>
+
+<p>
+    The blade height was used to color tall grass a bit different and make the final result more interesting. 
+    As for the random value, we used it to create a smooth LOD transition. Foliage is not only frustrum culled, groups at 
+    a certain distance from the camera are also culled, but we didn't want the foliage to just pop in. Instead, we used a random value 
+    to cull certain blades in the vertex shader before culling the entire group. This way, individual blades pop in gradually instead of 
+    displaying the entire group at once.
+</p>
+
+<p>
+    Additionally, we scaled down the blades when they were very close to the culling threshold,
+    which looks almost as if blades were growing up progressively as you get close to them. These two techniques combined made
+    the LOD transition seamless.
+</p>
+
+<h3>Results</h3>
+
+<p>
+    GPU Instancing allowed us to render millions of blades of grass and flowers very fast, even on 
+    weaker hardware. In the game, there is a zone called <i>Windy Meadows</i> where a vast field populated with foliage can 
+    be seen. This is a very gpu intensive zone, but we managed to get it running at native 4k60fps on PS5 with a 
+    very high level of detail. I don't think this would have turned out so well without GPU Instancing based on our initial tests 
+    with the original implementation. On weaker hardware, like Nintendo Switch, the game maintains 1080p30fps using a lower level 
+    of detail all things considered.
+</p>
+
+<h3>Going Forward</h3>
+
+<p>
+    Our system still had room for a lot of improvement. It could still be easier to iterate and understand for artists,
+    and it could be faster to generate the instances. If I had to code this again, I would try:
+</p>
+
+<ul>
+    <li>
+        Using a compute shader to generate the blades once and store them directly in the GPU. This would be much faster 
+        than the current CPU implementation, which means that it could potentially be executed in runtime or at least lead to 
+        faster iterations for artists.
+    </li>
+    <li>
+        Using texture arrays and storing a per-instance index to combine different groups that differ only in the texture 
+        they're using. This could potentially save many draw calls in zones like <i>Windy Meadows</i> where there are different 
+        types of foliage.
+    </li>
+    <li>
+        Using a compute shader to perform faster and more granular culling of groups and individual instances.
+    </li>
+</ul>
+
+<p>
+    Some new shading techniques could potentially make this GPU Instancing system obsolete, like Mesh Shaders. However, 
+    they are not currently supported by Unity, but in other contexts they should be considered and I'd love to give them 
+    a try in the future.
+</p>
