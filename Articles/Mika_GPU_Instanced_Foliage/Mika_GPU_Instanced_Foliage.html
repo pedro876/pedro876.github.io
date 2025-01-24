@@ -23,14 +23,14 @@
 <ul>
     <li>Use a base mesh for each grass blade.</li>
     <li>Generate random points on a surface and put the base mesh in each of those points.</li>
-    <li>Create the combined mesh and render it as usual with a material whose color matches their surface.</li>
+    <li>Create the combined mesh and render it as usual with a material whose color matches its surface.</li>
 </ul>
 
 <p>This seems very straightforward and performant at first since everything except rendering is calculated offline. 
     However, it doesn't really scale that well:</p>
 
 <ul>
-    <li>There is a limit to the amount of vertices that can be combined into a single mesh in Unity.</li>
+    <li>There is a limit to the number of vertices that can be combined into a single mesh in Unity.</li>
     <li>Having many large meshes just for foliage occupies a ton of memory both on disk and on VRAM.</li>
     <li>Large surfaces can have varying colors across them. When the blade color doesn't match its surface, it loses 
     a lot of its appeal.</li>
@@ -42,8 +42,8 @@
     are some of the possible solutions I found:</p>
 
 <ul>
-    <li><b>Geometry shaders:</b> Using a geometry shader, it is possible to create geometry in the GPU, without it ever requiring to be
-    stored or loaded from disk. Once set up, it is very easy to configure, understand and iterate for artists 
+    <li><b>Geometry shaders:</b> Using a geometry shader, it is possible to create geometry in the GPU, without it ever requiring 
+    storage or loading from disk. Once set up, it is very easy to configure, understand and iterate for artists 
     because the foliage becomes part of the ground surface itself. Additionally, it is very easy to render each blade with the 
     surface color because it's part of the same shader with the same properties. The geometry shader can sample the ground color 
     where the blade is located and pass that as vertex color for the generated foliage geometry. There is a catch to this, 
@@ -53,9 +53,9 @@
     taking into account the camera transform to only populate with grass whatever's visible for the player in that frame. However, 
     it is not that easy to sample the surface color in this case and compute shaders are not that performant on some systems.</li>
     <li><b>GPU Instancing:</b> This render method is very efficient because it consists in storing only the instance (blade) specific data 
-    in a buffer, and then use the same mesh to render all the instances in a single draw call. Everything possible is precalculated (baked),
+    in a buffer, and then using the same mesh to render all the instances in a single draw call. Everything possible is pre-calculated (baked),
     which makes GPU Instancing very efficient. It is not as simple to get a working system that is easy to iterate as it was with 
-    geometry shaders, but the benefits outweight the costs by a large margin.</li>
+    geometry shaders, but the benefits outweigh the costs by a large margin.</li>
 </ul>
 
 After reviewing the solutions described above, I decided to give GPU Instancing a try because it would allow us to render a lot
@@ -86,8 +86,8 @@ workflow that I defined was:
                 adds a bit of variety to the grass in general.
             </li>
             <li>
-                Calculate the bounds of the resulting set of blades and subdivide it into a 3D grid of smaller groups that can be
-                later culled using the camera frustrum. This will  help reduce vertex and rasterization processing load for the GPU
+                Calculate the bounds of the resulting set of blades and subdivide it into a 3D grid of smaller groups that can later be
+                culled using the camera frustrum. This will  help reduce vertex and rasterization processing load for the GPU
                 at the expense of a few extra draw calls.
             </li>
         </ul>
