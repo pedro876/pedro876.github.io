@@ -7,7 +7,7 @@
 <h3>Motivation</h3>
 
 <p>
-    During the initial prototype phase of Mika and the Witch's Mountain, a basic foliage system was developed 
+    During the initial prototype phase of <i>Mika and the Witch's Mountain</i>, a basic foliage system was developed 
     that allowed the team to populate the island with grass. However, it was not easy to maintain or configure 
     and it was expensive to render, specially on weaker hardware. For this reason, I decided to do some research 
     on foliage rendering that led me to explore different ways to get the results we wanted.
@@ -43,18 +43,18 @@
 
 <ul>
     <li><b>Geometry shaders:</b> Using a geometry shader, it is possible to create geometry in the GPU, without it ever requiring 
-    storage or loading from disk. Once set up, it is very easy to configure, understand and iterate for artists 
+    storage or loading from disk. Once set up, it is very easy to configure, understand and iterate on for artists 
     because the foliage becomes part of the ground surface itself. Additionally, it is very easy to render each blade with the 
     surface color because it's part of the same shader with the same properties. The geometry shader can sample the ground color 
     where the blade is located and pass that as vertex color for the generated foliage geometry. There is a catch to this, 
-    and it's the fact that geometry shaders are very slow, specially when they do high amplification (the ratio of 
-    primitives outputed for each original primitive).</li>
+    and it's the fact that geometry shaders are very slow, especially when they perform high amplification (i.e., generating 
+    many output primitives for each input primitive), as this significantly increases the workload on the GPU.</li>
     <li><b>Compute shaders:</b> Similarly to how geometry shaders work, it could be possible to generate blades of grass in runtime 
     taking into account the camera transform to only populate with grass whatever's visible for the player in that frame. However, 
     it is not that easy to sample the surface color in this case and compute shaders are not that performant on some systems.</li>
     <li><b>GPU Instancing:</b> This render method is very efficient because it consists in storing only the instance (blade) specific data 
     in a buffer, and then using the same mesh to render all the instances in a single draw call. Everything possible is pre-calculated (baked),
-    which makes GPU Instancing very efficient. It is not as simple to get a working system that is easy to iterate as it was with 
+    which makes GPU Instancing very efficient. It is not as simple to get a working system that is easy to iterate on as it was with 
     geometry shaders, but the benefits outweigh the costs by a large margin.</li>
 </ul>
 
@@ -100,7 +100,7 @@ workflow that I defined was:
 
 <p>
     That entire process is automated using buttons in the inspector once the required references are set up.
-    This way, it becomes very easy to iterate. When the game starts, it just needs to deserialize the blades,
+    This way, it becomes very easy to iterate on. When the game starts, it just needs to deserialize the blades,
     set a compute buffer with their data and issue a gpu instanced draw call for the amount of blades required.
 
     The shader uses a keyword to identify that it is using GPU Instancing, and then retrieves each instance data 
@@ -136,7 +136,7 @@ workflow that I defined was:
 <p>
     GPU Instancing allowed us to render millions of blades of grass and flowers very fast, even on 
     weaker hardware. In the game, there is a zone called <i>Windy Meadows</i> where a vast field populated with foliage can 
-    be seen. This is a very gpu intensive zone, but we managed to get it running at native 4k60fps on PS5 with a 
+    be seen. This is a very GPU-intensive zone, but we managed to get it running at native 4k60fps on PS5 with a 
     very high level of detail. I don't think this would have turned out so well without GPU Instancing based on our initial tests 
     with the original implementation. On weaker hardware, like Nintendo Switch, the game maintains 1080p30fps using a lower level 
     of detail all things considered.
@@ -145,7 +145,7 @@ workflow that I defined was:
 <h3>Going Forward</h3>
 
 <p>
-    Our system still had room for a lot of improvement. It could still be easier to iterate and understand for artists,
+    Our system still had room for a lot of improvement. It could be easier to iterate on and understand for artists,
     and it could be faster to generate the instances. If I had to code this again, I would try:
 </p>
 
