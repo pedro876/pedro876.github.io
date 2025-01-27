@@ -27,6 +27,18 @@
     and shadows come into action.
 </p>
 
+<div data-image='{
+    "images": ["Articles/Mika_DecalLights/Mika_DecalLights_001.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/Mika_DecalLights/Mika_DecalLights_000_Off.jpg", "Articles/Mika_DecalLights/Mika_DecalLights_000_On.jpg"]
+    , "texts": ["Decals Off", "Decals On"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
+
 <h3>Implementation</h3>
 
 <p>
@@ -63,6 +75,16 @@
 Cull Front
 ZWrite Off
 </div>
+
+<p>
+    If you have difficulty understanding what these settings mean, see the image below. In yellow, 
+    you can see the part of a sphere that would be visible when it intersects with geometry.
+</p>
+
+<div data-image='{
+    "images": ["Articles/Mika_DecalLights/DecalVisualization.png"]
+    , "maximizable": true
+}'></div>
 
 <p>
     Using the depht buffer and some mathematics, it is possible to reconstruct the world position inside of the decal and use it to calculate
@@ -108,10 +130,59 @@ half atten = LightingDistanceAttenuation(distSqr, 1.0);
 <h3>Results</h3>
     
 <p>
-    Decal lights and shadows are limitied to simple height gradients and fill light spheres without shadows, but in
-    conjunction with a few actual lights and ambient occlusion, they can make environments a lot more appealing.
+    Decal lights and shadows are limitied to simple height gradients and fill light spheres without shadows, but together
+    with a few actual lights and ambient occlusion, they can make environments a lot more appealing.
     These faked lights and shadows are used to great extent in interiors in the game, especially in the dungeons.
 </p>
+
+<div data-image='{
+    "images": ["Articles/Mika_DecalLights/Mika_DecalLights_002_Off.jpg", "Articles/Mika_DecalLights/Mika_DecalLights_002_On.jpg"]
+    , "texts": ["Decals Off", "Decals On"]
+    , "sliderValue": 0
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/Mika_DecalLights/Mika_DecalLights_003_Off.jpg", "Articles/Mika_DecalLights/Mika_DecalLights_003_On.jpg"]
+    , "texts": ["Decals Off", "Decals On"]
+    , "sliderValue": 0
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/Mika_DecalLights/Mika_DecalLights_004_Off.jpg", "Articles/Mika_DecalLights/Mika_DecalLights_004_On.jpg"]
+    , "texts": ["Decals Off", "Decals On"]
+    , "sliderValue": 0
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/Mika_DecalLights/Mika_DecalLights_005_Off.jpg", "Articles/Mika_DecalLights/Mika_DecalLights_005_On.jpg"]
+    , "texts": ["Decals Off", "Decals On"]
+    , "sliderValue": 0
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/Mika_DecalLights/Mika_DecalLights_006_Off.jpg", "Articles/Mika_DecalLights/Mika_DecalLights_006_On.jpg"]
+    , "texts": ["Decals Off", "Decals On"]
+    , "sliderValue": 0
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/Mika_DecalLights/Mika_DecalLights_007_Off.jpg", "Articles/Mika_DecalLights/Mika_DecalLights_007_On.jpg"]
+    , "texts": ["Decals Off", "Decals On"]
+    , "sliderValue": 0
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/Mika_DecalLights/Mika_DecalLights_008_Off.jpg", "Articles/Mika_DecalLights/Mika_DecalLights_008_On.jpg"]
+    , "texts": ["Decals Off", "Decals On"]
+    , "sliderValue": 0
+    , "maximizable": true
+}'></div>
 
 <h3>Going Forward</h3>
     
