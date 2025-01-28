@@ -87,8 +87,8 @@ ZWrite Off
 }'></div>
 
 <p>
-    Using the depht buffer and some mathematics, it is possible to reconstruct the world position inside of the decal and use it to calculate
-    the opacity of the decal.
+    Using the depth buffer and some mathematics, it is possible to reconstruct the world position inside of the decal and use it to calculate
+    its opacity.
 </p>
 
 <p>
@@ -105,7 +105,7 @@ float height = positionOS.y + 0.5;
 </div>
 
 <p>
-    How to calculate distance to the sphere center for decal point lights (distSqr):
+    How to calculate the distance to the sphere center for decal point lights (distSqr):
 </p>
 
 <div class="code">float2 screenUV = input.screenPos.xy / input.screenPos.w;
@@ -200,7 +200,7 @@ half atten = LightingDistanceAttenuation(distSqr, 1.0);
         depth buffer.</li>
         <li>Add better controls to how decals affect characters or other layers.</li>
         <li>Create decal lights that add only specular highlights. This could be useful for scenes 
-        that use baked lighting. Using these specular decals, artist could add specularity to metals
+        that use baked lighting. Using these specular decals, artists could add specularity to metals
         exactly where they want, without changing the lighting of the scene.</li>
     </ul>
 </p>
