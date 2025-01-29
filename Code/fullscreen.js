@@ -10,8 +10,14 @@ function EnterFullScreen(element) {
     document.body.style.overflow = "hidden";
     element.style.marginTop = "0px";
     element.style.marginBottom = "0px";
+    element.style.maxHeight = "100vh";
     var maximizeButton = element.querySelector(".image-maximize");
     maximizeButton.src = "GlobalImages/minimize.png";
+
+    var images = element.querySelectorAll("img");
+    images.forEach((image) => {
+        image.style.maxHeight = "100vh";
+    });
 
     isInFullscreen = true;
     CheckFullscreenButtonsVisibility();
@@ -23,6 +29,13 @@ function ExitFullScreen() {
 
     element.style.marginTop = "";
     element.style.marginBottom = "";
+    element.style.maxHeight = "";
+
+    var images = element.querySelectorAll("img");
+    images.forEach((image) => {
+        image.style.maxHeight = "";
+    });
+
     var maximizeButton = element.querySelector(".image-maximize");
     maximizeButton.src = "GlobalImages/maximize.png";
 

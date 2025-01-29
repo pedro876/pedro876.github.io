@@ -1,7 +1,12 @@
 .code {
     background-color: rgb(26, 27, 29);
     font-family: monospace;
-    white-space: pre-wrap;
-    padding: 8px 8px 8px 8px;
-    width: calc(100% - 16px);
+    white-space: pre-wrap; /* Ensures line breaks */
+    word-break: break-word; /* Forces words to break if necessary */
+    overflow-wrap: break-word; /* Ensures wrapping inside container */
+    padding: 8px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: auto; /* Enables scrolling for long content */
 }

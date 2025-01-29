@@ -8,7 +8,7 @@
     flex-direction: column;
     margin-top: 16px;
     margin-bottom: 16px;
-    max-height: 100vh;
+    /*max-height: 100vh;*/
 }
 
 .image-container img {
@@ -16,7 +16,7 @@
     margin: 0px;
     display: block;
     width: 100%; /* Adjust to fit your layout */
-    max-height: 100vh;
+    /*max-height: 100vh;*/
     /*max-height: calc(100vh - var(--sliderHeight));*/
 }
 
