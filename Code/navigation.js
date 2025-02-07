@@ -33,6 +33,7 @@ function AddButtonClickBehaviour(elemButton) {
             SetEnableAllButtons(true);
             AddInputToImageComparisons();
             AddVideos();
+            ProcessCode();
             elemButton.disabled = true;
             isFetching = false;
             if (mobileShowIndex) ToggleIndex();

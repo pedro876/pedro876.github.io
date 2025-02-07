@@ -68,7 +68,7 @@
     intersection, as shown in the code below:
 </p>
 
-<div class="code">float GetDist(float3 p)
+<div class="code" data-lang="hlsl">float GetDist(float3 p)
 {
     float spheres = 99999.9;
 
@@ -88,7 +88,7 @@
 
 <p>Using the function above, each pixel raymarchs until a collision is determined:</p>
 
-<div class="code">float RayMarch(float3 rayOrigin, float3 rayDirection, float maxDistance)
+<div class="code" data-lang="hlsl">float RayMarch(float3 rayOrigin, float3 rayDirection, float maxDistance)
 {
     float currentDistance = 0.0; //d = current distance
     for(int i = 0; i < MAX_STEPS; i++)
@@ -103,7 +103,7 @@
 
 <p>Once the collision point is calculated, the normal is computed:</p>
 
-<div class="code">float3 GetNormal(float3 p)
+<div class="code" data-lang="hlsl">float3 GetNormal(float3 p)
 {
     float d = GetDist(p);
     float2 e = float2(0.01,0.0);
@@ -122,7 +122,7 @@
     <li>Shade the background of the lamp using a vertical fade between two user-defined colors.</li>
 </ul>
 
-<div class="code">void ShapeShading_half(in half Alpha, in half3 LightOS, in half3 PositionOS, in half3 NormalOS, in half3 ViewDirOS, out half3 LitColor, out half OutAlpha)
+<div class="code" data-lang="hlsl">void ShapeShading_half(in half Alpha, in half3 LightOS, in half3 PositionOS, in half3 NormalOS, in half3 ViewDirOS, out half3 LitColor, out half OutAlpha)
 {
     half Intensity = 0;
     half Height;
