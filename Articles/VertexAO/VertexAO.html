@@ -34,18 +34,24 @@
 
 <ul>
     <li>Normal offset: Easy enough, by displacing the rays origin a bit along the normal, it stops being coplanar with its own triangle.</li>
-    <li>Tangent offset: This is where things get a bit more complicated. Calculating a tangent to the vector is straightforward, but if we 
-    just moved towards any vector perpendicular to the normal, we could potentially end up outside the original triangle!</li>
+    <li>
+        Tangent offset: This is where things get a bit more complicated. Calculating a tangent to the vector is straightforward, but if we
+        just moved towards any vector perpendicular to the normal, we could potentially end up outside the original triangle!
+    </li>
 </ul>
 
-<p>What we need is to find a tangent direction along the triangle, and to make sure that the rays origin does not end up outside the original 
-    triangle while doing so.</p>
+<p>
+    What we need is to find a tangent direction along the triangle, and to make sure that the rays origin does not end up outside the original
+    triangle while doing so.
+</p>
 
 <ul>
     <li>1: Calculate the bisector vector that splits the triangle in two triangles with equal angles at each side.</li>
     <li>2: Calculate the intersection between the bisector vector and the line defined by the other two vertices of the current vertex triangle.</li>
-    <li>3: Move along the bisector vector a certain distance. If it exceeds the calculated intersection, use the intersection to prevent stepping out 
-    of the triangle.</li>
+    <li>
+        3: Move along the bisector vector a certain distance. If it exceeds the calculated intersection, use the intersection to prevent stepping out
+        of the triangle.
+    </li>
 </ul>
 
 <div data-image='{
@@ -55,7 +61,7 @@
 }'></div>
 
 <p>
-    This allows us to effectively raycast from an origin with a normal and tangent offset. However, a vertex may belong to more than one triangle, so I came up with a 
+    This allows us to effectively raycast from an origin with a normal and tangent offset. However, a vertex may belong to more than one triangle, so I came up with a
     way to use all those triangles to calculate occlusion:
 </p>
 
@@ -87,10 +93,14 @@
     , "texts" : ["Rounded shapes"]
 }'></div>
 
+
+
+<h3>Results</h3>
+
 <p>With this working as intended, let's move on to more complicated meshes, such as characters.</p>
 
 <div data-image='{
-    "images": ["Articles/VertexAO/Images/VertexAO_004_DekuLink_AO.png"]
+    "images": ["Articles/VertexAO/Images/VertexAO_CharactersAO.png"]
     , "maximizable": true
     , "texts" : ["Character Occlusion"]
 }'></div>
@@ -102,7 +112,44 @@
     , "maximizable": true
 }'></div>
 
-<h3>Results</h3>
+<div data-image='{
+    "images": ["Articles/VertexAO/Images/VertexAO_012_Link_Base.png", "Articles/VertexAO/Images/VertexAO_013_Link_Final.png"]
+    , "texts": ["AO Off", "AO On"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
+
+<p>
+    Alright, so characters can have proper occlusion, but what about environments? This is an even more important part because
+    character AO can easily be painted by an artist but painting an entire scene's ambient occlusion is much more complex. Thus, this
+    is where this algorithm can better utilized.
+</p>
+
+<div data-image='{
+    "images": ["Articles/VertexAO/Images/VertexAO_014_MilkBar_AO.png"]
+    , "maximizable": true
+    , "texts" : ["Environment Occlusion 1"]
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VertexAO/Images/VertexAO_015_MilkBar_Base.png", "Articles/VertexAO/Images/VertexAO_016_MilkBar_Final.png"]
+    , "texts": ["AO Off", "AO On"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VertexAO/Images/VertexAO_018_CuriosityShop_AO.png"]
+    , "maximizable": true
+    , "texts" : ["Environment Occlusion 2"]
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VertexAO/Images/VertexAO_019_CuriosityShop_Base.png", "Articles/VertexAO/Images/VertexAO_021_CuriosityShop_Final.png"]
+    , "texts": ["AO Off", "AO On"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
 
 <h3>Conclusion</h3>
 
