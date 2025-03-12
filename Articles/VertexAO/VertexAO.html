@@ -6,15 +6,43 @@
 
 <h3>Motivation</h3>
 
+<p>
+    Recently I found myself enjoying the world of Termina while playing <i>The Legend of Zelda: Majora's Mask 3D</i>. Each time I entered 
+    a house in Clock Town I thought the lighting looked amazing for a 3DS game. Per vertex lighting was used in many 3DS games to minimize 
+    shading cost, but that's not all that is going on in this game. Indirect lighting is baked into vertex attributes to speed up performance 
+    while still getting a high quality approximation.
+</p>
+
+<p>
+    I decided to split lighting calculations into two major factors:
+</p>
+
+<ul>
+    <li>
+        Realtime per vertex lighting: Since I'm using the Unity Engine, this is lighting technique is already available.
+    </li>
+    <li>
+        Baked per vertex ambient occlusion: Instead of baking indirect lighting from actual light sources, I decided to calculate average occlusion 
+        surrounding the vertex, so that the result could be valid in any lighting scenario. This is similar to how SSAO works. Since this is not 
+        implemented in Unity, it's up to me to come up with an algorithm to compute occlusion.
+    </li>
+</ul>
+
 <h3>Implementation</h3>
 
-<p>At first, the approach seems rather simple:</p>
+<p>The first idea that comes to mind seems very straightfoward:</p>
 
 <ul>
     <li>1: Iterate all vertices.</li>
     <li>2: Raycast in many directions in the hemisphere pointing towards the vertex normal.</li>
-    <li>3: Average occlusion data based on hit count.</li>
+    <li>3: Average occlusion data based on hit count and distance between the vertex and the occluders.</li>
 </ul>
+
+<div data-image='{
+    "images": ["Articles/VertexAO/Images/VertexAO_Explanation2.png"]
+    , "maximizable": false
+    , "texts" : ["Hemisphere sampling"]
+}'></div>
 
 <p>I'm going to use a simple mesh to debug the results using the mentioned algorithm:</p>
 
@@ -93,7 +121,56 @@
     , "texts" : ["Rounded shapes"]
 }'></div>
 
+<p>
+    There are many factors related to mesh topology that can affect the final look of this ambient
+    occlusion implementation. A lot of care must be put into crafting the meshes for them to
+    be baked in this manner. These are some of the options I added to help artists achieve a
+    good result with this tool:
+</p>
 
+<ul>
+    <li>
+        Look:
+        <ul>
+            <li>Range: the radius of the hemisphere.</li>
+            <li>Curve: since the result of the AO is linear, this curve can be used to modify that look and make it smoother.</li>
+        </ul>
+    </li>
+    <li>
+        Raycasting:
+        <ul>
+            <li>
+                Max angle: the max angle of the hemisphere is 90 degrees by default, which could capture non-intended occlusion. This variable can be used
+                to alleviate that problem is desired.
+            </li>
+            <li>Vertex and normal Offset: how far from the vertex the rays should originate.</li>
+            <li>Double sided: allows to configure the behaviour of raycasting when colliding against triangles that are not facing the vertex.</li>
+        </ul>
+    </li>
+    <li>
+        Merging:
+        <ul>
+            <li>Smooth normals: allows the user to preprocess the mesh before calculating AO to average the normals of nearby vertices.</li>
+            <li>Merge results: allows the user to postprocess the mesh after calculating AO to average the occlusion values of nearby vertices.</li>
+        </ul>
+    </li>
+</ul>
+
+<p>
+    Finally, these results must be saved. I chose to store the occlusion values in a byte array (8-bit depth for occlusion). The array also contains 
+    information about meshes names and vertex count so that occlusion values can be invalidated if the model changed significantly. Additionally, 
+    there are different places where we might want to store the byte array:
+</p>
+
+<ul>
+    <li>
+        Per model: The occlusion values are stored in a binary file next to the original mode. Each time the model is reimported the occlusion values are reapplied.
+        If the model is deleted, the occlusion file and its meta file are automatically removed from the project.
+    </li>
+    <li>
+        Per instance: The occlusion values are serialized in the component and reapplied on an instanced mesh when the game object is initialized for the first time.
+    </li>
+</ul>
 
 <h3>Results</h3>
 
@@ -122,7 +199,8 @@
 <p>
     Alright, so characters can have proper occlusion, but what about environments? This is an even more important part because
     character AO can easily be painted by an artist but painting an entire scene's ambient occlusion is much more complex. Thus, this
-    is where this algorithm can better utilized.
+    is where this algorithm can be better utilized. Take into account that there are no lights in the following pictures, just ambient occlusion, so 
+    they might seem a bit dark but it is to be expected.
 </p>
 
 <div data-image='{
@@ -139,13 +217,13 @@
 }'></div>
 
 <div data-image='{
-    "images": ["Articles/VertexAO/Images/VertexAO_018_CuriosityShop_AO.png"]
+    "images": ["Articles/VertexAO/Images/VertexAO_025_CuriosityShop_AO.png"]
     , "maximizable": true
     , "texts" : ["Environment Occlusion 2"]
 }'></div>
 
 <div data-image='{
-    "images": ["Articles/VertexAO/Images/VertexAO_019_CuriosityShop_Base.png", "Articles/VertexAO/Images/VertexAO_021_CuriosityShop_Final.png"]
+    "images": ["Articles/VertexAO/Images/VertexAO_026_CuriosityShop_Base.png", "Articles/VertexAO/Images/VertexAO_027_CuriosityShop_Final.png"]
     , "texts": ["AO Off", "AO On"]
     , "sliderValue": 50
     , "maximizable": true
@@ -153,4 +231,22 @@
 
 <h3>Conclusion</h3>
 
+<p>
+    Baking ambient occlusion as vertex data is an elegant and simple solution to a complex problem. Calculating proper ambient occlusion 
+    in realtime remains a major undertaking to this day. The best results can be achieved using raytracing, but it is very expensive. Another option is SSAO but it 
+    becomes unstable if used with a large radius. Lightmaps could be considered, but they require modifying shaders to support them and take up a significant amount of memory. 
+</p>
+
+<p>
+    At the end of the day, nothing beats storing data as vertex attributes in terms of performance, especially if you combine existing vertex color with occlusion values.
+    If you are going for a retro look or have a tight technical budget, this might be your best bet.
+</p>
+
+<p>
+    However, as I mentioned earlier, meshes need to be designed with a relatively uniform triangle density while minimizing clipping. If you're already deep into
+    development and your models weren't created with this in mind, adapting them could require a lot of time and effort. Additionally, since this is not a realtime 
+    solution, you will have to add contact shadows to dynamic objects using a different technique, such as blob shadows.
+</p>
+
 <h3>Going forward</h3>
+
