@@ -7,9 +7,9 @@
 <h3>Motivation</h3>
 
 <p>
-    Recently I found myself enjoying the world of Termina while playing <i>The Legend of Zelda: Majora's Mask 3D</i>. Each time I entered 
-    a house in Clock Town I thought the lighting looked amazing for a 3DS game. Per vertex lighting was used in many 3DS games to minimize 
-    shading cost, but that's not all that is going on in this game. Indirect lighting is baked into vertex attributes to speed up performance 
+    Recently I found myself enjoying the world of Termina while playing <i>The Legend of Zelda: Majora's Mask 3D</i>. Each time I entered
+    a house in Clock Town I thought the lighting looked amazing for a 3DS game. Per vertex lighting was used in many 3DS games to minimize
+    shading cost, but that's not all that is going on in this game. Indirect lighting is baked into vertex attributes to speed up performance
     while still getting a high quality approximation.
 </p>
 
@@ -22,8 +22,8 @@
         Realtime per vertex lighting: Since I'm using the Unity Engine, this is lighting technique is already available.
     </li>
     <li>
-        Baked per vertex ambient occlusion: Instead of baking indirect lighting from actual light sources, I decided to calculate average occlusion 
-        surrounding the vertex, so that the result could be valid in any lighting scenario. This is similar to how SSAO works. Since this is not 
+        Baked per vertex ambient occlusion: Instead of baking indirect lighting from actual light sources, I decided to calculate average occlusion
+        surrounding the vertex, so that the result could be valid in any lighting scenario. This is similar to how SSAO works. Since this is not
         implemented in Unity, it's up to me to come up with an algorithm to compute occlusion.
     </li>
 </ul>
@@ -157,8 +157,8 @@
 </ul>
 
 <p>
-    Finally, these results must be saved. I chose to store the occlusion values in a byte array (8-bit depth for occlusion). The array also contains 
-    information about meshes names and vertex count so that occlusion values can be invalidated if the model changed significantly. Additionally, 
+    Finally, these results must be saved. I chose to store the occlusion values in a byte array (8-bit depth for occlusion). The array also contains
+    information about meshes names and vertex count so that occlusion values can be invalidated if the model changed significantly. Additionally,
     there are different places where we might want to store the byte array:
 </p>
 
@@ -199,7 +199,7 @@
 <p>
     Alright, so characters can have proper occlusion, but what about environments? This is an even more important part because
     character AO can easily be painted by an artist but painting an entire scene's ambient occlusion is much more complex. Thus, this
-    is where this algorithm can be better utilized. Take into account that there are no lights in the following pictures, just ambient occlusion, so 
+    is where this algorithm can be better utilized. Take into account that there are no lights in the following pictures, just ambient occlusion, so
     they might seem a bit dark but it is to be expected.
 </p>
 
@@ -229,12 +229,25 @@
     , "maximizable": true
 }'></div>
 
+<div data-image='{
+    "images": ["Articles/VertexAO/Images/VertexAO_028_BombShop_AO.png"]
+    , "maximizable": true
+    , "texts" : ["Environment Occlusion 3"]
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VertexAO/Images/VertexAO_029_BombShop_Base.png", "Articles/VertexAO/Images/VertexAO_030_BombShop_Final.png"]
+    , "texts": ["AO Off", "AO On"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
+
 <h3>Conclusion</h3>
 
 <p>
-    Baking ambient occlusion as vertex data is an elegant and simple solution to a complex problem. Calculating proper ambient occlusion 
-    in realtime remains a major undertaking to this day. The best results can be achieved using raytracing, but it is very expensive. Another option is SSAO but it 
-    becomes unstable if used with a large radius. Lightmaps could be considered, but they require modifying shaders to support them and take up a significant amount of memory. 
+    Baking ambient occlusion as vertex data is an elegant and simple solution to a complex problem. Calculating proper ambient occlusion
+    in realtime remains a major undertaking to this day. The best results can be achieved using raytracing, but it is very expensive. Another option is SSAO but it
+    becomes unstable if used with a large radius. Lightmaps could be considered, but they require modifying shaders to support them and take up a significant amount of memory.
 </p>
 
 <p>
@@ -244,7 +257,7 @@
 
 <p>
     However, as I mentioned earlier, meshes need to be designed with a relatively uniform triangle density while minimizing clipping. If you're already deep into
-    development and your models weren't created with this in mind, adapting them could require a lot of time and effort. Additionally, since this is not a realtime 
+    development and your models weren't created with this in mind, adapting them could require a lot of time and effort. Additionally, since this is not a realtime
     solution, you will have to add contact shadows to dynamic objects using a different technique, such as blob shadows.
 </p>
 
