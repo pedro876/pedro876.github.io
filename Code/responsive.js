@@ -36,8 +36,21 @@ function OnResize() {
         //Portrait Style
         elemIndex.style.flex = 'auto';
         elemIndex.style.width = '100%';
-        elemContent.style.paddingLeft = '20px';
-        elemContent.style.paddingRight = '20px';
+        //if (aspect <= mobileViewAspectRatio) {
+            elemContent.style.paddingLeft = '0px';
+            elemContent.style.paddingRight = '0px';
+            elemContent.style.paddingTop = '0px';
+            elemContent.style.paddingBottom = '0px';
+            elemContent.style.backgroundColor = 'rgba(0,0,0,0)';
+        //}
+        //else {
+        //    elemContent.style.paddingLeft = '20px';
+        //    elemContent.style.paddingRight = '20px';
+        //    elemContent.style.paddingTop = '';
+        //    elemContent.style.paddingBottom = '';
+        //    elemContent.style.backgroundColor = '';
+        //}
+        
     }
     else {
         //Landscape View
@@ -51,6 +64,9 @@ function OnResize() {
         elemIndex.style.width = '';
         elemContent.style.paddingLeft = '';
         elemContent.style.paddingRight = '';
+        elemContent.style.paddingTop = '';
+        elemContent.style.paddingBottom = '';
+        elemContent.style.backgroundColor = '';
     }
 
     //console.log(window.innerWidth);

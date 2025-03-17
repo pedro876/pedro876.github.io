@@ -42,7 +42,7 @@
 }
 
 #articleContent {
-    background-color: rgb(62, 63, 74);
+    background-color: var(--contentBackgroundColor);
     padding-left: 40px;
     padding-right: 40px;
     padding-top: 30px;

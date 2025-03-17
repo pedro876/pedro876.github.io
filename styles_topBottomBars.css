@@ -9,8 +9,7 @@
     align-items: center;
     display: flex;
     /*background-color:rgb(48, 49, 53);*/
-    background-color:rgb(62, 63, 74);
-    
+    background-color: var(--contentBackgroundColor);
     /*border-color: transparent;*/
     /*border-image: linear-gradient(to right, rgba(255,255,255,0), white 20%, white 80%, rgba(255,255,255,0)) 1;*/
 }
@@ -110,8 +109,6 @@
     width: 100%;
     position: fixed;
     bottom: 0;
-    /*background-color: rgb(62, 63, 74);*/
-    /*background-color: rgb(205, 207, 221);*/
     background-color: rgb(231, 232, 238);
     border-radius: 10px 10px 0px 0px;
     justify-content: center;

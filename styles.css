@@ -4,8 +4,10 @@
     --pageWidth: 1300px;
     --bottomBarHeight: 40px;
     --indexWidth: 300px;
-    --horizontalPagePadding:20px;
+    --horizontalPagePadding: 20px;
     --sliderHeight: 20px;
+    /*--contentBackgroundColor: rgb(62, 63, 74);*/
+    --contentBackgroundColor: rgb(45, 46, 54);
 }
 
 html {
