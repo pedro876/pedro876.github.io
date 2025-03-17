@@ -26,11 +26,11 @@
 
 <ul>
     <li>
-        Realtime per vertex lighting: Since I'm using the Unity Engine, this is lighting technique is already available.
+        Realtime per vertex lighting: Since I'm using the Unity Engine, this lighting technique is already available.
     </li>
     <li>
         Baked per vertex ambient occlusion: Instead of baking indirect lighting from actual light sources, I decided to calculate average occlusion
-        surrounding the vertex, so that the result could be valid in any lighting scenario. This is similar to how SSAO works. Since this is not
+        surrounding the vertex, which allows the result to be valid in any lighting scenario. This is similar to how SSAO works. Since this is not
         implemented in Unity, it's up to me to come up with an algorithm to compute occlusion.
     </li>
 </ul>
@@ -58,24 +58,27 @@
 }'></div>
 
 <p>
-    There is a clear problem with this approach: At corners, like a vertex that is at the end of a floor connecting to a vertical wall, the rays
-    origin are coplanar with the wall and floor triangles, possibly causing false negatives when raycasting. We can alleviate this problem offsetting
-    the rays origin, but where to?
+    A clear issue with this approach arises at corners&mdash;such as a vertex where a floor meets a vertical wall. Here, the ray
+    origin is coplanar with the wall and floor triangles, potencially causing false negatives during raycasting. We can mitigate this by offsetting
+    the ray origin, but where to?
 </p>
 
-<p>As I said, the raycasting origin is coplanar with its own triangle and potentially other triangles. We need to apply two different offsets:</p>
+<p>As I said, each ray origin is coplanar with its own triangle and potentially other triangles. We need to apply two different offsets:</p>
 
 <ul>
-    <li>Normal offset: Easy enough, by displacing the rays origin a bit along the normal, it stops being coplanar with its own triangle.</li>
     <li>
-        Tangent offset: This is where things get a bit more complicated. Calculating a tangent to the vector is straightforward, but if we
-        just moved towards any vector perpendicular to the normal, we could potentially end up outside the original triangle!
+        <b>Normal offset:</b> Slightly displace the ray origin along its triangle normal. This way, it stops being coplanar with its own triangle.
+    </li>
+    <li>
+        <b>Tangent offset:</b> Shifting the ray origin along a triangle's tangent&mdash;a vector perpendicular to the normal&mdash;it from being
+        coplanar with other triangles at corners.
     </li>
 </ul>
 
 <p>
-    What we need is to find a tangent direction along the triangle, and to make sure that the rays origin does not end up outside the original
-    triangle while doing so.
+    Offseting the ray origin along a tangent is tricky though, because if the ray origin ends up outside the original triangle, leaking can occur at corners.
+    For example, a vertex situated at a corner in the floor, could be displaced inside a wall. What we need is to find a tangent direction that traverses the 
+    triangle. When we move the ray origin along that tangent, we must ensure that the ray origin lies inside the triangle.
 </p>
 
 <ul>
@@ -98,9 +101,9 @@
 </p>
 
 <ul>
-    <li>1: Gather all the triangles in advance and store the the angle for each of those triangles for the vertex corner.</li>
-    <li>2: Calculate the total angle by summing each triangle's angle and weight each triangle's contribution based on the angle ratio.</li>
-    <li>3: Distribute the ray count around each triangle based on their weight so that triangles with a bigger angle do more raycasts.</li>
+    <li>1: Gather all the triangles in advance and store the angle for each of those triangles for the vertex corner.</li>
+    <li>2: Calculate the total angle by summing each triangle's angle and weigh each triangle's contribution based on the angle ratio.</li>
+    <li>3: Distribute the ray count across each triangle based on its weight, ensuring that triangles with larger angles perform more raycasts.</li>
 </ul>
 
 <div data-image='{
@@ -125,48 +128,49 @@
 <p>
     There are many factors related to mesh topology that can affect the final look of this ambient
     occlusion implementation. A lot of care must be put into crafting the meshes for them to
-    be baked in this manner. These are some of the options I added to help artists achieve a
-    good result with this tool:
+    be baked in this manner. Therefore, I added some options to allow artists to fine-tune the algorithm 
+    to each particular mesh:
 </p>
 
 <ul>
     <li>
-        Look:
+        <b>Look:</b>
         <ul>
-            <li>Range: the radius of the hemisphere.</li>
-            <li>Curve: since the result of the AO is linear, this curve can be used to modify that look and make it smoother.</li>
+            <li>Range: The radius of the hemisphere.</li>
+            <li>Curve: Since the result of the AO is linear, this curve can be used to modify that look and make it smoother.</li>
         </ul>
     </li>
     <li>
-        Raycasting:
+        <b>Raycasting:</b>
         <ul>
             <li>
-                Max angle: the max angle of the hemisphere is 90 degrees by default, which could capture non-intended occlusion. This variable can be used
-                to alleviate that problem is desired.
+                Max angle: The max angle of the hemisphere is 90 degrees by default, which may capture unintended occlusion. This variable allows the user to 
+                narrow the hemisphere's space as needed.
             </li>
-            <li>Vertex and normal Offset: how far from the vertex the rays should originate.</li>
-            <li>Double sided: allows to configure the behaviour of raycasting when colliding against triangles that are not facing the vertex.</li>
+            <li>Vertex and normal Offset: How far from the vertex the rays should originate.</li>
+            <li>Double sided: Allows to configure the behaviour of raycasting when colliding against triangles that are not facing the vertex.</li>
         </ul>
     </li>
     <li>
-        Merging:
+        <b>Merging:</b>
         <ul>
-            <li>Smooth normals: allows the user to preprocess the mesh before calculating AO to average the normals of nearby vertices.</li>
-            <li>Merge results: allows the user to postprocess the mesh after calculating AO to average the occlusion values of nearby vertices.</li>
+            <li>Smooth normals: Preprocess the mesh before calculating AO to average the normals of nearby vertices.</li>
+            <li>Merge results: Postprocess the mesh after calculating AO to average the occlusion values of nearby vertices.</li>
         </ul>
     </li>
 </ul>
 
 <p>
     Finally, these results must be saved. I chose to store the occlusion values in a byte array (8-bit depth for occlusion). The array also contains
-    information about meshes names and vertex count so that occlusion values can be invalidated if the model changed significantly. Additionally,
+    information about mesh names and vertex counts so that occlusion values can be invalidated if the model changes significantly. Additionally,
     there are different places where we might want to store the byte array:
 </p>
 
 <ul>
     <li>
-        Per model: The occlusion values are stored in a binary file next to the original mode. Each time the model is reimported the occlusion values are reapplied.
-        If the model is deleted, the occlusion file and its meta file are automatically removed from the project.
+        <b>Per model:</b> The occlusion values are stored in a binary file next to the original mode. Each time the model is 
+        reimported the occlusion values are reapplied. If the model is deleted, the occlusion file and its meta file 
+        are automatically removed from the project.
     </li>
     <li>
         Per instance: The occlusion values are serialized in the component and reapplied on an instanced mesh when the game object is initialized for the first time.
@@ -175,12 +179,11 @@
 
 <h3>Results</h3>
 
-<p>With this working as intended, let's move on to more complicated meshes, such as characters.</p>
+<p>Let's move on to more complicated meshes, such as characters:</p>
 
 <div data-image='{
     "images": ["Articles/VertexAO/Images/VertexAO_CharactersAO.png"]
     , "maximizable": true
-    , "texts" : ["Character Occlusion"]
 }'></div>
 
 <div data-image='{
@@ -198,16 +201,15 @@
 }'></div>
 
 <p>
-    Alright, so characters can have proper occlusion, but what about environments? This is an even more important part because
-    character AO can easily be painted by an artist but painting an entire scene's ambient occlusion is much more complex. Thus, this
-    is where this algorithm can be better utilized. Take into account that there are no lights in the following pictures, just ambient occlusion, so
+    Alright, so characters have proper occlusion now, but what about environments? This is a more releveant use case because
+    character AO can easily be painted by an artist but doing so for an entire scene's ambient occlusion is much more complex. Thus, this
+    is where this algorithm can shine. Take into account that there are no lights in the following pictures, just ambient occlusion, so
     they might seem a bit dark but it is to be expected.
 </p>
 
 <div data-image='{
     "images": ["Articles/VertexAO/Images/VertexAO_014_MilkBar_AO.png"]
     , "maximizable": true
-    , "texts" : ["Environment Occlusion 1"]
 }'></div>
 
 <div data-image='{
@@ -220,7 +222,6 @@
 <div data-image='{
     "images": ["Articles/VertexAO/Images/VertexAO_025_CuriosityShop_AO.png"]
     , "maximizable": true
-    , "texts" : ["Environment Occlusion 2"]
 }'></div>
 
 <div data-image='{
@@ -233,7 +234,6 @@
 <div data-image='{
     "images": ["Articles/VertexAO/Images/VertexAO_028_BombShop_AO.png"]
     , "maximizable": true
-    , "texts" : ["Environment Occlusion 3"]
 }'></div>
 
 <div data-image='{
