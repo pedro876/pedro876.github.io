@@ -6,7 +6,70 @@
 
 <h3>Motivation</h3>
 
+<p>
+  Recently I covered the topic of baking ambient occlusion on a per-vertex basis. Once the team saw the results combined with realtime lights it was clear that we were getting closer to the desired art style, which should be reminiscent of 3DS titles like <i>The Legend Of Zelda: Majora's Mask</i>.
+</p>
+
+<p>
+  However, we soon realized how limited those realtime per-vertex lights are in Unity:
+</p>
+
+<ul>
+  <li>
+    <b>Limited lights per object</b>: Only up to eight lights can be applied per object, which means that manual mesh slicing would have to be applied if more are required.
+  </li>
+  <li>
+    <b>No shadows</b>: Shadow maps are not supported for vertex lighting. This makes it very hard to convincingly illuminate environments and provokes major leaking issues.
+  </li>
+</ul>
+
+<p>
+  Taking into account that most of those lights will be static and having implemented baked per-vertex AO just recently, the solution was clear: Baked per-vertex lighting.
+</p>
+
+<p style="color:red">Imagen de portada</p>
+
 <h3>Implementation</h3>
+
+<p>The new code for light baking will be added to the existing ambient occlusion implementation, so occlusion and lighting act as the same system. Requirements:</p>
+
+<ol>
+  <li>
+    <b>Infinite static lights</b>.
+  </li>
+  <li>
+    <b>Different light types</b>: Directional, point and spot lights.
+  </li>
+  <li>
+    <b>Configurable lights</b>: Range, intensity, color, shadow strength, angle attenuation, etc.
+  </li>
+  <li>
+    <b>Indirect lighting</b>.
+  </li>
+  <li>
+    <b>Realtime fallback</b>: A static light creates a realtime counterpart that only affects dynamic objects.
+  </li>
+  <li>
+    <b>Two baking sets</b>: In the game there are two possible lighting scenarios, and it must be possible to blend between them in realtime.
+  </li>
+  <li>
+    <b>High performance</b>: Baking a complex model with several lights should be very fast to allow fluid iterations of light configurations. Ideally under five seconds.
+  </li>
+</ol>
+
+<h3>Performance</h3>
+
+<p>
+  Once the algorithm was complete and we tested it on complex models, it terribly underperformed in terms of speed. What had to be executed in less than five seconds, took over three minutes.
+</p>
+
+<p>
+  If we didn't address this issue, baking would be a pain during the entire development process. Not only that, but it would disincentivize the use of baked lights, reducing the overall quality of the presentation.
+</p>
+
+<p>
+  Fortunately, this algorithm is highly parallelizable, so I created a compute shader and mirrored the entire algorithm.
+</p>
 
 <h3>Results</h3>
 
