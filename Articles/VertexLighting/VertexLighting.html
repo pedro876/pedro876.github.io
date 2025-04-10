@@ -68,8 +68,14 @@
 </p>
 
 <p>
-  Fortunately, this algorithm is highly parallelizable, so I created a compute shader and mirrored the entire algorithm.
+  Fortunately, this algorithm is highly parallelizable, so I created a compute shader and mirrored the entire algorithm. In the CPU implementation, Unity's collider components are used to raycast occlusion, shadows, and indirect lighting. Implementing that in the compute shader would be possible, but it would take a considerable amount of effort. Thankfully, raytracing shaders exist so I didn't have to implement mesh raycasting myself.
 </p>
+
+<p>
+  Using raytracing and compute shaders improves performance dramatically. It takes literally less than a second to bake an entire environment now, with all the features enabled. Now, artists can iterate on lighting blazingly fast. To make it even quicker, I added a keyboard shortcut to preview results that doesn't save the results persistenly and only bakes the current lighting scenario.
+</p>
+
+
 
 <h3>Results</h3>
 
