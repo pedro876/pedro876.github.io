@@ -44,7 +44,7 @@
     <b>Configurable lights</b>: Range, intensity, color, shadow strength, angle attenuation, etc.
   </li>
   <li>
-    <b>Indirect lighting</b>.
+    <b>Indirect lighting</b>: Each light must have the ability to bounce its rays across the environment to attain more realistic lighting.
   </li>
   <li>
     <b>Realtime fallback</b>: A static light creates a realtime counterpart that only affects dynamic objects.
@@ -53,9 +53,48 @@
     <b>Two baking sets</b>: In the game there are two possible lighting scenarios, and it must be possible to blend between them in realtime.
   </li>
   <li>
-    <b>High performance</b>: Baking a complex model with several lights should be very fast to allow fluid iterations of light configurations. Ideally under five seconds.
+    <b>High performance</b>: Baking a complex model with several lights should be very fast to reduce iteration times of light configurations. Ideally under five seconds.
   </li>
 </ol>
+
+<p>
+  Lights are defined using a custom component, and the baking system iterates these lights to add up their contributions to each vertex. In principle, the attenuation equations are the same used by Unity to match their realtime counterparts.
+</p>
+
+<p style="color:red">Mostrar una imagen para cada tipo de luz.</p>
+
+<p>
+  In order to calculate shadows, the straightforward approach implies simply raycasting from the vertex to the light and adding the light contribution only if the raycast fails. However, this results in binary shadows that look blocky and unappealing. Similar to how PCF shadows work, it's better to define a set of points in an circular area around the vertex, raycast from each of them and average the results.
+</p>
+
+<p>
+  Indirect lighting is a more involved process, but rather easy to understand if one's familiar to ambient occlusion. As in the later technique, a bunch of rays are raycasted in the normal aligned hemisphere of the vertex. For those that collide against geometry, it is checked if light reaches them and how much is reflected in the ray's direction. This value is averaged across the hemisphere and added to the total contribution of that one light.
+</p>
+
+<p>
+  In practice, indirect lighting requires many raycast to reduce noise and it's yet unclear if it will be used in the game, but's it's a nice feature to have in case we end up needing it in the future.
+</p>
+
+<p style="color:red">Mostrar comparativa de 1 raycast vs múltiples.</p>
+
+<p>
+  Even after calculating shadows smoothly using multiple shadows, results are still a bit blocky and noisy. To address this, the results of nearby vertices are merged. This was already implemented for occlusion values but the logic changes when it comes to lightning. Rather than merging vertices that are almost exactly at the same position in world space, we increase that distance threshold to a meter or more, but add the restriction that the vertices must be connected by edges in order to merged. This prevents lighting to leak between different surfaces.
+</p>
+
+<h3>Storing vertex data</h3>
+
+<p>
+  Previously, a single occlusion value was stored per vertex in the x coordinate of the fourth texture coordinate attribute (uv3.x). But now additional information about lighting for two scenarios must be stored. A texture coordinate can store up to four values, but we need at least 7 values (1 for AO, 6 for the two rgb intensities of the lighting scenarios. An additional two values are added to regulate final occlusion and lighting intensity, that makes a total of 9 values.
+</p>
+
+<p>
+  In order to fit 9 values into a 4-channel texture coordinate, some packing must be done. Lighting colors need high precision because lighting must allow values above one. I decided to use 10 bit color depth for lighting, with values ranging between 0 and 10.
+  Therefore, each lighting scenario was stored in one channel of the uv3 (uv3.y and uv3.w). This leaves 2 bits unused, but it's not really a problem. Occlusion is still stored in uv3.x unpacked, and strength values are packed using 16-bit depth in uv3.z.
+</p>
+
+<p style="color:red">
+  Mostrar código de packing y unpacking.
+</p>
 
 <h3>Performance</h3>
 
