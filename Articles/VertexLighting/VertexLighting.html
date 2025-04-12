@@ -7,117 +7,219 @@
 <h3>Motivation</h3>
 
 <p>
-  Recently I covered the topic of baking ambient occlusion on a per-vertex basis. Once the team saw the results combined with realtime lights it was clear that we were getting closer to the desired art style, which should be reminiscent of 3DS titles like <i>The Legend Of Zelda: Majora's Mask</i>.
+    Recently I covered the topic of baking ambient occlusion on a per-vertex basis. Once the team saw the results combined
+    with realtime lights it was clear that we were getting closer to the desired art style, which should be reminiscent of
+    3DS titles like <i>The Legend Of Zelda: Majora's Mask</i>.
 </p>
 
 <p>
-  However, we soon realized how limited those realtime per-vertex lights are in Unity:
+    However, we soon realized how limited those realtime per-vertex lights are in Unity:
 </p>
 
 <ul>
-  <li>
-    <b>Limited lights per object</b>: Only up to eight lights can be applied per object, which means that manual mesh slicing would have to be applied if more are required.
-  </li>
-  <li>
-    <b>No shadows</b>: Shadow maps are not supported for vertex lighting. This makes it very hard to convincingly illuminate environments and provokes major leaking issues.
-  </li>
+    <li>
+        <b>Limited lights per object</b>: Only up to eight lights can be applied per object, which means that manual
+        mesh slicing would have to be applied if more are required.
+    </li>
+    <li>
+        <b>No shadows</b>: Shadow maps are not supported for vertex lighting. This makes it very hard to convincingly
+        illuminate environments and provokes major leaking issues.
+    </li>
 </ul>
 
 <p>
-  Taking into account that most of those lights will be static and having implemented baked per-vertex AO just recently, the solution was clear: Baked per-vertex lighting.
+    Taking into account that most of those lights will be static and having implemented baked per-vertex AO just recently,
+    the solution was clear: Baked per-vertex lighting.
 </p>
 
 <p style="color:red">Imagen de portada</p>
 
 <h3>Implementation</h3>
 
-<p>The new code for light baking will be added to the existing ambient occlusion implementation, so occlusion and lighting act as the same system. Requirements:</p>
+<p>
+    The new code for light baking will be added to the existing ambient occlusion implementation, so occlusion and
+    lighting act as the same system. Requirements:
+</p>
 
 <ol>
-  <li>
-    <b>Infinite static lights</b>.
-  </li>
-  <li>
-    <b>Different light types</b>: Directional, point and spot lights.
-  </li>
-  <li>
-    <b>Configurable lights</b>: Range, intensity, color, shadow strength, angle attenuation, etc.
-  </li>
-  <li>
-    <b>Indirect lighting</b>: Each light must have the ability to bounce its rays across the environment to attain more realistic lighting.
-  </li>
-  <li>
-    <b>Realtime fallback</b>: A static light creates a realtime counterpart that only affects dynamic objects.
-  </li>
-  <li>
-    <b>Two baking sets</b>: In the game there are two possible lighting scenarios, and it must be possible to blend between them in realtime.
-  </li>
-  <li>
-    <b>High performance</b>: Baking a complex model with several lights should be very fast to reduce iteration times of light configurations. Ideally under five seconds.
-  </li>
+    <li>
+        <b>Infinite static lights</b>.
+    </li>
+    <li>
+        <b>Different light types</b>: Directional, point and spot lights.
+    </li>
+    <li>
+        <b>Configurable lights</b>: Range, intensity, color, shadow strength, angle attenuation, etc.
+    </li>
+    <li>
+        <b>Indirect lighting</b>: Each light must have the ability to bounce its rays across the environment to attain more realistic lighting.
+    </li>
+    <li>
+        <b>Realtime fallback</b>: A static light creates a realtime counterpart that only affects dynamic objects.
+    </li>
+    <li>
+        <b>Two baking sets</b>: In the game there are two possible lighting scenarios, and it must be possible to blend between them in realtime.
+    </li>
+    <li>
+        <b>High performance</b>: Baking a complex model with several lights should be very fast to reduce iteration times of
+        light configurations. Ideally under five seconds.
+    </li>
 </ol>
 
+<h4>Light types</h4>
+
 <p>
-  Lights are defined using a custom component, and the baking system iterates these lights to add up their contributions to each vertex. In principle, the attenuation equations are the same used by Unity to match their realtime counterparts.
+    Lights are defined using a custom component, and the baking system iterates these lights to add up their contributions to
+    each vertex. In principle, the attenuation equations are the same used by Unity to match their realtime counterparts.
 </p>
 
 <p style="color:red">Mostrar una imagen para cada tipo de luz.</p>
 
-<p>
-  In order to calculate shadows, the straightforward approach implies simply raycasting from the vertex to the light and adding the light contribution only if the raycast fails. However, this results in binary shadows that look blocky and unappealing. Similar to how PCF shadows work, it's better to define a set of points in an circular area around the vertex, raycast from each of them and average the results.
-</p>
+<h4>Shadows</h4>
 
 <p>
-  Indirect lighting is a more involved process, but rather easy to understand if one's familiar to ambient occlusion. As in the later technique, a bunch of rays are raycasted in the normal aligned hemisphere of the vertex. For those that collide against geometry, it is checked if light reaches them and how much is reflected in the ray's direction. This value is averaged across the hemisphere and added to the total contribution of that one light.
-</p>
-
-<p>
-  In practice, indirect lighting requires many raycast to reduce noise and it's yet unclear if it will be used in the game, but's it's a nice feature to have in case we end up needing it in the future.
+    In order to calculate shadows, the straightforward approach implies simply raycasting from the vertex to the light and adding
+    the light contribution only if the raycast fails. However, this results in binary shadows that look blocky and unappealing.
+    Similar to how PCF shadows work, it's better to define a set of points in an circular area around the vertex, raycast from
+    each of them and average the results.
 </p>
 
 <p style="color:red">Mostrar comparativa de 1 raycast vs múltiples.</p>
 
-<p>
-  Even after calculating shadows smoothly using multiple shadows, results are still a bit blocky and noisy. To address this, the results of nearby vertices are merged. This was already implemented for occlusion values but the logic changes when it comes to lightning. Rather than merging vertices that are almost exactly at the same position in world space, we increase that distance threshold to a meter or more, but add the restriction that the vertices must be connected by edges in order to merged. This prevents lighting to leak between different surfaces.
-</p>
-
-<h3>Storing vertex data</h3>
+<h4>Indirect Lighting</h4>
 
 <p>
-  Previously, a single occlusion value was stored per vertex in the x coordinate of the fourth texture coordinate attribute (uv3.x). But now additional information about lighting for two scenarios must be stored. A texture coordinate can store up to four values, but we need at least 7 values (1 for AO, 6 for the two rgb intensities of the lighting scenarios. An additional two values are added to regulate final occlusion and lighting intensity, that makes a total of 9 values.
+    Indirect lighting is a more involved process, but rather easy to understand if one's familiar to ambient occlusion. As in the
+    later technique, a bunch of rays are raycasted in the normal aligned hemisphere of the vertex. For those that collide against
+    geometry, it is checked if light reaches them and how much is reflected in the ray's direction. This value is averaged across
+    the hemisphere and added to the total contribution of that one light.
 </p>
 
 <p>
-  In order to fit 9 values into a 4-channel texture coordinate, some packing must be done. Lighting colors need high precision because lighting must allow values above one. I decided to use 10 bit color depth for lighting, with values ranging between 0 and 10.
-  Therefore, each lighting scenario was stored in one channel of the uv3 (uv3.y and uv3.w). This leaves 2 bits unused, but it's not really a problem. Occlusion is still stored in uv3.x unpacked, and strength values are packed using 16-bit depth in uv3.z.
+    In practice, indirect lighting requires many raycast to reduce noise and it's yet unclear if it will be used in the game, but's
+    it's a nice feature to have in case we end up needing it in the future.
 </p>
+
+<p style="color:red">Mostrar comparativa indirect on / off.</p>
+
+<h4>Denoising</h4>
+
+<p>
+    Even after calculating shadows smoothly using multiple shadows, results are still a bit blocky and noisy. To address this, the
+    results of nearby vertices are merged. This was already implemented for occlusion values but the logic changes when it comes to
+    lightning. Rather than merging vertices that are almost exactly at the same position in world space, we increase that distance
+    threshold to a meter or more, but add the restriction that the vertices must be connected by edges in order to merged. This prevents
+    lighting to leak between different surfaces.
+</p>
+
 
 <p style="color:red">
-  Mostrar código de packing y unpacking.
+    Mostrar comparativa de smoothing off / on
 </p>
+
+<h4>Storing vertex data</h4>
+
+<p>
+    Previously, a single occlusion value was stored per vertex in the x coordinate of the fourth texture coordinate attribute (uv3.x).
+    But now additional information about lighting for two scenarios must be stored. A texture coordinate can store up to four values,
+    but we need at least 7 values (1 for AO, 6 for the two rgb intensities of the lighting scenarios. An additional two values are
+    added to regulate final occlusion and lighting intensity, that makes a total of 9 values.
+</p>
+
+<p>
+    In order to fit 9 values into a 4-channel texture coordinate, some packing must be done. Lighting colors need high precision because lighting
+    must allow values above one. I decided to use 10 bit color depth for lighting, with values ranging between 0 and 10.
+    Therefore, each lighting scenario was stored in one channel of the uv3 (uv3.y and uv3.w). This leaves 2 bits unused, but it's not really a
+    problem. Occlusion is still stored in uv3.x unpacked, and strength values are packed using 16-bit depth in uv3.z. Since both
+    scenarios are stored in the same UV, it is possible to blend between them in realtime using a global uniform value.
+</p>
+
+
+
+<p>
+    This is the code used for packing vertex data in the CPU:
+</p>
+
+<div class="code" data-lang="C#" data-url="Articles/VertexLighting/Packing.cs"></div>
+
+<p>
+    Then, in the vertex shader, the data in unpacked. Note that the uv must be unpacked in the vertex shader,
+    it can't be passed to the fragment shader because it would be interpolated and the unpacked result would 
+    just be noise. These are the functions used:
+</p>
+
+<div class="code" data-lang="hlsl" data-url="Articles/VertexLighting/Unpacking.hlsl"></div>
+
 
 <h3>Performance</h3>
 
 <p>
-  Once the algorithm was complete and we tested it on complex models, it terribly underperformed in terms of speed. What had to be executed in less than five seconds, took over three minutes.
+    Once the algorithm was complete and we tested it on complex models, it terribly underperformed in terms of speed. What had to be executed in less than
+    five seconds, took over three minutes.
 </p>
 
 <p>
-  If we didn't address this issue, baking would be a pain during the entire development process. Not only that, but it would disincentivize the use of baked lights, reducing the overall quality of the presentation.
+    If we didn't address this issue, baking would be a pain during the entire development process. Not only that, but it would disincentivize the use of
+    baked lights, reducing the overall quality of the presentation.
 </p>
 
 <p>
-  Fortunately, this algorithm is highly parallelizable, so I created a compute shader and mirrored the entire algorithm. In the CPU implementation, Unity's collider components are used to raycast occlusion, shadows, and indirect lighting. Implementing that in the compute shader would be possible, but it would take a considerable amount of effort. Thankfully, raytracing shaders exist so I didn't have to implement mesh raycasting myself.
+    Fortunately, this algorithm is highly parallelizable, so I created a compute shader and mirrored the entire algorithm. In the CPU implementation,
+    Unity's collider components are used to raycast occlusion, shadows, and indirect lighting. Implementing that in the compute
+    shader would be possible, but it would take a considerable amount of effort. Thankfully, raytracing shaders exist so I didn't
+    have to implement mesh raycasting myself.
 </p>
 
 <p>
-  Using raytracing and compute shaders improves performance dramatically. It takes literally less than a second to bake an entire environment now, with all the features enabled. Now, artists can iterate on lighting blazingly fast. To make it even quicker, I added a keyboard shortcut to preview results that doesn't save the results persistenly and only bakes the current lighting scenario.
+    Using raytracing and compute shaders improves performance dramatically. It takes literally less than a second to bake an entire environment now,
+    with all the features enabled. Now, artists can iterate on lighting blazingly fast. To make it even quicker, I added a
+    keyboard shortcut to preview results that doesn't save the results persistenly and only bakes the current lighting scenario.
 </p>
 
-
+<p style="color:red">
+    Mostrar tabla con Scenario | Vertex Count | Light Count | CPU Time | GPU Time.
+</p>
 
 <h3>Results</h3>
 
 <h3>Conclusion</h3>
 
+<p>
+    Baking lighting information per-vertex results in a shading style with a lot of
+    personality and that is reminiscent of many retro games. After using this lighting system
+    in the actual environments of the game we're working on, which I still can't show, we're
+    finally seeing the artistic vision come to life in realtime.
+</p>
+
+<p>
+    It is clear that interpolating vertex attributes won't look as realistic as
+    per-pixel lighting or lightmaps, but that is exactly what gives this lighting technique its own personality. It's physically based, meaning
+    that it is realistic, but is constrained by limitations often seen in older platforms. Not only this is what the art team was looking for, but
+    it can be computed very fast on current hardware, and has almost zero cost at runtime. It's yet to be seen how it will evolve during
+    development, but it's a great starting point.
+</p>
+
 <h3>Going forward</h3>
+
+<p>
+    This lighting system is already very feature-complete, but there at least two aspects of it that could be improved:
+</p>
+
+<ul>
+    <li>
+        Specular highlights: It is difficult to bake specular highlights because they depend on the viewer's perspective.
+        However, many retro games faked specular highlights in different ways. Since the viewer's perspective does not change a lot
+        in our game, it could be possible to just define a fixed position or direction to calculate specular hightlights and leave them
+        baked.
+    </li>
+    <li>
+        Different properties per object: Right now all objects are shaded uniformly, but if could be benefitial to take into account
+        certain physical properties of the materials, such as metallic, smoothness, etc.
+    </li>
+    <li>
+        Lighting scenarios limitations: Only two baking sets can actually be used, but it might be needed to use more in the future. If blending
+        can occur between any given pair of scenarios, packing will have to be done differently or use an extra texture coordinate. Otherwise,
+        it might be possible to bake other scenarios to a different buffer and swap the uv data based on the lighting scenario as needed.
+    </li>
+
+</ul>
