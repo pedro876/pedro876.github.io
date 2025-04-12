@@ -70,10 +70,26 @@
 
 <p>
     Lights are defined using a custom component, and the baking system iterates these lights to add up their contributions to
-    each vertex. In principle, the attenuation equations are the same used by Unity to match their realtime counterparts.
+    each vertex. There are three light types:
 </p>
 
+<ul>
+    <li>
+        <b>Directional</b>: Does not attenuate over distance and the light direction is always the same because it doesn't have a position.
+    </li>
+    <li>
+        <b>Point</b>: Attenuates over distance, reaching zero energy at a defined range. The direction varies because the light has a defined position.
+    </li>
+    <li>
+        <b>Spot</b>: It's the same as the point light, but additionally attenuates as the angle between the light's 
+        forward direction and the direction from the vertex to the light's position grows.
+    </li>
+</ul>
+
+
 <p style="color:red">Mostrar una imagen para cada tipo de luz.</p>
+
+<div class="code" data-lang="hlsl" data-url="Articles/VertexLighting/LightTypes.hlsl"></div>
 
 <h4>Shadows</h4>
 
@@ -86,29 +102,13 @@
 
 <p style="color:red">Mostrar comparativa de 1 raycast vs múltiples.</p>
 
-<h4>Indirect Lighting</h4>
-
-<p>
-    Indirect lighting is a more involved process, but rather easy to understand if one's familiar to ambient occlusion. As in the
-    later technique, a bunch of rays are raycasted in the normal aligned hemisphere of the vertex. For those that collide against
-    geometry, it is checked if light reaches them and how much is reflected in the ray's direction. This value is averaged across
-    the hemisphere and added to the total contribution of that one light.
-</p>
-
-<p>
-    In practice, indirect lighting requires many raycast to reduce noise and it's yet unclear if it will be used in the game, but's
-    it's a nice feature to have in case we end up needing it in the future.
-</p>
-
-<p style="color:red">Mostrar comparativa indirect on / off.</p>
-
 <h4>Denoising</h4>
 
 <p>
-    Even after calculating shadows smoothly using multiple shadows, results are still a bit blocky and noisy. To address this, the
+    Even after calculating shadows smoothly using multiple rays, results are still a bit blocky and noisy. To address this, the
     results of nearby vertices are merged. This was already implemented for occlusion values but the logic changes when it comes to
     lightning. Rather than merging vertices that are almost exactly at the same position in world space, we increase that distance
-    threshold to a meter or more, but add the restriction that the vertices must be connected by edges in order to merged. This prevents
+    threshold to a meter or more, but add the restriction that the vertices must be connected by edges in order to be merged. This prevents
     lighting to leak between different surfaces.
 </p>
 
@@ -116,6 +116,22 @@
 <p style="color:red">
     Mostrar comparativa de smoothing off / on
 </p>
+
+<h4>Indirect Lighting</h4>
+
+<p>
+    Indirect lighting is a more involved process, but rather easy to understand if one's familiar to ambient occlusion. As in the
+    later technique, several rays are traced in the normal-aligned hemisphere of the vertex. For those that collide against
+    geometry, it is checked if light reaches them and how much is reflected in the ray's direction. This value is averaged across
+    the hemisphere and added to the total contribution of that one light.
+</p>
+
+<p>
+    In practice, indirect lighting requires many raycasts to reduce noise and it's yet unclear if it will be used in the game, but's
+    it's a nice feature to have in case we end up needing it in the future.
+</p>
+
+<p style="color:red">Mostrar comparativa indirect on / off.</p>
 
 <h4>Storing vertex data</h4>
 
@@ -144,7 +160,7 @@
 
 <p>
     Then, in the vertex shader, the data in unpacked. Note that the uv must be unpacked in the vertex shader,
-    it can't be passed to the fragment shader because it would be interpolated and the unpacked result would 
+    it can't be passed to the fragment shader because it would be interpolated and the unpacked result would
     just be noise. These are the functions used:
 </p>
 
@@ -173,12 +189,30 @@
 <p>
     Using raytracing and compute shaders improves performance dramatically. It takes literally less than a second to bake an entire environment now,
     with all the features enabled. Now, artists can iterate on lighting blazingly fast. To make it even quicker, I added a
-    keyboard shortcut to preview results that doesn't save the results persistenly and only bakes the current lighting scenario.
+    keyboard shortcut to preview results that doesn't save them persistenly and only bakes the current lighting scenario.
 </p>
 
 <p style="color:red">
     Mostrar tabla con Scenario | Vertex Count | Light Count | CPU Time | GPU Time.
 </p>
+
+<table>
+    <tr>
+        <th>Scene</th>
+        <th>Vertex Count</th>
+        <th>Light Count</th>
+        <th>CPU Time</th>
+        <th>GPU Time</th>
+    </tr>
+    <tr>
+        <td>Scene 0</td>
+        <td>54698</td>
+        <td>8</td>
+        <td>45ms</td>
+        <td>50ms</td>
+    </tr>
+</table>
+
 
 <h3>Results</h3>
 

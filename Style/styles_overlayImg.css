@@ -52,7 +52,7 @@
     appearance: none;
     width: 100%;
     height: var(--sliderHeight);
-    background: rgb(26, 27, 29);
+    background: var(--pageBackgroundColor);
     outline: none;
     -webkit-transition: .2s;
     transition: background .2s;

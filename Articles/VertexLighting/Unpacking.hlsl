@@ -1,36 +1,28 @@
-#ifndef BAKED_VERTEX_PACKING
-#define BAKED_VERTEX_PACKING
-
 float4 _GlobalVertexOcclusionColor = 1;
 float _GlobalVertexOcclusionStrength = 1;
 float _GlobalVertexLightingStrength = 1;
 float _GlobalVertexLightingTransition = 0;
 
-void UnpackTwoFloats(float packed, out float a, out float b)
+void UnpackTwoFloats(float packed, 
+    out float a, out float b)
 {
-    uint packedInt = asuint(packed); // Convert float to uint
-    a = float((packedInt >> 16) & 0xFFFF) / 65535.0; // Extract upper 16 bits
-    b = float(packedInt & 0xFFFF) / 65535.0; // Extract lower 16 bits
+    uint packedInt = asuint(packed);
+    a = float((packedInt >> 16) & 0xFFFF) / 65535.0;
+    b = float(packedInt & 0xFFFF) / 65535.0;
 }
 
-void UnpackThreeFloats(float packed, out float a, out float b, out float c)
+void UnpackThreeFloats(float packed, 
+    out float a, out float b, out float c)
 {
-    uint packedInt = asuint(packed); // Convert float to uint
+    uint packedInt = asuint(packed);
     a = float((packedInt >> 20) & 0x3FF) / 1023.0;
     b = float((packedInt >> 10) & 0x3FF) / 1023.0;
     c = float(packedInt & 0x3FF) / 1023.0;
 }
 
-void UnpackFourFloats(float packed, out float a, out float b, out float c, out float d)
-{
-    uint packedInt = asuint(packed); // Convert float to uint
-    a = float((packedInt >> 24) & 0xFF) / 255.0;
-    b = float((packedInt >> 16) & 0xFF) / 255.0;
-    c = float((packedInt >> 8) & 0xFF) / 255.0;
-    d = float(packedInt & 0xFF) / 255.0;
-}
-
-void UnpackBakedVertexData_float(float4 uv, out float3 ao, out float3 lighting, out float aoStrength, out float lightingStrength)
+void UnpackBakedVertexData_float(float4 uv, 
+    out float3 ao, out float3 lighting, 
+    out float aoStrength, out float lightingStrength)
 {
     ao = lerp(_GlobalVertexOcclusionColor.rgb, float3(1, 1, 1), uv.x);
     float lightR, lightG, lightB;
@@ -47,5 +39,3 @@ void UnpackBakedVertexData_float(float4 uv, out float3 ao, out float3 lighting, 
     lightingStrength *= _GlobalVertexLightingStrength;
 
 }
-
-#endif

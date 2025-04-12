@@ -34,6 +34,7 @@ function AddButtonClickBehaviour(elemButton) {
             AddInputToImageComparisons();
             AddVideos();
             ProcessCode();
+            ProcessTables();
             elemButton.disabled = true;
             isFetching = false;
             if (mobileShowIndex) ToggleIndex();

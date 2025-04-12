@@ -2,7 +2,7 @@ function ProcessCode() {
     var allCodes = elemContent.querySelectorAll(".code");
     allCodes.forEach((codeElem) => {
         function OnCodeElemLoaded(codeElem) {
-            codeElem.style.background = "rgb(26, 27, 29)";
+            codeElem.style.background = "var(--codeBackgroundColor)";
             const language = codeElem.getAttribute("data-lang"); // Default to plaintext if no language specified
             if (language != null) {
                 const worker = new Worker("Code/highlightWorker.js");

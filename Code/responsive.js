@@ -81,6 +81,8 @@ function OnResize() {
         elemTopBarRightContent.style.display = "grid";
         if (elemRaccoon != null) elemRaccoon.hidden = false;
     }
+
+    AdjustTables();
 }
 
 function ToggleIndex() {

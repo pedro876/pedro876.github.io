@@ -1,4 +1,9 @@
-static Vector4 EncodeOcclusionLighting(float occlusion, Vector3 light, Vector3 light2, float occlusionStrength, float lightingStrength)
+static Vector4 EncodeOcclusionLighting(
+    float occlusion, 
+    Vector3 light, 
+    Vector3 light2, 
+    float occlusionStrength, 
+    float lightingStrength)
 {
     Vector4 texcoord = Vector4.zero;
     texcoord.x = occlusion;

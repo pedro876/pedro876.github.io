@@ -128,7 +128,7 @@
 }
 
 .logo p {
-    color: rgb(26, 27, 29);
+    color: var(--pageBackgroundColor);
     /*font-weight:bold;*/
 }
 

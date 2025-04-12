@@ -1,5 +1,5 @@
 .code {
-    background-color: rgb(26, 27, 29);
+    background-color: var(--codeBackgroundColor);
     font-family: monospace;
     white-space: pre-wrap; /* Ensures line breaks */
     word-break: break-word; /* Forces words to break if necessary */
