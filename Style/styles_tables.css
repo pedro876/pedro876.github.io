@@ -32,3 +32,18 @@ td {
     text-align: right;
     background-color: var(--codeBackgroundColor)
 }
+
+.columnBright {
+    background-color: var(--contentBackgroundColor);
+}
+
+.columnSeparator {
+    width: 2px;
+    padding: 0px;
+    background-color: white;
+    z-index: 1000;
+}
+
+th.columnSeparator {
+    background-color: rgb(183, 183, 183);
+}
