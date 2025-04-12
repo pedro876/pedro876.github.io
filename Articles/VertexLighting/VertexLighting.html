@@ -32,7 +32,10 @@
     the solution was clear: Baked per-vertex lighting.
 </p>
 
-<p style="color:red">Imagen de portada</p>
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_MilkBar_LitIndirect_0.png"]
+    , "maximizable": true
+}'></div>
 
 <h3>Implementation</h3>
 
@@ -81,13 +84,28 @@
         <b>Point</b>: Attenuates over distance, reaching zero energy at a defined range. The direction varies because the light has a defined position.
     </li>
     <li>
-        <b>Spot</b>: It's the same as the point light, but additionally attenuates as the angle between the light's 
+        <b>Spot</b>: It's the same as the point light, but additionally attenuates as the angle between the light's
         forward direction and the direction from the vertex to the light's position grows.
     </li>
 </ul>
 
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_Type_Directional.png"]
+    , "texts": ["Directional"]
+    , "maximizable": true
+}'></div>
 
-<p style="color:red">Mostrar una imagen para cada tipo de luz.</p>
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_Type_Point.png"]
+    , "texts": ["Point"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_Type_Spot.png"]
+    , "texts": ["Spot"]
+    , "maximizable": true
+}'></div>
 
 <div class="code" data-lang="hlsl" data-url="Articles/VertexLighting/LightTypes.hlsl"></div>
 
@@ -100,7 +118,12 @@
     each of them and average the results.
 </p>
 
-<p style="color:red">Mostrar comparativa de 1 raycast vs múltiples.</p>
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_PCF_Off.png", "Articles/VertexLighting/Images/VertexLighting_PCF_On.png"]
+    , "texts": ["Single ray", "Multiple rays"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
 
 <h4>Denoising</h4>
 
@@ -109,13 +132,22 @@
     results of nearby vertices are merged. This was already implemented for occlusion values but the logic changes when it comes to
     lightning. Rather than merging vertices that are almost exactly at the same position in world space, we increase that distance
     threshold to a meter or more, but add the restriction that the vertices must be connected by edges in order to be merged. This prevents
-    lighting to leak between different surfaces.
+    lighting to leak between different surfaces. Try using the slider in the following images to see the difference:
 </p>
 
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_PCF_On.png", "Articles/VertexLighting/Images/VertexLighting_Denoise.png"]
+    , "texts": ["Denoise Off", "Denoise On"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
 
-<p style="color:red">
-    Mostrar comparativa de smoothing off / on
-</p>
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_Denoise_Off.png", "Articles/VertexLighting/Images/VertexLighting_Denoise_On.png"]
+    , "texts": ["Denoise Off", "Denoise On"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
 
 <h4>Indirect Lighting</h4>
 
@@ -131,7 +163,23 @@
     it's a nice feature to have in case we end up needing it in the future.
 </p>
 
-<p style="color:red">Mostrar comparativa indirect on / off.</p>
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_Indirect_Off.png", "Articles/VertexLighting/Images/VertexLighting_Indirect_On.png"]
+    , "texts": ["Indirect Off", "Indirect On"]
+    , "sliderValue": 60
+    , "maximizable": true
+}'></div>
+
+<p>
+    In actual game environments, especially indoor scenes, the difference can be quite substantial:
+</p>
+
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_MilkBar_Lit_0.png", "Articles/VertexLighting/Images/VertexLighting_MilkBar_LitIndirect_0.png"]
+    , "texts": ["Indirect Off", "Indirect On"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
 
 <h4>Storing vertex data</h4>
 
@@ -166,8 +214,17 @@
 
 <div class="code" data-lang="hlsl" data-url="Articles/VertexLighting/Unpacking.hlsl"></div>
 
+<p>
+    The unpacked data looks like this:
+</p>
 
-<h3>Performance</h3>
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_MilkBar_Debug.png"]
+    , "texts": ["Unpacked uv3"]
+    , "maximizable": true
+}'></div>
+
+<h4>Performance</h4>
 
 <p>
     Once the algorithm was complete and we tested it on complex models, it terribly underperformed in terms of speed. What had to be executed in less than
@@ -187,34 +244,98 @@
 </p>
 
 <p>
-    Using raytracing and compute shaders improves performance dramatically. It takes literally less than a second to bake an entire environment now,
-    with all the features enabled. Now, artists can iterate on lighting blazingly fast. To make it even quicker, I added a
+    Using raytracing and compute shaders improves performance dramatically. baking an entire environment is now just a matter of seconds,
+    even with all the features enabled. Now, artists can iterate on lighting blazingly fast. To make it even quicker, I added a
     keyboard shortcut to preview results that doesn't save them persistenly and only bakes the current lighting scenario.
-</p>
-
-<p style="color:red">
-    Mostrar tabla con Scenario | Vertex Count | Light Count | CPU Time | GPU Time.
 </p>
 
 <table>
     <tr>
         <th>Scene</th>
-        <th>Vertex Count</th>
-        <th>Light Count</th>
-        <th>CPU Time</th>
-        <th>GPU Time</th>
+        <th>Vertices</th>
+        <th>Lights</th>
+        <th class="columnSeparator"></th>
+        <th>CPU Indirect Off</th>
+        <th>GPU Indirect Off</th>
+        <th>CPU Indirect On</th>
+        <th>GPU Indirect On</th>
     </tr>
     <tr>
-        <td>Scene 0</td>
-        <td>54698</td>
-        <td>8</td>
-        <td>45ms</td>
-        <td>50ms</td>
+        <td>Bomb Shop</td>
+        <td>10245</td>
+        <td>1</td>
+        <td class="columnSeparator"></td>
+        <td class="columnBright">4.40s</td>
+        <td>0.10s</td>
+        <td class="columnBright">115.67s</td>
+        <td>0.32s</td>
+    </tr>
+    <tr>
+        <td>Curiosity Shop</td>
+        <td>7631</td>
+        <td>2</td>
+        <td class="columnSeparator"></td>
+        <td class="columnBright">4.72s</td>
+        <td>0.29s</td>
+        <td class="columnBright">187.73s</td>
+        <td>0.47s</td>
+    </tr>
+    <tr>
+        <td>Milk Bar</td>
+        <td>23589</td>
+        <td>24</td>
+        <td class="columnSeparator"></td>
+        <td class="columnBright">47.25s</td>
+        <td>0.34s</td>
+        <td class="columnBright">8057.14s</td>
+        <td>2.18s</td>
     </tr>
 </table>
 
 
 <h3>Results</h3>
+
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_BombShop_Unlit.png", "Articles/VertexLighting/Images/VertexLighting_BombShop_Lit.png"]
+    , "texts": ["Unlit", "Baked Lit"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_CuriosityShop_Unlit.png", "Articles/VertexLighting/Images/VertexLighting_CuriosityShop_Lit.png"]
+    , "texts": ["Unlit", "Baked Lit"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_MilkBar_Unlit_0.png", "Articles/VertexLighting/Images/VertexLighting_MilkBar_LitIndirect_0.png"]
+    , "texts": ["Unlit", "Baked Lit"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_MilkBar_Unlit_1.png", "Articles/VertexLighting/Images/VertexLighting_MilkBar_LitIndirect_1.png"]
+    , "texts": ["Unlit", "Baked Lit"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_MilkBar_Unlit_2.png", "Articles/VertexLighting/Images/VertexLighting_MilkBar_LitIndirect_2.png"]
+    , "texts": ["Unlit", "Baked Lit"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VertexLighting/Images/VertexLighting_MilkBar_Unlit_3.png", "Articles/VertexLighting/Images/VertexLighting_MilkBar_LitIndirect_3.png"]
+    , "texts": ["Unlit", "Baked Lit"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
 
 <h3>Conclusion</h3>
 
@@ -251,9 +372,9 @@
         certain physical properties of the materials, such as metallic, smoothness, etc.
     </li>
     <li>
-        Lighting scenarios limitations: Only two baking sets can actually be used, but it might be needed to use more in the future. If blending
-        can occur between any given pair of scenarios, packing will have to be done differently or use an extra texture coordinate. Otherwise,
-        it might be possible to bake other scenarios to a different buffer and swap the uv data based on the lighting scenario as needed.
+        Lighting scenarios limitations: Only two baking sets can actually be used, but it might be necessary to use more in the future. If blending
+        can occur between any given pair of scenarios, packing will have to be done differently or an extra texture coordinate would have to be used.
+        Otherwise, it might be possible to bake other scenarios to a different buffer and swap the uv data based on the lighting scenario as needed.
     </li>
 
 </ul>
