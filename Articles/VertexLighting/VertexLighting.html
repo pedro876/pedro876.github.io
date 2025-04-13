@@ -112,8 +112,8 @@
 <h4>Shadows</h4>
 
 <p>
-    In order to calculate shadows, the straightforward approach implies simply raycasting from the vertex to the light and adding
-    the light contribution only if the raycast fails. However, this results in binary shadows that look blocky and unappealing.
+    In order to calculate shadows, the intuitive approach is to simply raycast from the vertex to the light and it's contribution
+    only if the raycast fails. However, this results in binary shadows that look blocky and unappealing.
     Similar to how PCF shadows work, it's better to define a set of points in an circular area around the vertex, raycast from
     each of them and average the results.
 </p>
@@ -130,8 +130,8 @@
 <p>
     Even after calculating shadows smoothly using multiple rays, results are still a bit blocky and noisy. To address this, the
     results of nearby vertices are merged. This was already implemented for occlusion values but the logic changes when it comes to
-    lightning. Rather than merging vertices that are almost exactly at the same position in world space, we increase that distance
-    threshold to a meter or more, but add the restriction that the vertices must be connected by edges in order to be merged. This prevents
+    lighting. Instead of merging vertices that are almost exactly at the same position in world space, we increase that distance
+    threshold to a meter or more and add a new restriction: vertices must be connected by edges in order to be merged. This prevents
     lighting to leak between different surfaces. Try using the slider in the following images to see the difference:
 </p>
 
@@ -186,8 +186,8 @@
 <p>
     Previously, a single occlusion value was stored per vertex in the x coordinate of the fourth texture coordinate attribute (uv3.x).
     But now additional information about lighting for two scenarios must be stored. A texture coordinate can store up to four values,
-    but we need at least 7 values (1 for AO, 6 for the two rgb intensities of the lighting scenarios. An additional two values are
-    added to regulate final occlusion and lighting intensity, that makes a total of 9 values.
+    but we need at least 7 values (1 for AO + 6 for the two rgb intensities of the lighting scenarios). Another two values are
+    added to regulate final occlusion and lighting intensity, which makes a total of 9 values.
 </p>
 
 <p>
@@ -195,7 +195,7 @@
     must allow values above one. I decided to use 10 bit color depth for lighting, with values ranging between 0 and 10.
     Therefore, each lighting scenario is stored in one channel of the uv3 (uv3.y and uv3.w). This leaves 2 bits unused, but it's not really a
     problem. Occlusion is still stored in uv3.x unpacked, and strength values are packed using 16-bit depth in uv3.z. Since both
-    scenarios are stored in the same UV, it is possible to blend between them in realtime using a global uniform value.
+    scenarios are stored in the same UV, it is possible to blend between them in realtime using a global uniform value:
 </p>
 
 <div data-video='{
@@ -231,7 +231,7 @@
 
 <p>
     Once the algorithm was complete and we tested it on complex models, it terribly underperformed in terms of speed. What had to be executed in less than
-    five seconds, took over three minutes.
+    five seconds, took minutes or even hours if using indirect lighting.
 </p>
 
 <p>
@@ -241,8 +241,8 @@
 
 <p>
     Fortunately, this algorithm is highly parallelizable, so I created a compute shader and mirrored the entire algorithm. In the CPU implementation,
-    Unity's collider components are used to raycast occlusion, shadows, and indirect lighting. Implementing that in the compute
-    shader would be possible, but it would take a considerable amount of effort. Thankfully, raytracing shaders exist so I didn't
+    Unity's collider components are used to raycast occlusion, shadows, and indirect lighting. Implementing that in a compute
+    shader is feashible, but it would take a considerable amount of effort. Thankfully, raytracing shaders exist so I didn't
     have to implement mesh raycasting myself.
 </p>
 
@@ -250,6 +250,11 @@
     Using raytracing and compute shaders improves performance dramatically. baking an entire environment is now just a matter of seconds,
     even with all the features enabled. Now, artists can iterate on lighting blazingly fast. To make it even quicker, I added a
     keyboard shortcut to preview results that doesn't save them persistenly and only bakes the current lighting scenario.
+</p>
+
+<p>
+    You can see different timings in the following table. Notice how indirect lighting is expensive, and unreasonably slow 
+    when several lights are baked in CPU.
 </p>
 
 <table>
@@ -344,14 +349,14 @@
 
 <p>
     Baking lighting information per-vertex results in a shading style with a lot of
-    personality and that is reminiscent of many retro games. After using this lighting system
+    personality that is reminiscent of many retro games. After using this lighting system
     in the actual environments of the game we're working on, which I still can't show, we're
     finally seeing the artistic vision come to life in realtime.
 </p>
 
 <p>
     It is clear that interpolating vertex attributes won't look as realistic as
-    per-pixel lighting or lightmaps, but that is exactly what gives this lighting technique its own personality. It's physically based, meaning
+    per-pixel lighting or lightmaps, but that is exactly what gives this lighting technique its own look. It's physically based, meaning
     that it is realistic, but is constrained by limitations often seen in older platforms. Not only this is what the art team was looking for, but
     it can be computed very fast on current hardware, and has almost zero cost at runtime. It's yet to be seen how it will evolve during
     development, but it's a great starting point.
@@ -360,22 +365,22 @@
 <h3>Going forward</h3>
 
 <p>
-    This lighting system is already very feature-complete, but there at least two aspects of it that could be improved:
+    This lighting system is already pretty much feature complete, but there some aspects of it that could be further developed:
 </p>
 
 <ul>
     <li>
-        Specular highlights: It is difficult to bake specular highlights because they depend on the viewer's perspective.
+        <b>Specular highlights</b>: It is difficult to bake specular highlights because they depend on the viewer's perspective.
         However, many retro games faked specular highlights in different ways. Since the viewer's perspective does not change a lot
         in our game, it could be possible to just define a fixed position or direction to calculate specular hightlights and leave them
         baked.
     </li>
     <li>
-        Different properties per object: Right now all objects are shaded uniformly, but if could be benefitial to take into account
+        <b>Different properties per object</b>: Right now all objects are shaded uniformly, but if could be benefitial to take into account
         certain physical properties of the materials, such as metallic, smoothness, etc.
     </li>
     <li>
-        Lighting scenarios limitations: Only two baking sets can actually be used, but it might be necessary to use more in the future. If blending
+        <b>Lighting scenarios limitations</b>: Only two baking sets can actually be used, but it might be necessary to use more in the future. If blending
         can occur between any given pair of scenarios, packing will have to be done differently or an extra texture coordinate would have to be used.
         Otherwise, it might be possible to bake other scenarios to a different buffer and swap the uv data based on the lighting scenario as needed.
     </li>
