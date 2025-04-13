@@ -101,3 +101,42 @@
     margin: 0px;
 }
 
+.articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 16px;
+    max-width: 100%;
+}
+
+.article-grid-element {
+    text-align: center;
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    background: none;
+    color: white;
+    cursor: pointer;
+}
+
+.article-grid-element p {
+    margin: 10px 0px 0px 0px;
+    font-weight: bold;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.article-grid-element img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.article-grid-element:hover img {
+    transform: scale(0.97);
+}
+
+.article-grid-element:hover p {
+    /*text-decoration: underline;*/
+    color: rgb(200, 200, 200);
+}
