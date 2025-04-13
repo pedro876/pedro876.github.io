@@ -193,7 +193,7 @@
 <p>
     In order to fit 9 values into a 4-channel texture coordinate, some packing must be done. Lighting colors need high precision because lighting
     must allow values above one. I decided to use 10 bit color depth for lighting, with values ranging between 0 and 10.
-    Therefore, each lighting scenario was stored in one channel of the uv3 (uv3.y and uv3.w). This leaves 2 bits unused, but it's not really a
+    Therefore, each lighting scenario is stored in one channel of the uv3 (uv3.y and uv3.w). This leaves 2 bits unused, but it's not really a
     problem. Occlusion is still stored in uv3.x unpacked, and strength values are packed using 16-bit depth in uv3.z. Since both
     scenarios are stored in the same UV, it is possible to blend between them in realtime using a global uniform value.
 </p>

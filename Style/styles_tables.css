@@ -6,7 +6,8 @@
 
 table, th, td {
     border: 1px solid white;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0px;
 }
 
 th, td {
@@ -42,8 +43,13 @@ td {
     padding: 0px;
     background-color: white;
     z-index: 1000;
+    border-color: white;
 }
 
 th.columnSeparator {
-    background-color: rgb(183, 183, 183);
+    border-left-color: rgb(183, 183, 183);
+}
+
+th.columnSeparator + th {
+    border-left-color: white;
 }
