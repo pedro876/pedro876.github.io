@@ -16,7 +16,10 @@ function EnterFullScreen(element) {
 
     var images = element.querySelectorAll("img");
     images.forEach((image) => {
-        image.style.maxHeight = "100vh";
+        image.style.height = "100vh";
+        image.style.width = "auto";
+        image.style.maxWidth = "100vw";
+        image.style.objectFit = "contain";
     });
 
     isInFullscreen = true;
@@ -33,7 +36,10 @@ function ExitFullScreen() {
 
     var images = element.querySelectorAll("img");
     images.forEach((image) => {
-        image.style.maxHeight = "";
+        image.style.height = "";
+        image.style.width = "";
+        image.style.maxWidth = "";
+        image.style.objectFit = "";
     });
 
     var maximizeButton = element.querySelector(".image-maximize");
