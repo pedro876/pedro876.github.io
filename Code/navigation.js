@@ -51,11 +51,11 @@ function ProcessArticleGrid() {
         button.appendChild(p);
         grid.appendChild(button);
 
-        AddButtonClickBehaviour(button);
+        AddButtonClickBehaviour(button, indexButton);
     });
 }
 
-function AddButtonClickBehaviour(elemButton) {
+function AddButtonClickBehaviour(elemButton, indexButton) {
     elemButton.loadContent = function () {
         if (isFetching) return;
         if (isInFullscreen) ExitFullScreen();
@@ -75,7 +75,7 @@ function AddButtonClickBehaviour(elemButton) {
             ProcessCode();
             ProcessTables();
             ProcessArticleGrid();
-            elemButton.disabled = true;
+            indexButton.disabled = true;
             isFetching = false;
             if (mobileShowIndex) ToggleIndex();
 
@@ -94,7 +94,7 @@ function AddButtonClickBehaviour(elemButton) {
 }
 
 indexButtons.forEach((indexButton) => {
-    AddButtonClickBehaviour(indexButton);
+    AddButtonClickBehaviour(indexButton, indexButton);
 });
 
 function LoadURLArticle() {
