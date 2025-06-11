@@ -6,7 +6,7 @@
     flex-direction: row;
     width: 100%;
     margin-bottom: calc(var(--bottomBarHeight) + 10px);
-    gap: 30px;
+    gap: var(--indexContentGap);
     overflow-x: hidden;
     justify-content: center;
 }
@@ -51,7 +51,7 @@
     /*text-align: justify;*/
     border-radius: 10px;
     width: 100%;
-    max-width: calc(var(--pageWidth) - var(--indexWidth) - 30px);
+    max-width: calc(var(--pageWidth) - var(--indexWidth) - var(--indexContentGap));
 }
 
 #articleContent h1 {
