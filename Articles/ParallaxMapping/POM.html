@@ -1,0 +1,65 @@
+<h1>Parallax Occlusion Mapping</h1>
+<h2>
+    June 6th, 2025 <br />
+    Unreleased Project
+</h2>
+
+<h3>Motivation</h3>
+
+<h3>Implementation</h3>
+
+<h4>Curved Relief Mapping</h4>
+
+<p>
+    Parallax mapping assumes a planar representation for each pixel. When the effect is presented with
+    high displacement offsets on non planar meshes, you start to see the limitations of this technique. As the ray progresses through the 
+    surface, it should actually bend following the surface curvature, but we don't have the geometric information 
+    required to do that in a fragment shader. Besides, even if we did have the mesh data required to achieve that, 
+    it would probably be too expensive.
+</p>
+
+<p>
+    One way to overcome this problem, is to mathematically approximate the curvature. This is what <b>Manuel M. Oliveira</b>
+    tried in his 2005 paper <a href="https://www.researchgate.net/publication/237284965_An_Efficient_Representation_for_Surface_Details">
+    An Efficient Representation for Surface Details</a>.
+</p>
+
+<p>
+    The idea is to do a preprocessing step of the mesh to obtain two coeficients that define a quadric surface for each vertex, 
+    and store it as an attribute. During raymarching, the quadric surface height is calculated using the curvature coeficients and
+    the ray displacement. This leads to a situation in which a ray may enter the surface, and exit it without colliding against 
+    the height map. In that case, the pixel is considered to belong to a silhouette and is therefore discarded.
+</p>
+
+<div data-image='{
+    "images": ["Articles/ParallaxMapping/Images/Twitter_Bricks_Off.jpg", "Articles/ParallaxMapping/Images/Twitter_Bricks_On.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/ParallaxMapping/Images/Twitter_Bricks_Wireframe.jpg"]
+    , "texts": ["Wireframe"]
+    , "maximizable": true
+}'></div>
+
+<p>
+    Don't get too excited though. In theory, this should improve the look of parallax effects significantly and provide accurate silhouettes.
+    However, in practice, <b>I found out that this approximation breaks even in simple test cases</b>. For me, the biggest problem is that when 
+    the quadric surface does not match the actual geometry complexity, it will discard pixels where geometry is actually present. This artifact 
+    was a deal breaker for me, so I entirely scratched the idea of approximating the surface curvature.
+</p>
+
+<p>
+    Besides, the parallax effect is good enough when the displacement is small, which is always going to be the case when using parallax.
+    For more intense displacement factors, tessellation is preferred because it provides more accurate shadows, perfect silhouettes 
+    and no aliasing.
+</p>
+
+<h3>Results</h3>
+
+<h3>Conclusion</h3>
+
+<h3>Going Forward</h3>
+
