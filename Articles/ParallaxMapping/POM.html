@@ -6,28 +6,179 @@
 
 <h3>Motivation</h3>
 
+<p>
+    Imagine that you are working on a game with many tileable materials. For example, let's say you have set up a PBR material to
+    represent a brick wall that uses
+    different textures such as albedo, normals, roughness, etc. Now you are asked to give depth to every brick because it looks too flat even
+    with a normal map. You wouldn't want to manually model every brick in the game, would you?
+</p>
+
+<p>
+    This is the perfect scenario to apply Parallax Mapping: An effect that simulates surface displacement per pixel using the view angle and
+    a height map. This solution is faster and scalable, as the height map is created once and used on every brick wall already in existence
+    and future ones as well.
+</p>
+
+<p style="color:red">Poner imagen de portada</p>
+
 <h3>Implementation</h3>
 
-<h4>Curved Relief Mapping</h4>
+<p>
+    In order to simulate displacement for any given pixel, we'll need to raymarch thorugh the height map until a collision is determined.
+    Once a hit point is detected, we will interpolate between the previous raymarch step and the current one to approximate the true
+    ray collision point. The result will be a displaced UV that we can use to sample the rest of the textures later on.
+</p>
+
+<p>
+    That said, I must warn you that this effect is just a visual trick that is very good at faking depth. It has important limitations
+    though, and some performance concerns may arise as well:
+</p>
+
+<ul>
+    <li>
+        Several samples of the height map are required and trying to represent highly displaced surfaces with accuracy might become
+        expensive. On top of that, if the height map has high frequency details, using a low amount of samples will lead to flickering
+        while moving the camera around.
+    </li>
+    <li>
+        While raymarching the height field we'll be assuming a planar representation for every pixel given its position
+        and normal. If the surface is not a perfect plane, the higher the displacement the higher the error we are going to get. In practice,
+        we can usually get away with this error as it doesn't present obvious discontinuities from pixel to pixel.
+    </li>
+    <li>
+        Since the effect works on a per pixel level, it can't simulate highly detailed silhouettes. Even on flat geometry,
+        you will see that the effect seems to extend beyond the edges, almost as if you were looking through a portal.
+        This is the side effect of not using real geometry, but you can mitigate these artifacts by using a low displacement
+        scale and placing geometry in strategic ways.
+    </li>
+</ul>
+
+<p>
+    For these reasons, I consider parallax mapping to be a good solution only for thin surfaces, and that's what I'll focus on in this article.
+    At this point, you may be thinking that I dislike Parallax Mapping, but I actually think it is a powerful tool if used appropiately.
+</p>
+
+
+
+<h4>From World Space to Texture Space</h4>
+
+<p>
+    The first step is to go from world space pixel coordinates to texture space. For this, we need to create a rotation matrix
+    that lets us go from world space to tangent space. Then, we will use a texture scaling factor to go to texture space. For all of this,
+    we need certain information available for each pixel:
+</p>
+
+<ul>
+    <li><b>Normal</b> (float3): The geometric normal of the surface, not the normal mapped one.</li>
+    <li><b>Tangent</b> (float4): The geometric tangent of the surface, including the fourth sign component.</li>
+    <li>
+        <b>Texture Scale</b> (float3): A texture scaling factor that tells us how much texture space is covered by the current triangle. This
+        is a combination of UV scale and the tiling factor of the texture configured in the material. The third component is just
+        the displacement strength configured for the material.
+    </li>
+</ul>
+
+<p>
+    Using these parameters, the rotation matrix known as TBN can be constructed, and that is all we need to transform our coordinates.
+</p>
+
+<div class="code" data-lang="hlsl" data-url="Articles/ParallaxMapping/Transform.hlsl"></div>
+
+<h4>Calculating the Texture Scale factor</h4>
+
+<p>
+    Parallax mapping will be calculated in texture space because that means that a displacement of x units is always as "deep"
+    independently of texture tiling. Later on, this consistency will allow us to calculate the displaced world position and depth offset of the surface, which is
+    required to simulate self occlusion using shadow maps.
+</p>
+
+<p>
+    In simple words, the texture scale factor is: How much texture space covers a triangle? A quad will have a triangle scale of (1,1), because a triangle's vertices
+    bounds extend one unit horizontally and one unit vertically. I tried calculating this in realtime using screen space derivatives, but it breaks when the scale is not equal
+    in both axes. I also tried using a geometry shader to have the complete triangle information. That kind of worked, but it presented discontinuities and the performance penalty
+    was just not worth it. In the end, I used a custom importer script to calculate this factor in editor time and store the results as vertex attributes. Since a vertex may belong
+    to different triangles, the final vertex scaling factor is an average of its surrounding triangles, this solves discontinuities but will lead to artifacts if UV stretching
+    is highly irregular, so UVs must be carefully authored.
+</p>
+
+<div class="code" data-lang="hlsl">float3 textureScale = float3(rcp(scaleFactor * textureTiling), maxHeight);</div>
+
+<h4>Defining the raymarch origin and destiny</h4>
+
+<p>
+    In order to raymarch the height map, we must determine where to start and where to end. We can use the transform functions to easily obtain
+    a starting point. But in order to calculate the destiny, we need to know how far we'd have to traverse in the view direction to reach 
+    the maximum displacement, which is -1 in texture space. We can know that by inverting the z component of the view direciton in texture space:
+</p>
+
+<div class="code" data-lang="hlsl" data-url="Articles/ParallaxMapping/FindTMax.hlsl"></div>
+
+<p>
+    Now, we can calculate the ray origin, direction and displacement for each raymarch step:
+</p>
+
+<div class="code" data-lang="hlsl" data-url="Articles/ParallaxMapping/RayOriginAndDestiny.hlsl"></div>
+
+<p>
+    Notice that rayPosTS, which is where we will start raymarching, is not just the uv. We add a <i>heightDirection</i> variable in the range [-1,1] 
+    that allows us to decide whether we want the effect to simulate depth downwards of upwards. The default is -1, which means downwards 
+    and will leave rayPosTS equal to rayOriginTS. However, there are cases where we may want the effect to go upwards.
+</p>
+
+<p style="color:red">Poner imagen comparativa de height direction de -1, 0 y 1</p>
+
+<h4>Raymarching</h4>
+
+<p>
+    Before raymarching, we must determine which mip level we will use. Otherwise, the amount of samples can't be dynamic. If we just used 
+    the highest resolution mip, we would get aliasing artifacts at a distance. Fortunately, we can calculate the mip level using 
+    screen space derivatives before raymarching using this function:
+</p>
+
+<div class="code" data-lang="hlsl" data-url="Articles/ParallaxMapping/MipLevel.hlsl"></div>
+
+<p>With that out of the way, it's finally time to raymarch the height field:</p>
+
+<div class="code" data-lang="hlsl" data-url="Articles/ParallaxMapping/Raymarching.hlsl"></div>
+
+<h4>Displaced UVs and Depth Offset</h4>
+
+<p>
+    Now we know the point in texture space where the collision against the height field occurs, which is <i>rayPosTS</i>.
+    The displaced uv is just <i>rayPosTS.xy</i> because we are already in texture space. In order to obtain the displaced world 
+    position, we must transform the displacement back to world space and add it to the current position:
+</p>
+
+<div class="code" data-lang="hlsl" data-url="Articles/ParallaxMapping/Output.hlsl"></div>
+
+<p>
+    Given the displaced world position, we can finally write to the depth buffer using the following function:
+</p>
+
+<div class="code" data-lang="hlsl" data-url="Articles/ParallaxMapping/DepthOffset.hlsl"></div>
+
+
+<h4>Dealing with silhouettes</h4>
 
 <p>
     Parallax mapping assumes a planar representation for each pixel. When the effect is presented with
-    high displacement offsets on non planar meshes, you start to see the limitations of this technique. As the ray progresses through the 
-    surface, it should actually bend following the surface curvature, but we don't have the geometric information 
-    required to do that in a fragment shader. Besides, even if we did have the mesh data required to achieve that, 
+    high displacement offsets on non planar meshes, you start to see the limitations of this technique. As the ray progresses through the
+    surface, it should actually bend following the surface curvature, but we don't have the geometric information
+    required to do that in a fragment shader. Besides, even if we did have the mesh data required to achieve that,
     it would probably be too expensive.
 </p>
 
 <p>
     One way to overcome this problem, is to mathematically approximate the curvature. This is what <b>Manuel M. Oliveira</b>
     tried in his 2005 paper <a href="https://www.researchgate.net/publication/237284965_An_Efficient_Representation_for_Surface_Details">
-    An Efficient Representation for Surface Details</a>.
+        An Efficient Representation for Surface Details
+    </a>.
 </p>
 
 <p>
-    The idea is to do a preprocessing step of the mesh to obtain two coeficients that define a quadric surface for each vertex, 
+    The idea is to do a preprocessing step of the mesh to obtain two coeficients that define a quadric surface for each vertex,
     and store it as an attribute. During raymarching, the quadric surface height is calculated using the curvature coeficients and
-    the ray displacement. This leads to a situation in which a ray may enter the surface, and exit it without colliding against 
+    the ray displacement. This leads to a situation in which a ray may enter the surface, and exit it without colliding against
     the height map. In that case, the pixel is considered to belong to a silhouette and is therefore discarded.
 </p>
 
@@ -46,14 +197,14 @@
 
 <p>
     Don't get too excited though. In theory, this should improve the look of parallax effects significantly and provide accurate silhouettes.
-    However, in practice, <b>I found out that this approximation breaks even in simple test cases</b>. For me, the biggest problem is that when 
-    the quadric surface does not match the actual geometry complexity, it will discard pixels where geometry is actually present. This artifact 
+    However, in practice, <b>I found out that this approximation breaks even in simple test cases</b>. For me, the biggest problem is that when
+    the quadric surface does not match the actual geometry complexity, it will discard pixels where geometry is actually present. This artifact
     was a deal breaker for me, so I entirely scratched the idea of approximating the surface curvature.
 </p>
 
 <p>
     Besides, the parallax effect is good enough when the displacement is small, which is always going to be the case when using parallax.
-    For more intense displacement factors, tessellation is preferred because it provides more accurate shadows, perfect silhouettes 
+    For more intense displacement factors, tessellation is preferred because it provides more accurate shadows, perfect silhouettes
     and no aliasing.
 </p>
 
