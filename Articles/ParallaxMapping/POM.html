@@ -29,6 +29,10 @@
     ray collision point. The result will be a displaced UV that we can use to sample the rest of the textures later on.
 </p>
 
+<div data-image='{
+    "images": ["Articles/ParallaxMapping/Images/Raymarching.png"]
+}'></div>
+
 <p>
     That said, I must warn you that this effect is just a visual trick that is very good at faking depth. It has important limitations
     though, and some performance concerns may arise as well:
@@ -57,8 +61,6 @@
     For these reasons, I consider parallax mapping to be a good solution only for thin surfaces, and that's what I'll focus on in this article.
     At this point, you may be thinking that I dislike Parallax Mapping, but I actually think it is a powerful tool if used appropiately.
 </p>
-
-
 
 <h4>From World Space to Texture Space</h4>
 
@@ -93,7 +95,7 @@
 </p>
 
 <p>
-    In simple words, the texture scale factor is: How much texture space covers a triangle? A quad will have a triangle scale of (1,1), because a triangle's vertices
+    In simple words, the texture scale factor is: How much texture space does a triangle cover? A quad will have a triangle scale of (1,1), because a triangle's vertices
     bounds extend one unit horizontally and one unit vertically. I tried calculating this in realtime using screen space derivatives, but it breaks when the scale is not equal
     in both axes. I also tried using a geometry shader to have the complete triangle information. That kind of worked, but it presented discontinuities and the performance penalty
     was just not worth it. In the end, I used a custom importer script to calculate this factor in editor time and store the results as vertex attributes. Since a vertex may belong
@@ -103,7 +105,9 @@
 
 <div class="code" data-lang="hlsl">float3 textureScale = float3(rcp(scaleFactor * textureTiling), maxHeight);</div>
 
-<h4>Defining the raymarch origin and destiny</h4>
+<p style="color:red">Poner imagen de cómo se determina la texture scale de un vértice</p>
+
+<h4>Defining the ray's origin and destiny</h4>
 
 <p>
     In order to raymarch the height map, we must determine where to start and where to end. We can use the transform functions to easily obtain
@@ -125,7 +129,12 @@
     and will leave rayPosTS equal to rayOriginTS. However, there are cases where we may want the effect to go upwards.
 </p>
 
-<p style="color:red">Poner imagen comparativa de height direction de -1, 0 y 1</p>
+
+<div data-image='{
+    "images": ["Articles/ParallaxMapping/Images/HeightDirection.png"]
+}'></div>
+
+<p style="color:red">Poner imagen comparativa de height direction de -1 y 1 en un caso real de un suelo</p>
 
 <h4>Raymarching</h4>
 
@@ -210,7 +219,58 @@
 
 <h3>Results</h3>
 
+<p style="color:red">Poner imágenes y vídeos mostrando el efecto</p>
+
 <h3>Conclusion</h3>
 
+<p>
+    I think it's clear that parallax mapping works really well in certain scenarios, but fails completely in others. As I stated previously, 
+    I will be using it only on thin surfaces that are mostly planar or with a very soft curvature. For more complex surfaces that require more 
+    intense displacements, I'd use tessellation for better results. That said, parallax mapping has certain properties that can make it a better 
+    choice over tessellation:
+</p>
+
+<ul>
+    <li>
+        Highly irregular height maps: Parallax Mapping offsers per-pixel displacement, whereas you would need to tessellate 
+        the mesh aggresively to obtain similar fidelity.
+    </li>
+    <li>
+        Performance: Tessellation can be quite heavy on low-end hardware, whereas parallax can look really good with a small amount of 
+        samples on thin surfaces. Besides, since parallax works per pixel, the further you are from an object the less expensive it gets 
+        to compute the parallax effect for it. That means that the computational cost of parallax mapping scales automatically with 
+        view distance.
+    </li>
+</ul>
+
 <h3>Going Forward</h3>
+
+<p>
+    In my opinion, this parallax mapping implementation covers really well the necessities of my team, but there is at least one aspect of it 
+    that I'd like to improve on: Self Occlusion Shadows.
+</p>
+
+<p>
+    Currently, self occlusion works by writing to the depth buffer not only in the G-Buffer pass, but also in the ShadowCaster pass. That way,
+    what the light "sees" is a displaced version of the surface, similarly to what would happen if tessellation had been used. The problem is 
+    that shadow maps can't capture all the surface details due to resolution constraints.
+</p>
+
+<p>
+    In forward rendering, it would be possible to do additional raymarching steps in the height field to determine self occlusion against each light. However, 
+    we are using deferred rendering, so the height map is not available by the time lighting calculations occur. Besides, I can imagine raymarching multiple times 
+    is not a light-weight solution to the problem.
+</p>
+
+<p>
+    My proposal is using Screen Space Shadows. This technique calculates shadows by treating the depth buffer as a height field, and raymarching towards lights. It is 
+    not a replacement for shadow maps, it is meant to complete shadow maps. For that purpose, raymarching is executed for a very small distance, ideally to capture 
+    the details that the shadow map could not handle. The great benefit of using Screen Space Shadows is that it will not just benefit parallax mapped surfaces, it will 
+    improve shadow quality for everything. The performance penalty may be similar to the previously mentioned method, but there is an important difference: In Deferred rendering, 
+    lighting calculations for a pixel happen just once, independently of how many overlapping surfaces there are.
+</p>
+
+<p>
+    I still haven't implemented Screen Space Shadows in my custom SRP, so I'll probably make an update to this post in the future.
+</p>
 
