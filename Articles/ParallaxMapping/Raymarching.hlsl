@@ -31,5 +31,5 @@ for (int i = 0; i < samples && !hit; i++)
 if (isShadowCaster)
 {
     // Prevent precision errors by adding an offset bias in shadow caster passes
-    rayPosTS += viewDirTS * POM_SHADOW_OFFSET; //I found an offset of 0.08 to be good in practice.
+    rayPosTS += viewDirTS * POM_SHADOW_OFFSET; //I found an offset of 0.01 to be good in practice.
 }

@@ -19,7 +19,12 @@
     and future ones as well.
 </p>
 
-<p style="color:red">Poner imagen de portada</p>
+<div data-image='{
+    "images": ["Articles/ParallaxMapping/Images/Image_003.jpg", "Articles/ParallaxMapping/Images/Image_004.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+}'></div>
 
 <h3>Implementation</h3>
 
@@ -105,7 +110,13 @@
 
 <div class="code" data-lang="hlsl">float3 textureScale = float3(rcp(scaleFactor * textureTiling), maxHeight);</div>
 
-<p style="color:red">Poner imagen de cómo se determina la texture scale de un vértice</p>
+<p>
+    The mesh importer uses a compute shader to precalculate the texture scale factor for each vertex.
+    It takes into account vertex positions in tangent space and UVs to determine the scale factor for each triangle 
+    and averages the scales for each vertex:
+</p>
+
+<div class="code" data-lang="hlsl" data-url="Articles/ParallaxMapping/TextureScale.hlsl"></div>
 
 <h4>Defining the ray's origin and destiny</h4>
 
@@ -124,7 +135,7 @@
 <div class="code" data-lang="hlsl" data-url="Articles/ParallaxMapping/RayOriginAndDestiny.hlsl"></div>
 
 <p>
-    Notice that rayPosTS, which is where we will start raymarching, is not just the uv. We add a <i>heightDirection</i> variable in the range [-1,1] 
+    Notice that <i>rayPosTS</i>, which is where we will start raymarching, is not just the uv. We add a <i>heightDirection</i> variable in the range [-1,1] 
     that allows us to decide whether we want the effect to simulate depth downwards of upwards. The default is -1, which means downwards 
     and will leave rayPosTS equal to rayOriginTS. However, there are cases where we may want the effect to go upwards.
 </p>
@@ -134,7 +145,19 @@
     "images": ["Articles/ParallaxMapping/Images/HeightDirection.png"]
 }'></div>
 
-<p style="color:red">Poner imagen comparativa de height direction de -1 y 1 en un caso real de un suelo</p>
+<p>
+    Think of a gravel material used on a floor. Using <i>heightDirection = -1</i> will cause objects to hover 
+    a bit above the ground and you might be able to see the ground extend beyond walls. Meanwhile, using 
+    <i>heightDirection = 1</i> will lead to proper intersection between the ground and other elements such as 
+    objects and walls:
+</p>
+
+<div data-image='{
+    "images": ["Articles/ParallaxMapping/Images/Image_005.jpg", "Articles/ParallaxMapping/Images/Image_004.jpg"]
+    , "texts": ["Downward", "Upward"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
 
 <h4>Raymarching</h4>
 
@@ -207,7 +230,7 @@
 <p>
     Don't get too excited though. In theory, this should improve the look of parallax effects significantly and provide accurate silhouettes.
     However, in practice, <b>I found out that this approximation breaks even in simple test cases</b>. For me, the biggest problem is that when
-    the quadric surface does not match the actual geometry complexity, it will discard pixels where geometry is actually present. This artifact
+    the quadric surface does not resemble the actual geometry complexity, it will discard pixels where geometry is actually present. This artifact
     was a deal breaker for me, so I entirely scratched the idea of approximating the surface curvature.
 </p>
 
@@ -219,7 +242,40 @@
 
 <h3>Results</h3>
 
-<p style="color:red">Poner imágenes y vídeos mostrando el efecto</p>
+<div data-image='{
+    "images": ["Articles/ParallaxMapping/Images/Image_006.jpg", "Articles/ParallaxMapping/Images/Image_007.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/ParallaxMapping/Images/Image_008.jpg", "Articles/ParallaxMapping/Images/Image_010.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/ParallaxMapping/Images/Image_011.jpg", "Articles/ParallaxMapping/Images/Image_012.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/ParallaxMapping/Images/Image_013.jpg", "Articles/ParallaxMapping/Images/Image_014.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/ParallaxMapping/Images/Image_015.jpg", "Articles/ParallaxMapping/Images/Image_016.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
 
 <h3>Conclusion</h3>
 
