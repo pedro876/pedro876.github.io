@@ -56,7 +56,7 @@
         difference between static and dynamic objects, at the expense of precise indirect lighting for static surfaces.
     </li>
     <li>
-        Screen Space Global Illumination (SSGI): What if we want dynamic per pixel global illumination? We can use
+        Screen Space Global Illumination (SSGI): What if we want dynamic per-pixel global illumination? We can use
         a screen space technique called SSGI. It traces rays across the screen using the GBuffer textures to determine
         collisions. As an object becomes occluded or outside the frustum, its contribution to GI disappears. For this reason,
         it works best in outdoors environments. Indoors, it can still produce visually pleasing results as long as you
@@ -81,6 +81,24 @@
 
 <h3>Calculating GI</h3>
 
+<div data-image='{
+    "images": ["Articles/SVOGI/Images/Image_003.jpg"]
+    , "texts": ["Indirect Lighting"]
+    , "maximizable": false
+}'></div>
+
+<h3>Ambient Occlusion</h3>
+
+<p>Since the approximation is spatially sparse, it lacks per-pixel detail. One way to approximate it is integrating an ambient 
+    occlusion technique that modules the intensity of SVOGI. For example, SSAO is a good fit:</p>
+
+<div data-image='{
+    "images": ["Articles/SVOGI/Images/Image_010.jpg", "Articles/SVOGI/Images/Image_001.jpg"]
+    , "texts": ["SVOGI Only", "SVOGI + SSAO"]
+    , "sliderValue": 50
+    , "maximizable": true
+}'></div>
+
 <h3>Solving Probe Occlusion</h3>
 
 <div data-video='{
@@ -92,11 +110,7 @@
 
 <h3>Sampling GI</h3>
 
-<div data-image='{
-    "images": ["Articles/SVOGI/Images/Image_003.jpg"]
-    , "texts": ["Indirect Lighting"]
-    , "maximizable": false
-}'></div>
+
 
 <h3>Results</h3>
 
