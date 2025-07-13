@@ -6,6 +6,26 @@
 
 <h3>Motivation</h3>
 
+<p>
+    One of the most complex aspects of realtime rendering is Global Illumination. So much
+    that many games today still purely rely on direct lighting and some sort of flat
+    ambient lighting. The problem to solve is: How much light bounces off the environment and ends up
+    reaching a given point in space? We need an answer to that question for every pixel in the screen, which
+    becomes hard to run at interactable framerates.
+</p>
+
+<p>
+    While I discussed approaches with my team, and they explained their needs, I realized something:
+    They want a realtime solution (no baking), but only for development purposes. They want to immediately see 
+    changes in the scene to know how objects will look in the game without pressing a bake button every few minutes.
+    Not only that, we need a GI solution that runs very fast to support low-end hardware.
+</p>
+
+<p>So, what if we could bake GI in realtime while working? This led me to a technique called <i>Sparse Voxel 
+    Global Illumination</i> (SVOGI). A 3D grid of voxels covers the scene, we must store GI for each voxel and sample 
+    interpolated voxel values for every pixel. It is a baked solution from the player's perspective, but can be 
+    computed in realtime while working by just updating a small amount of voxels every frame.</p>
+
 <div data-image='{
     "images": ["Articles/SVOGI/Images/Image_000.jpg", "Articles/SVOGI/Images/Image_001.jpg"]
     , "texts": ["SVOGI Off", "SVOGI On"]
@@ -15,15 +35,67 @@
 
 <h3>Implementation</h3>
 
+<p>Before going deeper into SVOGI, I would like to mention other techniques to calculate global illumination:</p>
+
+<ul>
+    <li>
+        Flat Ambient Lighting: Use a preconfigured color to illuminate the scene. You can think of this as
+        a very sparse approximation, where you find a color that acts as an average of global illumination for the entire scene.
+        In big interiors, it's not a very great fit. However, it may just be sufficient for exteriors when coupled with some
+        ambient occlusion technique such as SSAO.
+    </li>
+    <li>
+        Lightmapping: Bake indirect lighting into textures for every static object in the scene. This can provide
+        the most performant and physically realistic results. However, you will lose the ability to freely move objects
+        during runtime because their lighting would not update properly. You will need a way to approximate GI for
+        dynamic objects, such us using Light Probes. But you have to keep in mind that there will be a notable difference
+        in shading between static and dynamic objects, which might be undesirable.
+    </li>
+    <li>
+        Light Probes: You can also bake indirect lighting to probes only. This removes the visual
+        difference between static and dynamic objects, at the expense of precise indirect lighting for static surfaces.
+    </li>
+    <li>
+        Screen Space Global Illumination (SSGI): What if we want dynamic per pixel global illumination? We can use
+        a screen space technique called SSGI. It traces rays across the screen using the GBuffer textures to determine
+        collisions. As an object becomes occluded or outside the frustum, its contribution to GI disappears. For this reason,
+        it works best in outdoors environments. Indoors, it can still produce visually pleasing results as long as you
+        don't care much about stability while moving the camera.
+    </li>
+    <li>
+        Raytraced Global Illumination (RTGI): This is the holy grail basically. You just raytrace global illumination
+        for every pixel in realtime and obtain physically perfect and stable results. However, it is expensive, very expensive.
+        You will most likely require temporal accumulation, upscaling and even frame generation to run this
+        in realtime. One way to reduce the cost is to use the light probes approach, and use raytracing to update the
+        probes in realtime. That is more performant because there are way less visible probes than pixels on the screen.
+    </li>
+</ul>
+
+<h3>Generating the Grid</h3>
+
 <div data-image='{
-    "images": ["Articles/SVOGI/Images/Image_003.jpg"]
-    , "texts": ["Indirect Lighting"]
+    "images": ["Articles/SVOGI/Images/Image_008.jpg"]
+    , "texts": ["Probe Visualization"]
     , "maximizable": false
 }'></div>
+
+<h3>Calculating GI</h3>
+
+<h3>Solving Probe Occlusion</h3>
 
 <div data-video='{
     "video" : "Articles/SVOGI/Images/Movie_001.mp4"
      , "poster" : "Articles/SVOGI/Images/Movie_001_Poster.jpg"
+}'></div>
+
+<h3>Updating the Grid</h3>
+
+<h3>Sampling GI</h3>
+
+<div data-image='{
+    "images": ["Articles/SVOGI/Images/Image_003.jpg"]
+    , "texts": ["Indirect Lighting"]
+    , "maximizable": false
 }'></div>
 
 <h3>Results</h3>
