@@ -42,7 +42,7 @@
 <p>
     Since the pipeline currently supports point, spot and directional lights, we need a way to raymarch through each of them.
     One way of doing this is by just sampling along the view ray from the camera up to a certain maximum distance. That would work for any type of
-    light, but is also a huge waste of resources. For spherical and cone shaped lights, most samples along the ray would be outside the light range
+    light, but is also a huge waste of resources. For spherical and cone shaped lights, most samples along the ray would be outside of the light's range
     and contribute nothing to the effect.
 </p>
 
@@ -71,7 +71,7 @@
 </ul>
 
 <p>
-    <b>Directional lights</b> are treated a bit differently. We assume they cover the entire the scene, so the search space always extends from the camera
+    <b>Directional lights</b> are treated a bit differently. We assume they cover the entire scene, so the search space always extends from the camera
     to the depth buffer and the light just renders a fullscreen quad.
 </p>
 
@@ -85,7 +85,7 @@
 <p>
     All of the above works fantastic with a scene fully dressed using opaque objects. But how do transparent effects integrate into it?
     I'm afraid a perfect solution would involve rendering volumetric lighting before transparents, and then again for each transparent fragment.
-    Similarly, fog can be rendered as a postprocessing to opaque surfaces, but needs to be computed per-fragment for transparent objects.
+    Similarly, fog can be rendered as a postprocessing effect for opaque surfaces, but needs to be computed per-fragment for transparent objects.
     However, while fog is a trivial computation, volumetric lighting isn't. Instead of aiming for perfection, let's aim for plausibility.
 </p>
 
@@ -105,7 +105,7 @@
         <b>Render volumetrics during transparencies</b>: Let each light issue a draw call as if it was just another transparent object with equal priority. While culling, the volumetric effect
         will automatically be sorted between other transparent surfaces. This must be handled with care, because lights can cover a huge space and lead to sorting inconsistencies between frames.
         It also means that volumetrics must be rendered at the same resolution as other transparent objects. This can only be applied to point and spot lights though, since directional lights
-        cover the entire scene they can only be applied before or after transparencies, at least for now.
+        cover the entire scene and can only be applied before or after transparencies, at least for now.
     </li>
 </ul>
 
@@ -128,7 +128,7 @@
 }'></div>
 
 <p>
-    For other effects, this could be alleviated using a blur pass after rendering. However, in this case volumetrics are rendered as any other
+    For other effects, hard edges could be softened using a blur pass after rendering. However, in this case volumetrics are rendered as any other
     transparent object to the framebuffer, so we can't just blur the result.
 </p>
 
@@ -144,6 +144,7 @@
     , "texts": ["Dithering Off", "Dithering On"]
     , "sliderValue": 50
     , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
 }'></div>
 
 <h4>Adding Dust</h4>

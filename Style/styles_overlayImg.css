@@ -96,6 +96,10 @@
     transform: translate(calc(var(--sliderHeight) / -2), 0.0);
 }
 
+.image-middleBarAlwaysVisible {
+    opacity: 0.3;
+}
+
 .image-middleBar div {
     width: 100%;
     height: 100%;

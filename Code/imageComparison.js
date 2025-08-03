@@ -58,6 +58,12 @@ function AddInputToImageComparisons() {
             // Add the middle bar div
             const middleBar = document.createElement('div');
             middleBar.className = 'image-middleBar';
+            if (data.alwaysVisibleMiddleBar != null && data.alwaysVisibleMiddleBar == true)
+            {
+                //middleBar.style.opacity = 0.3;
+                middleBar.className += " image-middleBarAlwaysVisible";
+            }
+
             middleBar.appendChild(document.createElement('div')); // Inner div
             imageContainer.appendChild(middleBar);
         }
