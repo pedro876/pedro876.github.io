@@ -1,0 +1,180 @@
+<h1>Soft Shadows</h1>
+<h2>
+    September 7th, 2025 <br />
+    Unreleased Project
+</h2>
+
+<h3>Motivation</h3>
+
+<p>
+    In the never-ending quest for compelling lighting in video games, I recently delved into rendering soft shadows.
+    Hard shadows are actually rare in real life, since they are only visible when the light source is very small compared to the occluder.
+    However, in video ogames we usually treat lights as point lights that lack any surface area, but that often isn't what we want to represent
+    artistically. In this article, I will explain how I solved this problem and offered artistic-driven parameters to my team.
+</p>
+
+<div data-image='{
+    "images": ["Articles/SoftShadows/Images/Image_021.jpg", "Articles/SoftShadows/Images/Image_020.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 50
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<h3>Implementation</h3>
+
+<p>
+    By default, Unity URP renders soft shadows using <i>Percentage Closer Filtering</i> (PCF). While it hides aliased edges
+    and provides more pleasant results than hard shadows, softness can't be configured. Therefore, light area can't be
+    configured or represented. Another way of rendering soft shadows is using <i>Percentage Closer Soft Shadows</i> (PCSS).
+    In that technique, a sampling step is performed before filtering the shadow map to identify the average distance to the occluder
+    and adjust the sampling pattern radius for filtering. You can read more on it <a target="_blank" href="https://developer.download.nvidia.com/shaderlibrary/docs/shadow_PCSS.pdf">here</a>.
+</p>
+
+<p>My implementation follows a similar structure to the one used in PCSS:</p>
+
+<ul>
+    <li>
+        <b>Create a distribution of texture offsets</b>: In our case, we have used a Poisson distribution of 24 points.
+        This distribution is rotated per pixel and per frame using <i>Interleaved Gradient Noise</i>.
+    </li>
+    <li>
+        <b>Find the average occluder distance</b>: Using the maximum softness radius, iterate through the Poisson distribution
+        and average depths. In practice, I found out that using only 12 points is sufficient, so I just iterated the array of points
+        using i+=2 instead of i++, which greatly improves performance.
+    </li>
+    <li>
+        <b>Filter the shadow map</b>: Given the occluder distance and light softness parameters, calculate the sampling radius and
+        iterate through the Poisson distribution using PCF sampling to average the output.
+    </li>
+    <li>
+        <b>Temporally stabilize the output:</b> Treating direct shadows as a stochastic effect, it is possible to completely
+        denoise the shadows. Samples per pixel must still be generous to avoid ghosting.
+    </li>
+</ul>
+
+<div class="code" data-lang="hlsl" data-url="Articles/SoftShadows/PoissonDistribution.hlsl"></div>
+
+<h4>Dealing with aliasing</h4>
+
+<p>
+    This would provide perfect smooth shadows if occlusion was a nice contiguous analytical function. However, it
+    is a numerical representation stored in a texture. Even using high resolution shadow maps, there are cases
+    where we will want to represent shadows with such hardness that the sampling area will only cover very few pixels,
+    or even less than one pixel.
+</p>
+
+<p>
+    This is especially troublesome in shadows near occluders when the shadow maps are set to a low resolution. So, instead of
+    trying to represent a level of fidelity that simply is not present in the shadow map, I decided to clamp the sampling radius so that
+    its minimum area covers at least 3x3 pixels. That way, hardness may be lost in some cases in exchange for softer shadows, but that is
+    still preferable compared to aliased edges near occluders.
+</p>
+
+<p>
+    Besides, screen space shadows can be introduced to recover hardness and detail near occluders, but I'll cover that 
+    in a future article.
+</p>
+
+<h4>Cascaded shadow maps</h4>
+
+<p>
+    In the case of directional lights, we are currently using cascaded shadow maps. Before, we used PCF filtering with varying radius
+    depending only on shadow quality (3x3, 5x5, etc). However, that made transitions between different cascades very apparent, because their
+    perceived softness varied substantially, especially when using low resolution shadow maps.
+</p>
+
+<p>
+    Using the new soft shadows implementation, that problem is mostly solved, because the softness radius in world space units does not depend
+    on shadow map resolution anymore. Some differences can still be appreciated between cascades of course, as details are lost in further cascades,
+    but that is a separate problem.
+</p>
+
+<div data-image='{
+    "images": ["Articles/SoftShadows/Images/Image_028.jpg", "Articles/SoftShadows/Images/Image_029.jpg"]
+    , "texts": ["PCF 5x5", "Dithered"]
+    , "sliderValue": 62
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<h4>Parametrization</h4>
+
+<p>Softness is parametrized per light:</p>
+
+<ul>
+    <li>
+        <b>Softness Range</b>: The minimum and maximum softness radius expressed in world units.
+    </li>
+    <li>
+        <b>Distance Range</b>: The distance range in which softness goes from minimum to maximum softness
+        in world units.
+    </li>
+</ul>
+
+<p>This is not physically based at all, but offers very intuitive controls and results.</p>
+
+<h3>Results</h3>
+
+<div data-image='{
+    "images": ["Articles/SoftShadows/Images/Image_018.jpg", "Articles/SoftShadows/Images/Image_019.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 50
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/SoftShadows/Images/Image_022.jpg", "Articles/SoftShadows/Images/Image_023.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 50
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/SoftShadows/Images/Image_024.jpg", "Articles/SoftShadows/Images/Image_025.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 20
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/SoftShadows/Images/Image_026.jpg", "Articles/SoftShadows/Images/Image_027.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 40
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<h3>Conclusion</h3>
+
+<p>
+    This implementation not only offers the capacity to render soft shadows, but also to scale softness
+    as the occluder-occludee distance grows. The exposed parameters for each light are highly intuitive for artists
+    and have been well received by the team.
+</p>
+
+<p>
+    It must be said that rendering shadows like this is more expensive than doing traditional PCF filtering, because
+    more samples are required and their distribution cause more cache misses. However, the improved fidelity and realism
+    are worth it in my opinion. It is not only about hiding aliased edges in shadows or achieving more realistic graphics,
+    these shadows also provide a sense of scale and better visual cues to easily understand the 3D environment.
+</p>
+
+<h3>Going Forward</h3>
+
+<p>
+    We currently support directional, point and spot lights with shadows. In the future, I would like 
+    to add support for other light shapes such as rectangle area lights. It will be interesting to see
+    how this approach to soft shadows fares in those scenarios, with lights that cover larger areas.
+</p>
+
+<p>
+    Additionally, it would be interesting to implement spatial denoising. Without it, we need a high amount 
+    of samples per pixel to prevent ghosting in the TAA pass. Using a compute shader could allow us to calculate shadows 
+    for every light and applying spatial denoising in a single compute pass. Potentially, that would allow us to use 
+    less samples per pixel, reduce ghosting and improve overall performance. But for now, what's been achieved 
+    is already quite good both visually and performance-wise.
+</p>
