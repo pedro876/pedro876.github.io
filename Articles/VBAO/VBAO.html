@@ -1,0 +1,107 @@
+<h1>Visibility Bitmask Ambient Occlusion</h1>
+<h2>
+    October 23rd, 2025 <br />
+    Unreleased Project
+</h2>
+
+<h3>Motivation</h3>
+
+<p>
+    A few months ago I wrote an article about baking ambient occlusion (AO) as vertex attributes. That worked in that case because we were going for a retro look in that project in particular.
+    However, I'm currently working on a completely different game that requires more realistic lighting.
+</p>
+
+<p>
+    Baking lighting as lightmaps was our solution for some time, but it makes iteration slow, makes it imposible for artists to obtain immediate feedback of their 
+    changes in engine, and takes a lot of time to bake. Therefore, we have scratched that approach entirely and decided to go for realtime lighting. 
+</p>
+
+<p>My last article about Soft Shadows explains how we solved direct lighting, but indirect lighting is a different beast entirely. We have been using a rudimentary version of 
+    SSAO for some time combined with Sparse Voxel GI, but we needed a better AO solution. </p>
+
+<p>
+    After doing some research for a while, I stumbled upon a paper from 2023 titled <a target="_blank" href="https://arxiv.org/abs/2301.11376">Screen Space Indirect Lighting with Visibility Bitmask</a>.
+    It builds on the foundations laid by <a target="_blank" href="https://www.activision.com/cdn/research/PracticalRealtimeStrategiesTRfinal.pdf">Ground-Truth Ambient Occlusion</a>, achieving results 
+    that are closer to a raytraced solution and with more intuitive parameters in my opinion.
+</p>
+
+<p>
+    Visibility Bitmask Ambient Occlusion (VBAO) is a great fit for our game as is, but using a custom render pipeline allows us to
+    provide better inputs to it and obtain even better results, as I will show in this article.
+</p>
+
+<p style="color:red">Imagen de portada</p>
+
+<h3>Implementation</h3>
+
+<h4>History</h4>
+
+<p>
+    First of all, I'm not going to explain every single detail about how to implement VBAO, because you can already find that information
+    online. Instead, I will give an overview of the technique, explain how we have integrated it in our render pipeline 
+    and provide source code. If you are not familiar with Screen-Space Ambient Occlusion, I suggest you go in chronological order 
+    and read these resources before you continue:
+</p>
+
+<ol>
+    <li><a target="_blank" href="https://learnopengl.com/Advanced-Lighting/SSAO">SSAO</a>: First implemented for the Crysis in 2007.</li>
+    <li><a target="_blank" href="https://developer.download.nvidia.com/presentations/2008/SIGGRAPH/HBAO_SIG08b.pdf">HBAO</a>: Presented by Nvidia in 2008, popularized by <i>Battlefield 3</i></li>
+    <li><a target="_blank" href="https://www.activision.com/cdn/research/PracticalRealtimeStrategiesTRfinal.pdf">GTAO</a>: Presented by Activision in 2016, used for the first time in <i>Call of Duty: WWII</i></li>
+    <li><a target="_blank" href="https://arxiv.org/abs/2301.11376">VBAO</a>: Published in 2023 by Olivier Therrien, Yannick Levesque and Guillaume Gilet.</li>
+</ol>
+
+<p>
+    While there have been many other attempts at solving AO, I consider these as the most important ones in order to understand 
+    how we've gone from the first SSAO implementation back in 2007 to the present.
+</p>
+
+<p>
+    I should mention that RTAO is another popular technique to solve Ambient Occlusion, but it requires raytracing and is not a screen-space effect, so 
+    I will cover it in a separate article some time in the future.
+</p>
+
+<h4>Overview</h4>
+
+<p>
+    VBAO is horizon-based, meaning that instead of tracing rays or sampling points in screen-space as the traditional SSAO implementation, we will try to determine
+    how much of the hemisphere oriented around a surface normal is occluded. This was first done in HBAO and improved later in GTAO. The hemisphere is split into slices, 
+    and each slice into two sides. For each side, a horizon angle is calculated by sampling the depth buffer along the slice direction of that side. 
+    Finally, based on the horizon angles, occlusion is determined and results of each slice are combined to provide a final output.
+</p>
+
+<p style="color:red">Poner imagen explicativa del HBAO</p>
+
+<p>
+    In VBAO, the overall structure of the shader is the same as in GTAO, but in this case we won't calculate the maximum horizon angles for each side of every slice.
+    Instead, slices are split into 32 sectors, and a single unsigned int is used as a bitmask to store which sectors of the slice are occluded. For each sample of the 
+    depth buffer, two positions are determined:
+</p>
+
+<ul>
+    <li>Front Position: The exact point where the surface starts in view space using the unmodified depth buffer value.</li>
+    <li>Back Position: An estimated point where the surface ends in view space, using an offseted depth buffer using a constant thickness value.</li>
+</ul>
+
+<p>
+    Then, those positions are transformed into two sector indices and all sectors in between are flagged as occluded for that slice. Once we have finished 
+    calculating the slice occlusion, its bits are counted and added to the overall hemisphere occlusion.
+</p>
+
+<p>This technique improves the results of GTAO because it can simulate the behaviour of light passing behind objects, so thin objects are not over occluded.</p>
+
+<p style="color:red">Mostrar imagen comparativa de GTAO vs VBAO en los cables del techo de Lair.</p>
+
+<h4>Code</h4>
+
+<h4>Multi-Layered Depth</h4>
+
+<h4>Per-Material Thickness</h4>
+
+<h3>Results</h3>
+
+<h3>Conclusion</h3>
+
+<h3>Going Forward</h3>
+
+<p style="color:red">Ideas: hablar de la posibilidad de precalcular un thickness como un atributo de vértice para que no dependa del material, sino de la malla y se adapte 
+    a los diferentes grosores del modelo.</p>
