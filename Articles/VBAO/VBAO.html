@@ -27,7 +27,7 @@
 
 <p>
     Visibility Bitmask Ambient Occlusion (VBAO) is a great fit for our game as is, but using a custom render pipeline allows us to
-    provide better inputs to it and obtain even better results, as I will show in this article.
+    provide better inputs to it and obtain more appealing results, as I will show in this article.
 </p>
 
 <p style="color:red">Imagen de portada</p>
@@ -47,6 +47,7 @@
     <li><a target="_blank" href="https://learnopengl.com/Advanced-Lighting/SSAO">SSAO</a>: First implemented for Crysis in 2007.</li>
     <li><a target="_blank" href="https://developer.download.nvidia.com/presentations/2008/SIGGRAPH/HBAO_SIG08b.pdf">HBAO</a>: Presented by Nvidia in 2008, popularized by <i>Battlefield 3</i></li>
     <li><a target="_blank" href="https://www.activision.com/cdn/research/PracticalRealtimeStrategiesTRfinal.pdf">GTAO</a>: Presented by Activision in 2016, used for the first time in <i>Call of Duty: WWII</i></li>
+    <li><a target="_blank" href="https://github.com/GameTechDev/XeGTAO">XeGTAO</a>: Intel's implementation of GTAO.</li>
     <li><a target="_blank" href="https://arxiv.org/abs/2301.11376">VBAO</a>: Published in 2023 by Olivier Therrien, Yannick Levesque, and Guillaume Gilet.</li>
 </ol>
 
@@ -63,10 +64,10 @@
 <h4>Overview</h4>
 
 <p>
-    VBAO is horizon-based, meaning that instead of tracing rays or sampling points in screen-space as the traditional SSAO implementation, we will try to determine
-    how much of the hemisphere oriented around a surface normal is occluded. This was first done in HBAO and improved later in GTAO. The hemisphere is split into slices, 
-    and each slice into two sides. For each side, a horizon angle is calculated by sampling the depth buffer along the slice direction of that side. 
-    Finally, based on the horizon angles, occlusion is determined and results of each slice are combined to provide a final output.
+    VBAO is horizon-based, it doesn't trace rays or sample random points inside a hemisphere in screen-space as the traditional SSAO implementation. Instead, thehemisphere is split into slices,
+    and each slice into two sides. For each side, a horizon angle is calculated by sampling the depth buffer along the slice direction of that side.
+    Finally, based on the horizon angles, we can determine how much of the slice is occluded. The combined occlusion of each slice gives an approximation of the total hemisphere occlusion.
+    This was first done in HBAO and improved later in GTAO.
 </p>
 
 <p style="color:red">Poner imagen explicativa del HBAO</p>
@@ -152,10 +153,18 @@
 <h4>Denoising</h4>
 
 <p>
-    The VBAO function uses 2D blue noise to apply per-pixel variations to the sampled positions.
-    However, unless you use an insane amount of samples, the results won't be smooth at all. If you
-    use TAA to hide it, you will see severe ghosting artifacts because the variance between adjacent 
-    pixels becomes too high due to aliasing in VBAO.
+    Since we can't sample every single position inside the hemisphere because it would make any GPU explode, 
+    we need to calculate ambient occlusion stochastically. This means that the sampled positions vary spatially and 
+    temporally as well. A noise function must be used that gives us two different random values per pixel. One value is used 
+    to rotate the hemisphere slices, and the other to apply an offset to the samples along each slice.
+</p>
+
+<p>
+    I tried using blue noise, and spatio-temporal blue noise (STBN). However, it didn't get along very well with 
+    neighbourhood clipping in the TAA pass. So I scrachted that approach, I needed a noise patter with very low discrepancy 
+    between pixels so that TAA would work well with it. In XeGTAO, they used a Hilbert Curve of level 6 (64x64 pattern repetion)
+    to turn a 2D screen coordinate into a 1D index. Then, that index is used to sample a low discrepancy sequence, more precisely 
+    <a target="_blank" href="https://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/">Martin Roberts R2 sequence</a>.
 </p>
 
 <p>
@@ -192,9 +201,16 @@
 </p>
 
 <ul>
+    <li><b>Depth Mip Chain</b>: In XeGTAO, it is mentioned that a depth buffer mip chain is created to speed up the algorithm. The idea is to use 
+    increasingly higher mips (less resolution) as the distance from the hemisphere origin grows. 
+    One of the reasons most SSAO algorithms are so costly is because of cache trashing, so using lower resolution textures for most samples
+    could in fact improve performance notoriously.
+    </li>
+
     <li><b>Better Noise Pattern</b>: While spatial denoising combined with TAA smooths the occlusion result greatly.
     I have noticed that it doesn't perfectly converge over time, which leads to some noise flickering. I know a lot of it 
-    comes down to the noise pattern used to calculate AO, so I will do some research about it in the future.</li>
+    comes down to the noise pattern used to calculate AO, so I will do some research about it in the future. Maybe 
+    Interleaved Gradient Noise could lead to more stable outputs.</li>
 
     <li><b>Per-Vertex Thickness</b>: While per-material thickness is a huge improvement over a global thickness
     parameter, sometimes it's not enough to represent some complex models. An idea that comes to mind would 
@@ -202,7 +218,7 @@
     vertex. That way we would have very precise information to better guide the VBAO algorithm, but 
     we'd probably need more than 16 bits in the G-Buffer for it!</li>
 
-    <li><b>Raytraced Ambient Occlusion (RTAO)</b>: Implementing VBAO would not only be great to have as an option 
+    <li><b>Raytraced Ambient Occlusion (RTAO)</b>: Implementing RTAO would not only be great to have as an option 
     for capable GPUs, it would also help us parameterize VBAO in a way that more closely matches a raytraced 
     reference in-engine.</li>
 </ul>
