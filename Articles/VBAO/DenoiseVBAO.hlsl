@@ -1,6 +1,7 @@
 int _AO_DenoiseRadius;
 float2 _AO_DenoiseDirection;
 float3 _AO_FarParams; // start, end, range
+float _AO_DenoiseWeights[32]; // Precalculated gaussian weights
 
 float GetDepthRange(float eyeDepth, float viewAngle, float targetResolutionHeight, float farStart, float farRange)
 {
@@ -60,12 +61,14 @@ OcclusionOutput DenoiseAO(Texture2D tex, float4 texelSize, float2 screenUV)
 		
         float otherEyeDepth = LinearEyeDepth(otherDepth);
         float weight = 1.0 - saturate(abs(eyeDepth - otherEyeDepth) / depthRange);
+        weight *= _AO_DenoiseWeights[abs(i)];
         avgOcclusion += occlusion * weight;
         totalWeight += weight;
 		
         #ifdef _MULTI_LAYER_DEPTH
             float otherEyeDepth2 = LinearEyeDepth(otherDepth2);
             float weight2 = 1.0 - saturate(abs(eyeDepth2 - otherEyeDepth2) / depthRange);
+            weight2 *= _AO_DenoiseWeights[abs(i)];
             avgOcclusion2 += occlusion2 * weight2;
             totalWeight2 += weight2;
         #endif

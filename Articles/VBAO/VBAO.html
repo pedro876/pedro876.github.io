@@ -12,16 +12,18 @@
 </p>
 
 <p>
-    Baking lighting as lightmaps was our solution for some time, but it makes iteration slow, makes it impossible for artists to obtain immediate feedback of their 
-    changes in engine, and takes a lot of time to bake. Therefore, we have scratched that approach entirely and decided to go for real-time lighting. 
+    Baking lighting as lightmaps was our solution for some time, but it makes iteration slow, makes it impossible for artists to obtain immediate feedback of their
+    changes in engine, and takes a lot of time to bake. Therefore, we have scratched that approach entirely and decided to go for real-time lighting.
 </p>
 
-<p>My last article about Soft Shadows explains how we solved direct lighting, but indirect lighting is a different beast entirely. We have been using a rudimentary version of 
-    SSAO for some time combined with Sparse Voxel GI, but we needed a better AO solution. </p>
+<p>
+    My last article about Soft Shadows explains how we solved direct lighting, but indirect lighting is a different beast entirely. We have been using a rudimentary version of
+    SSAO for some time combined with Sparse Voxel GI, but we needed a better AO solution.
+</p>
 
 <p>
     After doing some research for a while, I stumbled upon a paper from 2023 titled <a target="_blank" href="https://arxiv.org/abs/2301.11376">Screen Space Indirect Lighting with Visibility Bitmask</a>.
-    It builds on the foundations laid by <a target="_blank" href="https://www.activision.com/cdn/research/PracticalRealtimeStrategiesTRfinal.pdf">Ground-Truth Ambient Occlusion</a>, achieving results 
+    It builds on the foundations laid by <a target="_blank" href="https://www.activision.com/cdn/research/PracticalRealtimeStrategiesTRfinal.pdf">Ground-Truth Ambient Occlusion</a>, achieving results
     that are closer to a raytraced solution and with more intuitive parameters in my opinion.
 </p>
 
@@ -30,7 +32,12 @@
     provide better inputs to it and obtain more appealing results, as I will show in this article.
 </p>
 
-<p style="color:red">Imagen de portada</p>
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_019.jpg"]
+    , "texts": ["VBAO"]
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
 
 <h3>Implementation</h3>
 
@@ -38,8 +45,8 @@
 
 <p>
     First of all, I'm not going to explain every single detail about how to implement VBAO, because you can already find that information
-    online. Instead, I will give an overview of the technique, explain how we have integrated it in our render pipeline 
-    and provide source code. If you are not familiar with Screen-Space Ambient Occlusion, I suggest you go in chronological order 
+    online. Instead, I will give an overview of the technique, explain how we have integrated it in our render pipeline
+    and provide source code. If you are not familiar with Screen-Space Ambient Occlusion, I suggest you go in chronological order
     and read these resources before you continue:
 </p>
 
@@ -52,12 +59,12 @@
 </ol>
 
 <p>
-    While there have been many other attempts at solving AO, I consider these as the most important ones in order to understand 
+    While there have been many other attempts at solving AO, I consider these as the most important ones in order to understand
     how we've gone from the first SSAO implementation back in 2007 to the present.
 </p>
 
 <p>
-    I should mention that RTAO is another popular technique to solve Ambient Occlusion, but it requires raytracing and is not a screen-space effect, so 
+    I should mention that RTAO is another popular technique to solve Ambient Occlusion, but it requires raytracing and is not a screen-space effect, so
     I will cover it in a separate article some time in the future.
 </p>
 
@@ -74,7 +81,7 @@
 
 <p>
     In VBAO, the overall structure of the shader is the same as in GTAO, but in this case we won't calculate the maximum horizon angles for each side of every slice.
-    Instead, slices are split into 32 sectors, and a single unsigned int is used as a bitmask to store which sectors of the slice are occluded. For each sample of the 
+    Instead, slices are split into 32 sectors, and a single unsigned int is used as a bitmask to store which sectors of the slice are occluded. For each sample of the
     depth buffer, two positions are determined:
 </p>
 
@@ -84,7 +91,7 @@
 </ul>
 
 <p>
-    Then, those positions are transformed into two sector indices and all sectors in between are flagged as occluded for that slice. Once we have finished 
+    Then, those positions are transformed into two sector indices and all sectors in between are flagged as occluded for that slice. Once we have finished
     calculating the slice occlusion, its bits are counted and added to the overall hemisphere occlusion.
 </p>
 
@@ -97,14 +104,14 @@
 <h4>Multi-Layered Depth</h4>
 
 <p>
-    Usually a game renders to a color and depth buffers. Since we're using deferred rendering, there are also 
+    Usually a game renders to a color and depth buffers. Since we're using deferred rendering, there are also
     a variety of textures (G-Buffer) used for different purposes such as PBR properties, normals, emission and more.
-    
+
 </p>
 
 <p>
     When using screen-space effects such as SSAO or SSR, we'd typically just have information about the closest surfaces
-    to the camera per-pixel because the depth buffer only holds a single value. However, our render pipeline has an option 
+    to the camera per-pixel because the depth buffer only holds a single value. However, our render pipeline has an option
     to enable multi-layered depth that currently supports a secondary
     G-Buffer. Objects are assigned a layer target based on their rendering layer.
 </p>
@@ -112,7 +119,7 @@
 <p>
     For example, all characters are rendered
     to the second G-Buffer, which allows screen-space effects to see behind them. This feature has a considerable cost
-    because more textures are allocated, lighting is performed twice, and more texture fetches are required. In practice, 
+    because more textures are allocated, lighting is performed twice, and more texture fetches are required. In practice,
     using only two layers is fast enough that the benefits are worth it. Most games using screen space effects suffer from
     occlusion artifacts, generating strange silhouettes below objects in SSR, or halos around characters in SSAO.
     While those problems can be resolved completely using raytracing, our solution is more performant and solves the most
@@ -122,8 +129,8 @@
 <h4>Per-Material Thickness</h4>
 
 <p>
-    If you follow the original VBAO paper, you can find a comparison of different thickness values compared against 
-    a raytraced reference. While it is commendable how good this algorithm looks with a constant thickness value, 
+    If you follow the original VBAO paper, you can find a comparison of different thickness values compared against
+    a raytraced reference. While it is commendable how good this algorithm looks with a constant thickness value,
     it is logical that having more precise thickness data per-pixel would lead to a more accurate solution.
 </p>
 
@@ -142,8 +149,8 @@
 <p>
     This VBAO implementation is very pipeline-specific, so bear that
     in mind when checking the code below. The execution varies depending on the keyword
-    named _MULTI_LAYER_DEPTH. When disabled, the code is a straightforward VBAO implementation 
-    with some tweaks that uses a single-value depth buffer and G-Buffer normals. However, 
+    named _MULTI_LAYER_DEPTH. When disabled, the code is a straightforward VBAO implementation
+    with some tweaks that uses a single-value depth buffer and G-Buffer normals. However,
     when the keyword is enabled the shader has access to two different depth values, their normals
     and their thickness.
 </p>
@@ -153,44 +160,345 @@
 <h4>Denoising</h4>
 
 <p>
-    Since we can't sample every single position inside the hemisphere because it would make any GPU explode, 
-    we need to calculate ambient occlusion stochastically. This means that the sampled positions vary spatially and 
-    temporally as well. A noise function must be used that gives us two different random values per pixel. One value is used 
+    Since we can't sample every single position inside the hemisphere because it would make any GPU explode,
+    we need to calculate ambient occlusion stochastically. This means that the sampled positions vary spatially and
+    temporally as well. A noise function must be used that gives us two different random values per pixel. One value is used
     to rotate the hemisphere slices, and the other to apply an offset to the samples along each slice.
 </p>
 
 <p>
-    I tried using blue noise, and spatio-temporal blue noise (STBN). However, it didn't get along very well with 
-    neighbourhood clipping in the TAA pass. So I scrachted that approach, I needed a noise patter with very low discrepancy 
-    between pixels so that TAA would work well with it. In XeGTAO, they used a Hilbert Curve of level 6 (64x64 pattern repetion)
-    to turn a 2D screen coordinate into a 1D index. Then, that index is used to sample a low discrepancy sequence, more precisely 
-    <a target="_blank" href="https://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/">Martin Roberts R2 sequence</a>.
+    I had some headaches while searching for a good noise function to be honest.
+    First, I tried using <a target="_blank" href="https://momentsingraphics.de/BlueNoise.html">blue noise</a> , and
+    <a target="_blank" href="https://developer.nvidia.com/blog/rendering-in-real-time-with-spatiotemporal-blue-noise-textures-part-1/">spatio-temporal blue noise (STBN)</a>.
+    However, it didn't get along very well with
+    neighbourhood clipping in the TAA pass, so I scrachted that approach. I needed a noise pattern with very low discrepancy
+    between pixels so that TAA would work well with it. In XeGTAO, they use a Hilbert Curve of level 6 (64x64 pattern repetition)
+    to turn a 2D screen coordinate into a 1D index. Then, that index is used to sample a low discrepancy sequence
+    (<a target="_blank" href="https://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/">Martin Roberts R2 sequence</a>).
+    This approach was more stable than blue noise in my experience, but still had some convergence issues in the TAA pass.
 </p>
 
 <p>
-    Therefore, it is more convenient to spatially denoise AO before TAA is applied. To do so, we can 
-    use a bilateral filtering that uses depth information to preserve edges. In our case, using a separable
-    box bilateral filter provided good results:
+    In the end, I used
+    <a target="_blank" href="https://blog.demofox.org/2022/01/01/interleaved-gradient-noise-a-different-kind-of-low-discrepancy-sequence/">Interleaved Gradient Noise (IGN)</a>.
+    While it only provides a random value, I used a multiplier and a frac operation to obtain a second value. I had to carefully search for a good multiplier value empirically,
+    and ended up using 4.854102.
 </p>
+
+<div class="code" data-lang="hlsl" data-url="Articles/VBAO/NoiseVBAO.hlsl"></div>
+
+<p>
+    In order to prevent ghosting in the TAA pass, it is important to denoise AO spatially before. To do so, I have used
+    a bilateral filtering pass that uses depth information to preserve edges. In our case, using a separable
+    gaussian blur filter provided good results:
+</p>
+
+<p style="color:red">Añadir comparativa denoise OFF vs ON</p>
 
 <div class="code" data-lang="hlsl" data-url="Articles/VBAO/DenoiseVBAO.hlsl"></div>
 
 <h3>Results</h3>
 
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_001.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_003.jpg", "Articles/VBAO/Images/Image_002.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_004.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_006.jpg", "Articles/VBAO/Images/Image_005.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_007.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_009.jpg", "Articles/VBAO/Images/Image_008.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_010.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_012.jpg", "Articles/VBAO/Images/Image_011.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_013.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_015.jpg", "Articles/VBAO/Images/Image_014.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_016.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_018.jpg", "Articles/VBAO/Images/Image_017.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_019.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_021.jpg", "Articles/VBAO/Images/Image_020.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_022.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_024.jpg", "Articles/VBAO/Images/Image_023.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_025.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_027.jpg", "Articles/VBAO/Images/Image_026.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_028.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_030.jpg", "Articles/VBAO/Images/Image_029.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_031.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_033.jpg", "Articles/VBAO/Images/Image_032.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_034.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_036.jpg", "Articles/VBAO/Images/Image_035.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_037.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_039.jpg", "Articles/VBAO/Images/Image_038.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_040.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_042.jpg", "Articles/VBAO/Images/Image_041.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_043.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_045.jpg", "Articles/VBAO/Images/Image_044.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_046.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_048.jpg", "Articles/VBAO/Images/Image_047.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_049.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_051.jpg", "Articles/VBAO/Images/Image_050.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_052.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_054.jpg", "Articles/VBAO/Images/Image_053.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_055.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_057.jpg", "Articles/VBAO/Images/Image_056.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_058.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_060.jpg", "Articles/VBAO/Images/Image_059.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_061.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_063.jpg", "Articles/VBAO/Images/Image_062.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_064.jpg"]
+    , "maximizable": true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_066.jpg", "Articles/VBAO/Images/Image_065.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 0
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
 <h3>Conclusion</h3>
 
 <p>
-    I was a bit skeptical that using VBAO would make a great difference compared to SSAO, but 
-    decided to give it a try anyway. I'm glad I did, because the game's lighting has massively 
-    improved thanks to it. Indirect lighting is much more plausible now, and screen-space artifacts 
+    I was a bit skeptical that using VBAO would make a great difference compared to SSAO, but
+    decided to give it a try anyway. I'm glad I did, because the game's lighting has massively
+    improved thanks to it. Indirect lighting is much more plausible now, and screen-space artifacts
     are highly minimized.
 </p>
 
 <p style="color:red">Sería buena idea poner una comparativa de SSAO vs VBAO</p>
 
 <p>
-    I honestly don't think it gets much better than this when it comes to screen-space Ambient Occlusion, but 
-    then again, I thought the same when I first saw GTAO. Maybe in a few years someone will come up with an even 
+    I honestly don't think it gets much better than this when it comes to screen-space Ambient Occlusion, but
+    then again, I thought the same when I first saw GTAO. Maybe in a few years someone will come up with an even
     better solution that does not require raytracing. But until then, I'm very satisfied with what we've got.
 </p>
 
@@ -201,35 +509,41 @@
 </p>
 
 <ul>
-    <li><b>Depth Mip Chain</b>: In XeGTAO, it is mentioned that a depth buffer mip chain is created to speed up the algorithm. The idea is to use 
-    increasingly higher mips (less resolution) as the distance from the hemisphere origin grows. 
-    One of the reasons most SSAO algorithms are so costly is because of cache trashing, so using lower resolution textures for most samples
-    could in fact improve performance notoriously.
+    <li>
+        <b>Depth Mip Chain</b>: In XeGTAO, it is mentioned that a depth buffer mip chain is created to speed up the algorithm. The idea is to use
+        increasingly higher mips (less resolution) as the distance from the hemisphere origin grows.
+        One of the reasons most SSAO algorithms are so costly is because of cache trashing, so using lower resolution textures for most samples
+        could in fact improve performance notoriously.
     </li>
 
-    <li><b>Better Noise Pattern</b>: While spatial denoising combined with TAA smooths the occlusion result greatly.
-    I have noticed that it doesn't perfectly converge over time, which leads to some noise flickering. I know a lot of it 
-    comes down to the noise pattern used to calculate AO, so I will do some research about it in the future. Maybe 
-    Interleaved Gradient Noise could lead to more stable outputs.</li>
+    <li>
+        <b>Better Noise Pattern</b>: While spatial denoising combined with TAA smooths the occlusion result greatly.
+        I have noticed that it doesn't perfectly converge over time, which leads to some noise flickering. I know a lot of it
+        comes down to the noise pattern used to calculate AO, so I will do some research about it in the future.
+    </li>
 
-    <li><b>Per-Vertex Thickness</b>: While per-material thickness is a huge improvement over a global thickness
-    parameter, sometimes it's not enough to represent some complex models. An idea that comes to mind would 
-    be preprocessing models to generate a vertex attribute that acts as an average thickness value per 
-    vertex. That way we would have very precise information to better guide the VBAO algorithm, but 
-    we'd probably need more than 16 bits in the G-Buffer for it!</li>
+    <li>
+        <b>Per-Vertex Thickness</b>: While per-material thickness is a huge improvement over a global thickness
+        parameter, sometimes it's not enough to represent some complex models. An idea that comes to mind would
+        be preprocessing models to generate a vertex attribute that acts as an average thickness value per
+        vertex. That way we would have very precise information to better guide the VBAO algorithm, but
+        we'd probably need more than 16 bits in the G-Buffer for it!
+    </li>
 
-    <li><b>Raytraced Ambient Occlusion (RTAO)</b>: Implementing RTAO would not only be great to have as an option 
-    for capable GPUs, it would also help us parameterize VBAO in a way that more closely matches a raytraced 
-    reference in-engine.</li>
+    <li>
+        <b>Raytraced Ambient Occlusion (RTAO)</b>: Implementing RTAO would not only be great to have as an option
+        for capable GPUs, it would also help us parameterize VBAO in a way that more closely matches a raytraced
+        reference in-engine.
+    </li>
 </ul>
 
 <p>
-    That said, I consider Ambient Occlusion to be one of the most entertaining effects to implement and learn about 
-    as a graphics programmer. I think there is so much one can learn about rendering, mathematics and physics, 
+    That said, I consider Ambient Occlusion to be one of the most entertaining effects to implement and learn about
+    as a graphics programmer. I think there is so much one can learn about rendering, mathematics and physics,
     just from implementing this algorithm, that I can't believe it took me so long to delve into it.
 </p>
 
 <p>
-    While I consider this a huge milestone, there is still so much to learn and so many ways to improve 
+    While I consider this a huge milestone, there is still so much to learn and so many ways to improve
     our render pipeline. What should be next? Maybe SSGI would be great!
 </p>
