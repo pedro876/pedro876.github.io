@@ -36,7 +36,7 @@
     "images": ["Articles/VBAO/Images/Image_019.jpg"]
     , "texts": ["VBAO"]
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <h3>Implementation</h3>
@@ -142,7 +142,25 @@
     value. Now, the global thickness parameter becomes a multiplier of the per-material value.
 </p>
 
-<p style="color:red">Aquí estaría bien mostrar un personaje en una sala con foliage a su alrededor, y comparar el resultado de usar un thickness global vs multi-layer con thickness ajustado por material.</p>
+<p>
+    In the following comparison, you can see how configuring a lower thickness for a character makes its contribution to Ambient Occlusion more believable:
+</p>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_069.jpg", "Articles/VBAO/Images/Image_067.jpg"]
+    , "texts": ["Uniform Thickness", "Per-Material Thickness"]
+    , "sliderValue": 50
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_070.jpg", "Articles/VBAO/Images/Image_068.jpg"]
+    , "texts": ["Uniform Thickness", "Per-Material Thickness"]
+    , "sliderValue": 50
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
 
 <h4>Calculating Occlusion</h4>
 
@@ -157,7 +175,113 @@
 
 <div class="code" data-lang="hlsl" data-url="Articles/VBAO/CalculateVBAO.hlsl"></div>
 
+<h4>Quality Presets</h4>
+
+<p>
+    It is important to offer different options that provide scalable graphical fidelity. After all, this game
+    is meant to run both on a Nintendo Switch and a PS5 Pro. These are out currently defined presets, although they might 
+    change before launch:
+</p>
+
+<table>
+    <tr>
+        <th>Preset</th>
+        <th>Slices</th>
+        <th>Steps</th>
+        <th>Total SPP</th>
+        <th>Time (Multi-Layered Off)</th>
+        <th>Time (Multi-Layered On)</th>
+    </tr>
+    <tr>
+        <td class="columnBright">Low</td>
+        <td>2</td>
+        <td>4</td>
+        <td>8</td>
+        <td>0.2ms</td>
+        <td>1.0ms</td>
+    </tr>
+    <tr>
+        <td class="columnBright">Medium</td>
+        <td>3</td>
+        <td>6</td>
+        <td>18</td>
+        <td>0.3ms</td>
+        <td>1.7ms</td>
+    </tr>
+    <tr>
+        <td class="columnBright">High</td>
+        <td>4</td>
+        <td>8</td>
+        <td>32</td>
+        <td>0.5ms</td>
+        <td>2.9ms</td>
+    </tr>
+    <tr>
+        <td class="columnBright">Ultra</td>
+        <td>8</td>
+        <td>8</td>
+        <td>64</td>
+        <td>2.1ms</td>
+        <td>4.2ms</td>
+    </tr>
+</table>
+
+<p>
+    As you can see, multi-layered depth is expensive, mostly because it has to read a depth buffer that has four channels instead of one, and because it has to be executed twice (once per layer).
+    Thankfully, it is an optional feature in the pipeline, so 
+    lower-end hardware will run with it off. Performance has been measured on a RTX 4070 Laptop.
+    In the following images, you can compare the results of all presets with denoising off and on.
+</p>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_086.jpg", "Articles/VBAO/Images/Image_082.jpg"]
+    , "texts": ["Low (Denoise Off)", "Low (Denoise On)"]
+    , "sliderValue": 50
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_087.jpg", "Articles/VBAO/Images/Image_083.jpg"]
+    , "texts": ["Medium (Denoise Off)", "Medium (Denoise On)"]
+    , "sliderValue": 50
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_088.jpg", "Articles/VBAO/Images/Image_084.jpg"]
+    , "texts": ["High (Denoise Off)", "High (Denoise On)"]
+    , "sliderValue": 50
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_089.jpg", "Articles/VBAO/Images/Image_085.jpg"]
+    , "texts": ["Ultra (Denoise Off)", "Ultra (Denoise On)"]
+    , "sliderValue": 50
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<p>
+    You might have noticed that there is almost no visual difference between high and ultra, but performance-wise it is a huge step.
+    The ultra preset has an advantage in motion though, as it can reduce ghosting artifacts in some cases because there is less aliasing in the base image.
+    But basically, the medium preset is the way to go as it provides a good balance between performance and fidelity.
+</p>
+
+<p>
+    It is a great achievement that in the lowest quality preset, the denoised output is very smooth and runs very fast. Ambient Occlusion is an integral 
+    part of the game's appearance, so it must be present on all platforms and this will help us fulfill that goal.
+</p>
+
 <h4>Denoising</h4>
+
+<p>
+    Denoising is most important when using lower quality presets because less samples per pixel lead inevitably to more aliasing.
+    The images in this section are rendered at 720p in the medium quality preset for demonstration purposes.
+</p>
 
 <p>
     Since we can't sample every single position inside the hemisphere because it would make any GPU explode,
@@ -187,15 +311,36 @@
 
 <div class="code" data-lang="hlsl" data-url="Articles/VBAO/NoiseVBAO.hlsl"></div>
 
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_075.jpg"]
+    , "maximizable": true
+    , "texts": ["Raw Occlusion"]
+}'></div>
+
 <p>
     In order to prevent ghosting in the TAA pass, it is important to denoise AO spatially before. To do so, I have used
     a bilateral filtering pass that uses depth information to preserve edges. In our case, using a separable
     gaussian blur filter provided good results:
 </p>
 
-<p style="color:red">Añadir comparativa denoise OFF vs ON</p>
-
 <div class="code" data-lang="hlsl" data-url="Articles/VBAO/DenoiseVBAO.hlsl"></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_076.jpg"]
+    , "maximizable": true
+    , "texts": ["Spatial Denoising"]
+}'></div>
+
+<p>
+    Finally, enabling temporal antialiasing completely smooths out the result without ghosting artifacts:
+</p>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_077.jpg"]
+    , "maximizable": true
+    , "texts": ["Spatio-Temporal Denoising"]
+}'></div>
+
 
 <h3>Results</h3>
 
@@ -209,7 +354,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -222,7 +367,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -235,7 +380,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -248,7 +393,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -261,7 +406,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -274,7 +419,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -287,7 +432,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -300,7 +445,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -313,7 +458,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -326,7 +471,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -339,7 +484,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -352,7 +497,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -365,7 +510,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -378,7 +523,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -391,7 +536,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -404,7 +549,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -417,7 +562,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -430,7 +575,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -443,7 +588,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -456,7 +601,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -469,7 +614,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <div data-image='{
@@ -482,7 +627,7 @@
     , "texts": ["Off", "On"]
     , "sliderValue": 0
     , "maximizable": true
-    , "alwaysVisibleMiddleBar" : true
+    , "alwaysVisibleMiddleBar" : false
 }'></div>
 
 <h3>Conclusion</h3>
@@ -494,7 +639,26 @@
     are highly minimized.
 </p>
 
-<p style="color:red">Sería buena idea poner una comparativa de SSAO vs VBAO</p>
+<p>
+    Take a look at the following comparison between SSAO and VBAO. Notice how SSAO mostly looks as dark halos around objects, 
+    while VBAO has a better clue about regions where less light would reach.
+</p>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_072.jpg", "Articles/VBAO/Images/Image_071.jpg"]
+    , "texts": ["SSAO", "VBAO"]
+    , "sliderValue": 50
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
+
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_074.jpg", "Articles/VBAO/Images/Image_073.jpg"]
+    , "texts": ["SSAO", "VBAO"]
+    , "sliderValue": 50
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
 
 <p>
     I honestly don't think it gets much better than this when it comes to screen-space Ambient Occlusion, but
