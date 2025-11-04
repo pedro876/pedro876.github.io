@@ -227,7 +227,8 @@
 </table>
 
 <p>
-    As you can see, multi-layered depth is expensive, mostly because it has to read a depth buffer that has four channels instead of one, and because it has to be executed twice (once per layer).
+    As you can see, multi-layered depth is expensive, mostly because with it enabled, VBAO has to read a depth buffer 
+    that has four channels instead of one, and because it has to be executed twice (once per layer).
     Thankfully, it is an optional feature in the pipeline, so 
     lower-end hardware will run with it off. Performance has been measured on a RTX 4070 Laptop.
     In the following images, you can compare the results of all presets with denoising off and on.
