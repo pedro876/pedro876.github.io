@@ -1,14 +1,14 @@
 <h1>Visibility Bitmask Ambient Occlusion</h1>
 <h2>
-    October 23rd, 2025 <br />
-    Unreleased Project
+    November 5th, 2025 <br />
+    Elusive
 </h2>
 
 <h3>Motivation</h3>
 
 <p>
     A few months ago I wrote an article about baking Ambient Occlusion (AO) as vertex attributes. It was a good approach because we were going for a retro look in that project in particular.
-    However, I'm currently working on a completely different game that requires more realistic lighting.
+    However, I'm currently working on Elusive, a completely different game that requires more realistic lighting.
 </p>
 
 <p>
@@ -17,8 +17,8 @@
 </p>
 
 <p>
-    My last article about Soft Shadows explains how we solved direct lighting, but indirect lighting is a different beast entirely. We have been using a rudimentary version of
-    SSAO for some time combined with Sparse Voxel GI, but we needed a better AO solution.
+    My last article about Soft Shadows explains how we solved direct lighting, but indirect lighting is a different beast entirely. For the past few months we'd been using a rudimentary version of
+    SSAO combined with Sparse Voxel GI, but we needed a better AO solution.
 </p>
 
 <p>
@@ -71,13 +71,15 @@
 <h4>Overview</h4>
 
 <p>
-    VBAO is horizon-based, it doesn't trace rays or sample random points inside a hemisphere in screen-space as the traditional SSAO implementation. Instead, thehemisphere is split into slices,
+    VBAO is horizon-based, it doesn't trace rays or sample random points inside a hemisphere in screen-space as the traditional SSAO implementation. Instead, the hemisphere is split into slices,
     and each slice into two sides. For each side, a horizon angle is calculated by sampling the depth buffer along the slice direction of that side.
     Finally, based on the horizon angles, we can determine how much of the slice is occluded. The combined occlusion of each slice gives an approximation of the total hemisphere occlusion.
     This was first done in HBAO and improved later in GTAO.
 </p>
 
-<p style="color:red">Poner imagen explicativa del HBAO</p>
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Explanation_1.png"]
+}'></div>
 
 <p>
     In VBAO, the overall structure of the shader is the same as in GTAO, but in this case we won't calculate the maximum horizon angles for each side of every slice.
@@ -95,11 +97,32 @@
     calculating the slice occlusion, its bits are counted and added to the overall hemisphere occlusion.
 </p>
 
-<p>This technique improves the results of GTAO because it can simulate the behavior of light passing behind objects, so thin objects are not over-occluded.</p>
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Explanation_2.png"]
+}'></div>
 
-<p style="color:red">Mostrar imagen comparativa de GTAO vs VBAO en los cables del techo de Lair.</p>
+<p>
+    This technique improves the results of GTAO because it can simulate the behavior of light passing behind objects, so thin objects are not over-occluded.
+    For example, take a look at the following images. There is a wire hanging from the ceiling, connecting two light bulbs. GTAO darkens the entire silhouette
+    of the wire above it, making it seem as if it was somehow stitched to the wall, instead of hanging. Meanwhile, VBAO properly captures light passing behind it
+    in lower areas that are further away from the ceiling, and properly occludes the sides where the wire reaches the light bulbs.
+</p>
 
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_090.jpg", "Articles/VBAO/Images/Image_091.jpg"]
+    , "texts": ["GTAO", "VBAO"]
+    , "sliderValue": 50
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
 
+<div data-image='{
+    "images": ["Articles/VBAO/Images/Image_092.jpg", "Articles/VBAO/Images/Image_093.jpg"]
+    , "texts": ["GTAO", "VBAO"]
+    , "sliderValue": 50
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>
 
 <h4>Multi-Layered Depth</h4>
 
@@ -120,18 +143,34 @@
     For example, all characters are rendered
     to the second G-Buffer, which allows screen-space effects to see behind them. This feature has a considerable cost
     because more textures are allocated, lighting is performed twice, and more texture fetches are required. In practice,
-    using only two layers is fast enough that the benefits are worth it. Most games using screen space effects suffer from
+    using only two layers is fast enough that the benefits are worth it. Most games using screen-space effects suffer from
     occlusion artifacts, generating strange silhouettes below objects in SSR, or halos around characters in SSAO.
     While those problems can be resolved completely using raytracing, our solution is more performant and solves the most
     obvious and annoying cases where screen-space effects usually fail.
 </p>
+
+<p>
+    For example, in the following videos you can see how a character occluding some objects behind it affects how those objects occlude their
+    surroundings. In the first video, Multi-Layared Depth is Off, and in the second it is On. The occlusion artifacts due to character occlusion 
+    are completely solved using this technique.
+</p>
+
+<div data-video='{
+    "video" : "Articles/VBAO/Videos/MultiLayerOff.mp4"
+     , "poster" : "Articles/VBAO/Videos/MultiLayerOff_Poster2.png"
+}'></div>
+
+<div data-video='{
+    "video" : "Articles/VBAO/Videos/MultiLayerOn.mp4"
+     , "poster" : "Articles/VBAO/Videos/MultiLayerOn_Poster2.png"
+}'></div>
 
 <h4>Per-Material Thickness</h4>
 
 <p>
     If you follow the original VBAO paper, you can find a comparison of different thickness values compared against
     a raytraced reference. While it is commendable how good this algorithm looks with a constant thickness value,
-    it is logical that having more precise thickness data per-pixel would lead to a more accurate solution.
+    it is clear that having more precise thickness data per-pixel would lead to a more accurate solution.
 </p>
 
 <p>
@@ -179,7 +218,7 @@
 
 <p>
     It is important to offer different options that provide scalable graphical fidelity. After all, this game
-    is meant to run both on a Nintendo Switch and a PS5 Pro. These are out currently defined presets, although they might 
+    is meant to run both on a Nintendo Switch and a PS5 Pro. These are our currently defined presets, although they might 
     change before launch:
 </p>
 
@@ -230,7 +269,7 @@
     As you can see, multi-layered depth is expensive, mostly because with it enabled, VBAO has to read a depth buffer 
     that has four channels instead of one, and because it has to be executed twice (once per layer).
     Thankfully, it is an optional feature in the pipeline, so 
-    lower-end hardware will run with it off. Performance has been measured on a RTX 4070 Laptop.
+    lower-end hardware will run with it off. Performance has been measured on a RTX 4070 Laptop at 1080p.
     In the following images, you can compare the results of all presets with denoising off and on.
 </p>
 
@@ -286,17 +325,17 @@
 
 <p>
     Since we can't sample every single position inside the hemisphere because it would make any GPU explode,
-    we need to calculate ambient occlusion stochastically. This means that the sampled positions vary spatially and
+    we need to calculate Ambient Occlusion stochastically. This means that the sampled positions vary spatially and
     temporally as well. A noise function must be used that gives us two different random values per pixel. One value is used
     to rotate the hemisphere slices, and the other to apply an offset to the samples along each slice.
 </p>
 
 <p>
     I had some headaches while searching for a good noise function to be honest.
-    First, I tried using <a target="_blank" href="https://momentsingraphics.de/BlueNoise.html">blue noise</a> , and
+    First, I tried using <a target="_blank" href="https://momentsingraphics.de/BlueNoise.html">blue noise</a>, and
     <a target="_blank" href="https://developer.nvidia.com/blog/rendering-in-real-time-with-spatiotemporal-blue-noise-textures-part-1/">spatio-temporal blue noise (STBN)</a>.
     However, it didn't get along very well with
-    neighbourhood clipping in the TAA pass, so I scrachted that approach. I needed a noise pattern with very low discrepancy
+    neighbourhood clipping in the TAA pass, so I scratched that approach. I needed a noise pattern with very low discrepancy
     between pixels so that TAA would work well with it. In XeGTAO, they use a Hilbert Curve of level 6 (64x64 pattern repetition)
     to turn a 2D screen coordinate into a 1D index. Then, that index is used to sample a low discrepancy sequence
     (<a target="_blank" href="https://extremelearning.com.au/unreasonable-effectiveness-of-quasirandom-sequences/">Martin Roberts R2 sequence</a>).
@@ -306,8 +345,9 @@
 <p>
     In the end, I used
     <a target="_blank" href="https://blog.demofox.org/2022/01/01/interleaved-gradient-noise-a-different-kind-of-low-discrepancy-sequence/">Interleaved Gradient Noise (IGN)</a>.
-    While it only provides a random value, I used a multiplier and a frac operation to obtain a second value. I had to carefully search for a good multiplier value empirically,
-    and ended up using 4.854102.
+    While it only provides a single random value, I used a multiplier and a frac operation to obtain a second value. I had to carefully search for a good multiplier value,
+    and ended up using 4.854102. The idea is that while IGN cycles between 0 and 1 once, the second noise value should cycle multiple times. In practice, this helps VBAO capture 
+    more details and reduce banding artifacts.
 </p>
 
 <div class="code" data-lang="hlsl" data-url="Articles/VBAO/NoiseVBAO.hlsl"></div>
@@ -344,6 +384,12 @@
 
 
 <h3>Results</h3>
+
+<p>
+    Now I will present the final results of the VBAO implementation in different scenarios. For each of these, you can see
+    the raw output of the Ambient Occlusion pass alone, and how it looks on the final game. Remember that you can use sliders at 
+    the bottom of the comparisons to see how the game looks with VBAO Off/On.
+</p>
 
 <div data-image='{
     "images": ["Articles/VBAO/Images/Image_001.jpg"]
