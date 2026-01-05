@@ -3,7 +3,11 @@ var elemButtonFullscreenRight = document.getElementById("fullscreenRight");
 var elemButtonFullscreenLeft = document.getElementById("fullscreenLeft");
 var isInFullscreen = false;
 
-function EnterFullScreen(element) {
+function EnterFullScreen(element, isChange = false) {
+    if (!isChange && document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen();
+    }
+
     console.log("Entering full screen mode");
     elemFullscreen.appendChild(element);
     elemFullscreen.style.display = "flex";
@@ -24,9 +28,12 @@ function EnterFullScreen(element) {
 
     isInFullscreen = true;
     CheckFullscreenButtonsVisibility();
+
+    if (!isChange)
+        elemFullscreen.requestFullscreen();
 }
 
-function ExitFullScreen() {
+function ExitFullScreen(isChange = false) {
     console.log("Exiting full screen mode");
     var element = elemFullscreen.lastElementChild;
 
@@ -56,14 +63,17 @@ function ExitFullScreen() {
     elemFullscreen.style.display = "none";
     document.body.style.overflow = "";
     isInFullscreen = false;
+
+    if (!isChange && document.fullscreenElement && document.exitFullscreen)
+        document.exitFullscreen();
 }
 
 function NavigateFullscreen(dir) {
     if (!isInFullscreen) return;
     var newIndex = elemFullscreen.lastElementChild.maximizableIndex + dir;
     if (newIndex >= 0 && newIndex < maximizableElements.length) {
-        ExitFullScreen();
-        EnterFullScreen(maximizableElements[newIndex]);
+        ExitFullScreen(true);
+        EnterFullScreen(maximizableElements[newIndex], true);
     }
 }
 
@@ -84,6 +94,12 @@ document.addEventListener("keydown", (event) => {
     }
     else if (event.key === "ArrowRight" && isInFullscreen) {
         NavigateFullscreen(1);
+    }
+});
+
+document.addEventListener("fullscreenchange", () => {
+    if (document.fullscreenElement === null && isInFullscreen) {
+        ExitFullScreen();
     }
 });
 
