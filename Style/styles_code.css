@@ -1,4 +1,4 @@
-.code {
+pre {
     background-color: var(--codeBackgroundColor);
     font-family: monospace;
     white-space: pre-wrap; /* Ensures line breaks */

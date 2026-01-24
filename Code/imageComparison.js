@@ -2,24 +2,24 @@ var maximizableElements = [];
 var elemDraggable = null;
 
 function AddVideos() {
-    var allDataVideos = elemContent.querySelectorAll("div[data-video]");
-    allDataVideos.forEach((dataVideo) => {
-        const attr = dataVideo.getAttribute("data-video");
-        const data = JSON.parse(attr);
+    var allVideos = elemContent.querySelectorAll("video");
+    allVideos.forEach((video) => {
+        //const attr = video.getAttribute("data-video");
+        //const data = JSON.parse(attr);
 
-        const elemVideo = document.createElement("video");
-        elemVideo.className = "video-container";
-        elemVideo.src = data.video;
-        elemVideo.innerHTML = "Your browser does not support video tag";
+        /*const elemVideo = document.createElement("video");*/
+        video.className = "video-container";
+        //elemVideo.src = data.video;
+        video.innerHTML = "Your browser does not support video tag";
 
-        elemVideo.controls = true;
-        elemVideo.muted = true;
+        video.controls = true;
+        video.muted = true;
 
-        if (data.poster != null) {
-            elemVideo.poster = data.poster;
-        }
+        //if (data.poster != null) {
+        //    elemVideo.poster = data.poster;
+        //}
 
-        dataVideo.replaceWith(elemVideo);
+        //dataVideo.replaceWith(elemVideo);
     });
 }
 
