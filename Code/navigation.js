@@ -83,6 +83,7 @@ async function LoadIndex() {
             elem.addEventListener("click", () => {
                 window.location.href = link;
             });
+            elem.disabled = window.location.href == link;
             structureNav.appendChild(elem);
         }
 
