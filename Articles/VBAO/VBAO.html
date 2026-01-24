@@ -52,13 +52,6 @@
             <figcaption>VBAO</figcaption>
         </figure>
 
-        <!--<div data-image='{
-            "images": ["Articles/VBAO/Images/Image_019.jpg"]
-            , "texts": ["VBAO"]
-            , "maximizable": true
-            , "alwaysVisibleMiddleBar" : false
-        }'></div>-->
-
         <h3>Implementation</h3>
 
         <h4>History</h4>
@@ -97,9 +90,10 @@
             This was first done in HBAO and improved later in GTAO.
         </p>
 
-        <div data-image='{
-            "images": ["Articles/VBAO/Images/Explanation_1.png"]
-        }'></div>
+        <figure>
+            <img src="Images/Explanation_1.png" alt="Explanation_1" />
+            <figcaption>Explanation 1</figcaption>
+        </figure>
 
         <p>
             In VBAO, the overall structure of the shader is the same as in GTAO, but in this case we won't calculate the maximum horizon angles for each side of every slice.
@@ -117,9 +111,10 @@
             calculating the slice occlusion, its bits are counted and added to the overall hemisphere occlusion.
         </p>
 
-        <div data-image='{
-            "images": ["Articles/VBAO/Images/Explanation_2.png"]
-        }'></div>
+        <figure>
+            <img src="Images/Explanation_2.png" alt="Explanation_2" />
+            <figcaption>Explanation 2</figcaption>
+        </figure>
 
         <p>
             This technique improves the results of GTAO because it can simulate the behavior of light passing behind objects, so thin objects are not over-occluded.
@@ -128,21 +123,17 @@
             in lower areas that are further away from the ceiling, and properly occludes the sides where the wire reaches the light bulbs.
         </p>
 
-        <div data-image='{
-            "images": ["Articles/VBAO/Images/Image_090.jpg", "Articles/VBAO/Images/Image_091.jpg"]
-            , "texts": ["GTAO", "VBAO"]
-            , "sliderValue": 50
-            , "maximizable": true
-            , "alwaysVisibleMiddleBar" : true
-        }'></div>
+        <figure data-image='{"sliderValue": 50, "maximizable": true, "alwaysVisibleMiddleBar" : true}'>
+            <img src="Images/Image_090.jpg" alt="GTAO" />
+            <img src="Images/Image_091.jpg" alt="VBAO" />
+            <figcaption>GTAO vs VBAO</figcaption>
+        </figure>
 
-        <div data-image='{
-            "images": ["Articles/VBAO/Images/Image_092.jpg", "Articles/VBAO/Images/Image_093.jpg"]
-            , "texts": ["GTAO", "VBAO"]
-            , "sliderValue": 50
-            , "maximizable": true
-            , "alwaysVisibleMiddleBar" : true
-        }'></div>
+        <figure data-image='{"sliderValue": 50, "maximizable": true, "alwaysVisibleMiddleBar" : true}'>
+            <img src="Images/Image_092.jpg" alt="GTAO" />
+            <img src="Images/Image_093.jpg" alt="VBAO" />
+            <figcaption>GTAO vs VBAO</figcaption>
+        </figure>
 
         <h4>Multi-Layered Depth</h4>
 

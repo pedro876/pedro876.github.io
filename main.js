@@ -10,15 +10,6 @@ const scripts = [
     '/Code/navigation.js'
 ];
 
-//function LoadScriptSequentially(scripts, index = 0) {
-//    if (index >= scripts.length) return; // Done
-//    const script = document.createElement('script');
-//    script.src = scripts[index];
-//    script.onload = () => LoadScriptSequentially(scripts, index + 1); // Load next after current
-//    script.onerror = () => console.error(`Failed to load ${scripts[index]}`);
-//    document.head.appendChild(script);
-//}
-
 async function LoadScriptSequentially() {
     for (const src of scripts) {
         await new Promise((resolve, reject) => {
