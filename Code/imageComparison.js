@@ -27,79 +27,80 @@ function AddInputToImageComparisons() {
     var isMobile = window.mobileCheck();
     maximizableElements = [];
 
-    var allDataImages = elemContent.querySelectorAll("div[data-image]");
+    var allDataImages = elemContent.querySelectorAll("figure");
     allDataImages.forEach((dataImage) => {
         const attr = dataImage.getAttribute("data-image");
+        const data = attr != null ? JSON.parse(attr) : null;
+        //var isJson = attr != null && attr.startsWith("{");
+        //const data = isJson ? JSON.parse(attr) : null;
 
-        var isJson = attr.startsWith("{");
-        const data = isJson ? JSON.parse(attr) : null;
-        var isComparison = isJson && data.images != null && data.images.length > 1;
-
-        const imageContainer = document.createElement("div");
-        imageContainer.className = "image-container";
+        dataImage.className = "image-container";
+        const imageElems = dataImage.querySelectorAll("img");
+        var isComparison = imageElems.length > 1;
 
         // Add the first image
-        const img1 = document.createElement('img');
-        img1.src = isJson ? data.images[0] : attr;
-        imageContainer.appendChild(img1);
+        //const img1 = document.createElement('img');
+        //img1.src = isJson ? data.images[0] : attr;
+        //imageContainer.appendChild(img1);
 
         // Add the second image
         if (isComparison) {
-            const img2 = document.createElement('img');
-            img2.src = data.images[1];
-            imageContainer.appendChild(img2);
+            //const img2 = document.createElement('img');
+            //img2.src = data.images[1];
+            //imageContainer.appendChild(img2);
 
             const slider = document.createElement('input');
             slider.type = 'range';
             slider.className = 'image-slider';
-            slider.value = data.sliderValue == null ? 50 : data.sliderValue;
-            imageContainer.appendChild(slider);
+            slider.value = data == null || data.sliderValue == null ? 50 : data.sliderValue;
+            dataImage.appendChild(slider);
 
             // Add the middle bar div
             const middleBar = document.createElement('div');
             middleBar.className = 'image-middleBar';
-            if (data.alwaysVisibleMiddleBar != null && data.alwaysVisibleMiddleBar == true)
+            if (data != null && data.alwaysVisibleMiddleBar != null && data.alwaysVisibleMiddleBar == true)
             {
                 //middleBar.style.opacity = 0.3;
                 middleBar.className += " image-middleBarAlwaysVisible";
             }
 
             middleBar.appendChild(document.createElement('div')); // Inner div
-            imageContainer.appendChild(middleBar);
+            dataImage.appendChild(middleBar);
         }
 
-        if (isJson) {
-            if (data.texts != null) {
+        //if (isJson) {
+            if (data != null && imageElems != null) {
                 // Add the first text
                 const text1 = document.createElement('p');
-                text1.textContent = data.texts[0];
-                imageContainer.appendChild(text1);
-                if (data.images.length == 1) text1.style.bottom = "0px";
+                text1.textContent = imageElems[0].alt;
+                dataImage.appendChild(text1);
+                if (imageElems.length == 1) text1.style.bottom = "0px";
 
-                if (data.texts.length > 1) {
+                if (imageElems.length > 1) {
                     // Add the second text
                     const text2 = document.createElement('p');
-                    text2.textContent = data.texts[1];
-                    imageContainer.appendChild(text2);
-                    if (data.images.length == 1) text2.style.bottom = "0px";
+                    text2.textContent = imageElems[1].alt;
+                    dataImage.appendChild(text2);
                 }
                 else {
                     text1.style.textAlign = "right";
                     text1.style.clipPath = "none";
                 }
             }
-        }
+        //}
 
-        if (!isJson || data.maximizable == true) {
+        if (data == null || data.maximizable == true) {
             // Add the maximize button
             const maximizeButton = document.createElement('input');
             maximizeButton.type = 'image';
             maximizeButton.className = 'image-maximize';
-            imageContainer.appendChild(maximizeButton);
+            dataImage.appendChild(maximizeButton);
         }
 
+        var figCaption = dataImage.querySelector("figcaption");
+        if (figCaption != null) figCaption.remove();
         // Replace the original container with the new structure
-        dataImage.replaceWith(imageContainer);
+        //dataImage.replaceWith(imageContainer);
     });
 
     var allComparisons = elemContent.querySelectorAll(".image-container");
@@ -121,7 +122,7 @@ function AddInputToImageComparisons() {
                 else EnterFullScreen(comparison);
             });
 
-            maximize.src = "GlobalImages/maximize.png";
+            maximize.src = "/GlobalImages/maximize.png";
             maximize.type = "image";
         }
 
@@ -162,27 +163,32 @@ function AddInputToImageComparisons() {
     });
 }
 
-document.addEventListener("mouseup", (e) => {
-    elemDraggable = null;
-    document.body.style.userSelect = '';
-});
+function ImagesSetup() {
+    document.addEventListener("mouseup", (e) => {
+        elemDraggable = null;
+        document.body.style.userSelect = '';
+    });
 
-document.addEventListener("mousemove", (e) => {
-    if (elemDraggable == null) {
-        return;
-    }
+    document.addEventListener("mousemove", (e) => {
+        if (elemDraggable == null) {
+            return;
+        }
 
-    var mouseX = e.clientX;
-    var rect = elemDraggable.parentElement.getBoundingClientRect();
-    var maxWidth = rect.width;
-    var offsetX = rect.left;
+        var mouseX = e.clientX;
+        var rect = elemDraggable.parentElement.getBoundingClientRect();
+        var maxWidth = rect.width;
+        var offsetX = rect.left;
 
-    var left = Math.min(100, Math.max(0, ((mouseX - offsetX) / maxWidth) * 100));
-    elemDraggable.style.left = `${left}%`;
+        var left = Math.min(100, Math.max(0, ((mouseX - offsetX) / maxWidth) * 100));
+        elemDraggable.style.left = `${left}%`;
 
-    if (left > 99.9) left = 100.0;
-    if (left < 0.01) left = 0.0;
+        if (left > 99.9) left = 100.0;
+        if (left < 0.01) left = 0.0;
 
-    elemDraggable.slider.value = left;
-    elemDraggable.slider.updateComparisonClip();
-});
+        elemDraggable.slider.value = left;
+        elemDraggable.slider.updateComparisonClip();
+    });
+
+    AddInputToImageComparisons();
+    AddVideos();
+}

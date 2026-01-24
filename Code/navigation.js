@@ -1,22 +1,3 @@
-
-const baseURL = window.location.href.split("?")[0];
-var indexButtons = elemIndex.querySelectorAll("button[data-url]");
-var isFetching = false;
-
-function SetEnableAllButtons(enabled) {
-    indexButtons.forEach((indexButton) => {
-        indexButton.disabled = !enabled;
-    });
-}
-
-function DataUrlToFileName(dataURL) {
-    var articleName = dataURL.split("/");
-    articleName = articleName[articleName.length - 1];
-    articleName = articleName.split(".");
-    articleName = articleName[0];
-    return articleName;
-}
-
 function ResetScroll() {
     window.scrollTo({
         top: 0,
@@ -28,87 +9,84 @@ function ProcessArticleGrid() {
     let grid = document.querySelector(".articles-grid");
     if (!grid) return;
 
-    let isFirst = true;
-    indexButtons.forEach((indexButton) => {
-        if (isFirst) {
-            isFirst = false;
-            return;
-        }
-
+    let ul = grid.firstElementChild;
+    for (var child of ul.children) {
         let button = document.createElement("button");
-        button.setAttribute("data-url", indexButton.getAttribute("data-url"));
+        let link = child.firstElementChild.href;
+        let name = child.firstElementChild.innerHTML;
+        button.setAttribute("data-url", link);
         button.className = "article-grid-element";
 
         let img = document.createElement("img");
-        let thumbnailPath = indexButton.getAttribute("data-url").replace(".html", "_Thumbnail.jpg");
+        let thumbnailPath = link.replace(".html", "_Thumbnail.jpg");
         img.src = thumbnailPath;
-        img.alt = indexButton.textContent;
+        img.alt = name;
 
         let p = document.createElement("p");
-        p.textContent = indexButton.textContent;
+        p.textContent = name;
 
         button.appendChild(img);
         button.appendChild(p);
         grid.appendChild(button);
 
-        AddButtonClickBehaviour(button, indexButton);
-    });
-}
-
-function AddButtonClickBehaviour(elemButton, indexButton) {
-    elemButton.loadContent = function () {
-        if (isFetching) return;
-        if (isInFullscreen) ExitFullScreen();
-        isFetching = true;
-        var articlePath = elemButton.getAttribute("data-url");
-        ResetScroll();
-        fetch(articlePath).then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok ' + response.statusText);
-            }
-            return response.text();
-        }).then(html => {
-            elemContent.innerHTML = html;
-            SetEnableAllButtons(true);
-            AddInputToImageComparisons();
-            AddVideos();
-            ProcessCode();
-            ProcessTables();
-            ProcessArticleGrid();
-            indexButton.disabled = true;
-            isFetching = false;
-            if (mobileShowIndex) ToggleIndex();
-
-            var articleName = DataUrlToFileName(articlePath);
-            var url = `${baseURL}?article=${encodeURIComponent(articleName)}`;
-            if (window.location.href != url) {
-                window.history.pushState(null, "", url);
-                console.log("New url: ", url);
-            }
-        }).catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
+        button.addEventListener("click", () => {
+            window.location.href = link;
         });
-    };
-
-    elemButton.addEventListener('click', elemButton.loadContent);
+    }
+    grid.removeChild(ul);
 }
 
-indexButtons.forEach((indexButton) => {
-    AddButtonClickBehaviour(indexButton, indexButton);
-});
-
-function LoadURLArticle() {
-    var urlParams = new URLSearchParams(new URL(window.location.href).search);
-    var loadArticle = urlParams.has("article") ? urlParams.get("article") : "contact";
-    console.log("Load article: ", loadArticle);
-
-    indexButtons.forEach((indexButton) => {
-        var articleName = DataUrlToFileName(indexButton.getAttribute("data-url"));
-        if (articleName == loadArticle) {
-            indexButton.loadContent();
+//What we need to do start is load structure html
+async function LoadStructure() {
+    return fetch("/structure.html").then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to load structure.html: Error: " + response.statusText);
         }
+        return response.text();
+    }).then(structureHTML => {
+        const parser = new DOMParser();
+        const structureDoc = parser.parseFromString(structureHTML, "text/html");
+
+        // Grab the main elements
+        const documentMain = document.querySelector("main");
+        const structureMain = structureDoc.querySelector("main");
+
+        // 1. Replace structure's main content with the content of documentMain
+        structureMain.replaceWith(documentMain);
+
+        // 2. Replace documentMain with the entire structure's body content
+        document.body.replaceWith(structureDoc.body);
+    }).catch(error => {
+        console.error("There was a problem with the fetch operation: " + error);
     });
 }
 
-window.addEventListener("popstate", (event) => LoadURLArticle());
-LoadURLArticle();
+async function LoadIndex() {
+    return fetch("/index.html").then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to load index.html: Error: " + response.statusText);
+        }
+        return response.text();
+    }).then(indexHTML => {
+        const parser = new DOMParser();
+        const indexDoc = parser.parseFromString(indexHTML, "text/html");
+
+        // Now we want to populate the left side index using the nav element of index.html
+        var structureNav = document.querySelector("#index");
+        var indexNav = indexDoc.querySelector("nav").firstElementChild;
+        for (const child of indexNav.children) {
+            let elem = document.createElement("button");
+            let link = child.firstElementChild.href;
+            let name = child.firstElementChild.innerHTML;
+            elem.setAttribute("data-url", link);
+            elem.innerHTML = name;
+            elem.addEventListener("click", () => {
+                window.location.href = link;
+            });
+            structureNav.appendChild(elem);
+        }
+
+    }).catch(error => {
+        console.error("There was a problem with the fetch operation: " + error);
+    });
+}

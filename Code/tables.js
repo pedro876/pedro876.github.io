@@ -10,7 +10,7 @@ function AdjustTables() {
     });
 }
 
-function ProcessTables() {
+function TablesSetup() {
     allTables = elemContent.querySelectorAll("table");
     allTables.forEach((table) => {
         let wrapper = document.createElement("div");

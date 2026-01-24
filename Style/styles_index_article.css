@@ -42,7 +42,7 @@
     color: black;
 }
 
-#articleContent {
+main {
     background-color: var(--contentBackgroundColor);
     padding-left: 40px;
     padding-right: 40px;
@@ -54,30 +54,30 @@
     max-width: calc(var(--pageWidth) - var(--indexWidth) - var(--indexContentGap));
 }
 
-#articleContent h1 {
+main h1 {
     margin: 0px;
     padding: 0px;
     margin-bottom: 10px;
 }
 
-#articleContent h2 {
+main h2 {
     margin: 0px;
     padding: 0px;
     font-size: 14px;
     font-style: italic;
 }
 
-#articleContent h3 {
+main h3 {
     margin: 30px 0px 16px 0px;
     font-size: 25px;
 }
 
-#articleContent h4 {
+main h4 {
     margin: 30px 0px 0px 0px;
     font-size: 16px;
 }
 
-#articleContent li + li {
+main li + li {
     margin-top: 10px;
 }
 

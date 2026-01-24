@@ -2,13 +2,11 @@ const mobileViewAspectRatio = 1.17;
 const topBarRightContentMinWidth = 820;
 const hideLeftIndexAtWidth = 1000;
 
-var elemContent = document.getElementById("articleContent");
-var elemIndex = document.getElementById("index");
-var elemButtonIndex = document.getElementById("buttonIndex");
-var elemTopBarRightContent = document.getElementById("topBarRightContent");
-var elemRaccoon = document.getElementById("raccoonImg");
-
-
+var elemContent;
+var elemIndex;
+var elemButtonIndex;
+var elemTopBarRightContent;
+var elemRaccoon;
 var mobileShowIndex = false;
 
 window.mobileCheck = function () {
@@ -90,6 +88,14 @@ function ToggleIndex() {
     OnResize();
 }
 
-elemButtonIndex.addEventListener('click', ToggleIndex);
-window.addEventListener('resize', OnResize);
-OnResize();
+function ResponsiveSetup() {
+    elemContent = document.querySelector("main");
+    elemIndex = document.getElementById("index");
+    elemButtonIndex = document.getElementById("buttonIndex");
+    elemTopBarRightContent = document.getElementById("topBarRightContent");
+    elemRaccoon = document.getElementById("raccoonImg");
+
+    elemButtonIndex.addEventListener('click', ToggleIndex);
+    window.addEventListener('resize', OnResize);
+    OnResize();
+}

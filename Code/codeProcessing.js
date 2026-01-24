@@ -1,4 +1,4 @@
-function ProcessCode() {
+function CodeSetup() {
     var allCodes = elemContent.querySelectorAll(".code");
     allCodes.forEach((codeElem) => {
         function OnCodeElemLoaded(codeElem) {

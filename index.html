@@ -4,87 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevLog - Pedro Casas</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="stylesheet" href="main.css" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/main.css" />
 </head>
 <body>
-    <div id="topBar">
-        <div id="topBarContent" class="limitWidth">
+    <main>
+        <h1>About</h1>
 
-            <div id="topBarLeftContent">
-                <img id="raccoonImg" src="GlobalImages/RaccoonLowRes.png" />
-                <div id="topBarLeftTexts">
-                    <h1>Pedro Casas</h1>
-                    <h2>Graphics Programmer</h2>
-                </div>
-            </div>
+        <p>
+            Hi! My name is Pedro, and I'm a passionate game developer. In this Devlog you'll find a variety of
+            articles detailing how I implemented different features across various projects. I hope you find
+            something useful! :D
+        </p>
 
-            <div id="topBarRightContent">
+        <div id="contactLinks">
+            <div>
                 <img src="GlobalImages/logo_gmail_light.png" alt="Email: " />
-                <a href="mailto:pedrocasasdev@gmail.com">pedrocasasdev@gmail.com</a>
-
-                <img src="GlobalImages/github-mark-white.png" alt="GitHub: " />
-                <a href="https://github.com/pedro876" target="_blank">pedro876</a>
-
-                <img src="GlobalImages/LI-In-Bug-cropped-white.png" alt="LinkedIn: " />
-                <a href="http://linkedin.com/in/pedrocasasm" target="_blank">pedrocasasm</a>
-
-                <img src="GlobalImages/itchio-textless-white.svg" alt="Itch.io: " />
-                <a href="https://pedro876.itch.io/" target="_blank">PedroDev</a>
-
-                <img src="GlobalImages/x-logo-white.png" alt="X: " />
-                <a href="https://x.com/pedrocasas_dev" target="_blank">pedrocasas_dev</a>
-
-                <img src="GlobalImages/location1.png" alt="City: " />
-                <p>Valencia, Spain</p>
-
-
+                <a style="text-decoration: none" href="mailto:pedrocasasdev@gmail.com" target="_blank">pedrocasasdev@gmail.com</a>
             </div>
 
-            <button hidden id="buttonIndex">
-                <img src="GlobalImages/buttonIndex3.png" alt="Index" />
-            </button>
+            <div>
+                <img src="GlobalImages/LI-In-Bug-cropped-white.png" alt="LinkedIn: " />
+                <a style="text-decoration: none" href="http://linkedin.com/in/pedrocasasm" target="_blank">pedrocasasm</a>
+            </div>
+
+            <div>
+                <img src="GlobalImages/x-logo-white.png" alt="X: " />
+                <a style="text-decoration: none" href="https://x.com/pedrocasas_dev">pedrocasas_dev</a>
+            </div>
+
+            <div>
+                <img src="GlobalImages/github-mark-white.png" alt="GitHub: " />
+                <a style="text-decoration: none" href="https://github.com/pedro876" target="_blank">pedro876</a>
+            </div>
+
+            <div>
+                <img src="GlobalImages/itchio-textless-white.svg" alt="Itch.io: " />
+                <a style="text-decoration: none" href="https://pedro876.itch.io/" target="_blank">PedroDev</a>
+            </div>
+
+
         </div>
 
-    </div>
+        <h3>Work</h3>
 
-    <div class="centerContainer">
-        <div id="grid_index_article" class="limitWidth">
-            <nav id="index">
-                <button data-url="contact.html">About</button>
-                <button data-url="Articles/BelsFanfareRendering/BelsFanfareRendering.html">Rendering Bel's Fanfare</button>
-                <button data-url="Articles/VBAO/VBAO.html">Visibility Bitmask Ambient Occlusion</button>
-                <button data-url="Articles/SoftShadows/SoftShadows.html">Soft Shadows</button>
-                <button data-url="Articles/VolumetricLighting/VolumetricLighting.html">Volumetric Lighting</button>
-                <button data-url="Articles/SVOGI/SVOGI.html">Sparse Voxel GI</button>
-                <button data-url="Articles/ParallaxMapping/POM.html">Parallax Mapping</button>
-                <button data-url="Articles/ShellTexturing/ShellTexturing.html">Shell Texturing</button>
-                <button data-url="Articles/VertexLighting/VertexLighting.html">Baked Vertex Lighting</button>
-                <button data-url="Articles/VertexAO/VertexAO.html">Vertex Ambient Occlusion</button>
-                <button data-url="Articles/Mika_DecalLights/Mika_DecalLights.html">Decal Lights in Mika</button>
-                <button data-url="Articles/Mika_GPU_Instanced_Foliage/Mika_GPU_Instanced_Foliage.html">GPU Instanced Foliage in Mika</button>
-                <button data-url="Articles/LavaLamp/LavaLamp.html">Lava lamp</button>
-                <button data-url="Articles/Mika_SSR/Mika_SSR.html">Screen-Space Reflections in Mika</button>
-            </nav>
+        <p id="curriculum">
+            Here's my <a href="CV_PedroCasas_2025.pdf" target="_blank">resume</a>.
+            I'm currently open to freelance projects and collaborations.  If you're developing a
+            game and need a graphics programmer on board, feel free to reach out!
+        </p>
 
-            <main id="articleContent">
-                <p>Welcome!</p>
-            </main>
-        </div>
-    </div>
+        <h3>DevLog</h3>
 
-    <div id="fullscreen">
-        <input id="fullscreenRight" class="fullscreenInput" type="image" src="GlobalImages/arrow-right.png" />
-        <input id="fullscreenLeft" class="fullscreenInput" type="image" src="GlobalImages/arrow-left.png" />
-    </div>
+        <nav class="articles-grid">
+            <ul>
+                <li><a href="/Articles/BelsFanfareRendering/BelsFanfareRendering.html">Rendering Bel's Fanfare</a></li>
+                <li><a href="/Articles/VBAO/VBAO.html">Visibility Bitmask Ambient Occlusion</a></li>
+                <li><a href="/Articles/SoftShadows/SoftShadows.html">Soft Shadows</a></li>
+                <li><a href="/Articles/VolumetricLighting/VolumetricLighting.html">Volumetric Lighting</a></li>
+                <li><a href="/Articles/SVOGI/SVOGI.html">Sparse Voxel GI</a></li>
+                <li><a href="/Articles/ParallaxMapping/POM.html">Parallax Mapping</a></li>
+                <li><a href="/Articles/ShellTexturing/ShellTexturing.html">Shell Texturing</a></li>
+                <li><a href="/Articles/VertexLighting/VertexLighting.html">Baked Vertex Lighting</a></li>
+                <li><a href="/Articles/VertexAO/VertexAO.html">Vertex Ambient Occlusion</a></li>
+                <li><a href="/Articles/Mika_DecalLights/Mika_DecalLights.html">Decal Lights in Mika</a></li>
+                <li><a href="/Articles/Mika_GPU_Instanced_Foliage/Mika_GPU_Instanced_Foliage.html">GPU Instanced Foliage in Mika</a></li>
+                <li><a href="/Articles/LavaLamp/LavaLamp.html">Lava lamp</a></li>
+                <li><a href="/Articles/Mika_SSR/Mika_SSR.html">Screen-Space Reflections in Mika</a></li>
+            </ul>
+            
+        </nav>
 
-    <script src="Code/highlight/highlight.min.js"></script>
-    <script type="text/javascript" src="Code/highlightjs-hlsl/dist/hlsl.min.js"></script>
-    <script src="Code/fullscreen.js"></script>
-    <script src="Code/codeProcessing.js"></script>
-    <script src="Code/tables.js"></script>
-    <script src="Code/responsive.js"></script>
-    <script src="Code/imageComparison.js"></script>
-    <script src="Code/navigation.js"></script>
+    </main>
+
+    <script src="/main.js"></script>
 </body>
 </html>
