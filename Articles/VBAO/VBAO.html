@@ -195,30 +195,14 @@
             <figcaption>GTAO vs VBAO</figcaption>
         </figure>
 
-        <!--<div data-image='{
-            "images": ["Articles/VBAO/Images/Image_069.jpg", "Articles/VBAO/Images/Image_067.jpg"]
-            , "texts": ["Uniform Thickness", "Per-Material Thickness"]
-            , "sliderValue": 50
-            , "maximizable": true
-            , "alwaysVisibleMiddleBar" : true
-        }'></div>-->
-
         <figure data-image='{"sliderValue": 50, "maximizable": true, "alwaysVisibleMiddleBar" : true}'>
             <img src="Images/Image_070.jpg" alt="Uniform Thickness" />
             <img src="Images/Image_068.jpg" alt="Per-Material Thickness" />
             <figcaption>GTAO vs VBAO</figcaption>
         </figure>
 
-        <!--<div data-image='{
-            "images": ["Articles/VBAO/Images/Image_070.jpg", "Articles/VBAO/Images/Image_068.jpg"]
-            , "texts": ["Uniform Thickness", "Per-Material Thickness"]
-            , "sliderValue": 50
-            , "maximizable": true
-            , "alwaysVisibleMiddleBar" : true
-        }'></div>-->
-
         <h4>Calculating Occlusion</h4>
-   
+
         <p>
             This VBAO implementation is very pipeline-specific, so bear that
             in mind when checking the code below. The execution varies depending on the keyword
@@ -367,8 +351,6 @@
         }
         </code></pre>
 
-        <!--<div class="code" data-lang="hlsl" data-url="Articles/VBAO/CalculateVBAO.hlsl"></div>-->
-
         <h4>Quality Presets</h4>
 
         <p>
@@ -428,37 +410,61 @@
             In the following images, you can compare the results of all presets with denoising off and on.
         </p>
 
-        <div data-image='{
-            "images": ["Articles/VBAO/Images/Image_086.jpg", "Articles/VBAO/Images/Image_082.jpg"]
-            , "texts": ["Low (Denoise Off)", "Low (Denoise On)"]
-            , "sliderValue": 50
-            , "maximizable": true
-            , "alwaysVisibleMiddleBar" : true
-        }'></div>
+        <figure data-image='{"sliderValue": 50, "maximizable": true, "alwaysVisibleMiddleBar" : true}'>
+            <img src="Images/Image_086.jpg" alt="Low (Denoise Off)" />
+            <img src="Images/Image_082.jpg" alt="Low (Denoise On)" />
+            <figcaption>Low Denoise Off vs On</figcaption>
+        </figure>
 
-        <div data-image='{
-            "images": ["Articles/VBAO/Images/Image_087.jpg", "Articles/VBAO/Images/Image_083.jpg"]
-            , "texts": ["Medium (Denoise Off)", "Medium (Denoise On)"]
-            , "sliderValue": 50
-            , "maximizable": true
-            , "alwaysVisibleMiddleBar" : true
-        }'></div>
+        <!--<div data-image='{
+        "images": ["Articles/VBAO/Images/Image_086.jpg", "Articles/VBAO/Images/Image_082.jpg"]
+        , "texts": ["Low (Denoise Off)", "Low (Denoise On)"]
+        , "sliderValue": 50
+        , "maximizable": true
+        , "alwaysVisibleMiddleBar" : true
+    }'></div>-->
 
-        <div data-image='{
-            "images": ["Articles/VBAO/Images/Image_088.jpg", "Articles/VBAO/Images/Image_084.jpg"]
-            , "texts": ["High (Denoise Off)", "High (Denoise On)"]
-            , "sliderValue": 50
-            , "maximizable": true
-            , "alwaysVisibleMiddleBar" : true
-        }'></div>
+        <figure data-image='{"sliderValue": 50, "maximizable": true, "alwaysVisibleMiddleBar" : true}'>
+            <img src="Images/Image_087.jpg" alt="Medium (Denoise Off)" />
+            <img src="Images/Image_083.jpg" alt="Medium (Denoise On)" />
+            <figcaption>Medium Denoise Off vs On</figcaption>
+        </figure>
 
-        <div data-image='{
-            "images": ["Articles/VBAO/Images/Image_089.jpg", "Articles/VBAO/Images/Image_085.jpg"]
-            , "texts": ["Ultra (Denoise Off)", "Ultra (Denoise On)"]
-            , "sliderValue": 50
-            , "maximizable": true
-            , "alwaysVisibleMiddleBar" : true
-        }'></div>
+        <!--<div data-image='{
+        "images": ["Articles/VBAO/Images/Image_087.jpg", "Articles/VBAO/Images/Image_083.jpg"]
+        , "texts": ["Medium (Denoise Off)", "Medium (Denoise On)"]
+        , "sliderValue": 50
+        , "maximizable": true
+        , "alwaysVisibleMiddleBar" : true
+    }'></div>-->
+
+        <figure data-image='{"sliderValue": 50, "maximizable": true, "alwaysVisibleMiddleBar" : true}'>
+            <img src="Images/Image_088.jpg" alt="High (Denoise Off)" />
+            <img src="Images/Image_084.jpg" alt="High (Denoise On)" />
+            <figcaption>High Denoise Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VBAO/Images/Image_088.jpg", "Articles/VBAO/Images/Image_084.jpg"]
+        , "texts": ["High (Denoise Off)", "High (Denoise On)"]
+        , "sliderValue": 50
+        , "maximizable": true
+        , "alwaysVisibleMiddleBar" : true
+    }'></div>-->
+
+        <figure data-image='{"sliderValue": 50, "maximizable": true, "alwaysVisibleMiddleBar" : true}'>
+            <img src="Images/Image_089.jpg" alt="Ultra (Denoise Off)" />
+            <img src="Images/Image_085.jpg" alt="Ultra (Denoise On)" />
+            <figcaption>Ultra Denoise Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VBAO/Images/Image_089.jpg", "Articles/VBAO/Images/Image_085.jpg"]
+        , "texts": ["Ultra (Denoise Off)", "Ultra (Denoise On)"]
+        , "sliderValue": 50
+        , "maximizable": true
+        , "alwaysVisibleMiddleBar" : true
+    }'></div>-->
 
         <p>
             You might have noticed that there is almost no visual difference between high and ultra, but performance-wise it is a huge step.
@@ -505,13 +511,125 @@
             more details and reduce banding artifacts.
         </p>
 
-        <div class="code" data-lang="hlsl" data-url="Articles/VBAO/NoiseVBAO.hlsl"></div>
+        <pre><code data-lang="hlsl">
+        TEXTURE2D(_HilbertMap);
+        uint _HilbertResolution;
+        int _FrameCountMod64;
 
-        <div data-image='{
-            "images": ["Articles/VBAO/Images/Image_075.jpg"]
-            , "maximizable": true
-            , "texts": ["Raw Occlusion"]
-        }'></div>
+        int2 ihilbert(int i, int level)
+        {
+            int2 p = int2(0, 0);
+            for (int k = 0; k < level; k++)
+            {
+                int2 r = int2(i >> 1, i ^ (i >> 1)) & 1;
+                if (r.y == 0)
+                {
+                    if (r.x == 1)
+                    {
+                        p = (1 << k) - 1 - p;
+                    }
+                    p = p.yx;
+                }
+                p += r << k;
+                i >>= 2;
+            }
+            return p;
+        }
+
+        float2 MartinRobertR1Sequence(uint n)
+        {
+            const float g = 1.6180339887498948482;
+            const float a1 = 1.0 / g;
+            float x = frac(0.5 + a1 * n);
+            return x;
+        }
+
+        float2 MartinRobertR2Sequence(uint n)
+        {
+            const float g = 1.32471795724474602596;
+            const float a1 = 1.0 / g;
+            const float a2 = 1.0 / (g * g);
+            float x = frac(0.5 + a1 * n);
+            float y = frac(0.5 + a2 * n);
+            return float2(x, y);
+        }
+
+        uint Hilbert(uint2 p, uint level)
+        {
+            uint d = 0;
+            for (uint k = 0; k < level; k++)
+            {
+                uint n = level - k - 1;
+                uint2 r = (p >> n) & 1;
+                d += ((3 * r.x) ^ r.y) << (2 * n);
+                if (r.y == 0)
+                {
+                    if (r.x == 1)
+                    {
+                        p = (1 << n) - 1 - p;
+                    }
+                    p = p.yx;
+                }
+            }
+            return d;
+        }
+
+        float R1Noise(uint2 coord)
+        {
+            uint n = Hilbert(coord, 6);
+            n += 288 * _FrameCountMod64;
+            return MartinRobertR1Sequence(n);
+        }
+
+        float2 R2Noise(uint2 coord)
+        {
+            uint n = Hilbert(coord, 6);
+            n += 288 * _FrameCountMod64;
+            return MartinRobertR2Sequence(n);
+        }
+
+        uint GetHilbertLUT(uint2 coord)
+        {
+            coord %= _HilbertResolution;
+            float2 encoded = LOAD_TEXTURE2D(_HilbertMap, coord);
+            uint r = (uint(encoded.r * 255) & 0xFF);
+            uint b = (uint(encoded.g * 255) & 0xFF) << 8;
+            uint n = r + b;
+            return n;
+        }
+
+        float2 R1NoiseLUT(uint2 coord)
+        {
+            uint n = GetHilbertLUT(coord);
+            n += 288 * _FrameCountMod64;
+            return MartinRobertR1Sequence(n);
+        }
+
+        float2 R2NoiseLUT(uint2 coord)
+        {
+            uint n = GetHilbertLUT(coord);
+            n += 288 * _FrameCountMod64;
+            return MartinRobertR2Sequence(n);
+        }
+
+        float2 InterleavedGradientNoise2(uint2 coord)
+        {
+            float ign = InterleavedGradientNoise(coord, _FrameCountMod64);
+            float ign2 = frac(ign * 4.854102);
+            return float2(ign, ign2);
+        }
+        </code></pre>
+
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_075.jpg" alt="Raw Occlusion" />
+            <figcaption>Raw Occlusion</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VBAO/Images/Image_075.jpg"]
+        , "maximizable": true
+        , "texts": ["Raw Occlusion"]
+    }'></div>-->
 
         <p>
             In order to prevent ghosting in the TAA pass, it is important to denoise AO spatially before. To do so, I have used
@@ -519,23 +637,121 @@
             gaussian blur filter provided good results:
         </p>
 
-        <div class="code" data-lang="hlsl" data-url="Articles/VBAO/DenoiseVBAO.hlsl"></div>
+        <pre><code data-lang="hlsl">
+        int _AO_DenoiseRadius;
+        float2 _AO_DenoiseDirection;
+        float3 _AO_FarParams; // start, end, range
+        float _AO_DenoiseWeights[32]; // Precalculated gaussian weights
 
-        <div data-image='{
-            "images": ["Articles/VBAO/Images/Image_076.jpg"]
-            , "maximizable": true
-            , "texts": ["Spatial Denoising"]
-        }'></div>
+        float GetDepthRange(float eyeDepth, float viewAngle, float targetResolutionHeight, float farStart, float farRange)
+        {
+            const float _DENOISE_SMOOTHNESS = 0.02;
+            const float _DENOISE_MAX_SMOOTHNESS = 2.0;
+            const float _DENOISE_FAR_SMOOTHNESS = 5.0;
+	
+            float farness = saturate((eyeDepth - farStart) / farRange);
+            float depthRange = min(_DENOISE_SMOOTHNESS / viewAngle / (targetResolutionHeight / 1080.0), _DENOISE_MAX_SMOOTHNESS);
+            depthRange = lerp(depthRange, _DENOISE_FAR_SMOOTHNESS, farness);
+            return depthRange;
+        }
+
+        OcclusionOutput DenoiseAO(Texture2D tex, float4 texelSize, float2 screenUV)
+        {
+            int2 coord = screenUV * texelSize.zw;
+	
+            float2 depths;
+            bool layer2;
+            SampleSceneDepth(screenUV, depths, layer2);
+	
+            float eyeDepth = LinearEyeDepth(depths.x);
+            float3 normal = DecodeNormal(SampleSceneNormals(screenUV, false).zw);
+            float3 position = ReconstructWorldPosition(screenUV, depths.x);
+            float3 viewDirection = GetViewDirection(position);
+            float angle = Square(max(0.0001, abs(dot(viewDirection, normal))));
+            float depthRange = GetDepthRange(eyeDepth, angle, texelSize.w, _AO_FarParams.x, _AO_FarParams.z);
+            float avgOcclusion = 0.0;
+            float totalWeight = 0.0;
+	
+            #ifdef _MULTI_LAYER_DEPTH
+                float eyeDepth2 = LinearEyeDepth(depths.y);
+                float3 normal2 = DecodeNormal(SampleSceneNormals(screenUV, true).zw);
+                float3 position2 = ReconstructWorldPosition(screenUV, depths.y);
+                float3 viewDirection2 = GetViewDirection(position2);
+                float angle2 = Square(max(0.0001, abs(dot(viewDirection2, normal2))));
+                float depthRange2 = GetDepthRange(eyeDepth2, angle2, texelSize.w, _AO_FarParams.x, _AO_FarParams.z);
+                float avgOcclusion2 = 0.0;
+                float totalWeight2 = 0.0;
+            #endif
+	
+            for (int i = -_AO_DenoiseRadius; i <= _AO_DenoiseRadius; i++)
+            {
+                float2 otherUV = screenUV + _AO_DenoiseDirection * i * texelSize.xy;
+                float3 occlusionSample = SAMPLE_TEXTURE2D_LOD(tex, point_clamp_sampler, otherUV, 0).rgb;
+                float2 otherDepths = SampleSceneDepths(otherUV);
+		
+                #ifdef _MULTI_LAYER_DEPTH
+                    float occlusion = occlusionSample.g;
+                    float occlusion2 = occlusionSample.b;
+                    float otherDepth = otherDepths.x;
+                    float otherDepth2 = otherDepths.y;
+                #else
+                    float occlusion = occlusionSample.r;
+                    float otherDepth = otherDepths.x;
+                #endif
+		
+                float otherEyeDepth = LinearEyeDepth(otherDepth);
+                float weight = 1.0 - saturate(abs(eyeDepth - otherEyeDepth) / depthRange);
+                weight *= _AO_DenoiseWeights[abs(i)];
+                avgOcclusion += occlusion * weight;
+                totalWeight += weight;
+		
+                #ifdef _MULTI_LAYER_DEPTH
+                    float otherEyeDepth2 = LinearEyeDepth(otherDepth2);
+                    float weight2 = 1.0 - saturate(abs(eyeDepth2 - otherEyeDepth2) / depthRange);
+                    weight2 *= _AO_DenoiseWeights[abs(i)];
+                    avgOcclusion2 += occlusion2 * weight2;
+                    totalWeight2 += weight2;
+                #endif
+            }
+	
+            avgOcclusion /= totalWeight;
+            if (DepthIsSkybox(depths.x)) avgOcclusion = 1.0;
+	
+            #ifdef _MULTI_LAYER_DEPTH
+                avgOcclusion2 /= totalWeight2;
+                if (DepthIsSkybox(depths.y)) avgOcclusion2 = 1.0;
+                return OcclusionOutput(layer2 ? avgOcclusion2 : avgOcclusion, avgOcclusion, avgOcclusion2);
+            #else
+                return avgOcclusion;
+            #endif
+        }
+        </code></pre>
+
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_076.jpg" alt="Spatial Denoising" />
+            <figcaption>Spatial Denoising</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VBAO/Images/Image_076.jpg"]
+        , "maximizable": true
+        , "texts": ["Spatial Denoising"]
+    }'></div>-->
 
         <p>
             Finally, enabling temporal antialiasing completely smooths out the result without ghosting artifacts:
         </p>
 
-        <div data-image='{
-            "images": ["Articles/VBAO/Images/Image_077.jpg"]
-            , "maximizable": true
-            , "texts": ["Spatio-Temporal Denoising"]
-        }'></div>
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_077.jpg" alt="Spatio-Temporal Denoising" />
+            <figcaption>Spatio-Temporal Denoising</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VBAO/Images/Image_077.jpg"]
+        , "maximizable": true
+        , "texts": ["Spatio-Temporal Denoising"]
+    }'></div>-->
 
 
         <h3>Results</h3>
@@ -546,291 +762,533 @@
             the bottom of the comparisons to see how the game looks with VBAO Off/On.
         </p>
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_001.jpg" alt="" />
+            <figcaption>Image_001</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_001.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_003.jpg" alt="Off" />
+            <img src="Images/Image_002.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_003.jpg", "Articles/VBAO/Images/Image_002.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_004.jpg" alt="" />
+            <figcaption>Image_004</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_004.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_006.jpg" alt="Off" />
+            <img src="Images/Image_005.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_006.jpg", "Articles/VBAO/Images/Image_005.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_007.jpg" alt="" />
+            <figcaption>Image_007</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_007.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_009.jpg" alt="Off" />
+            <img src="Images/Image_008.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_009.jpg", "Articles/VBAO/Images/Image_008.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_010.jpg" alt="" />
+            <figcaption>Image_010</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_010.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_012.jpg" alt="Off" />
+            <img src="Images/Image_011.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_012.jpg", "Articles/VBAO/Images/Image_011.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_013.jpg" alt="" />
+            <figcaption>Image_013</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_013.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_015.jpg" alt="Off" />
+            <img src="Images/Image_014.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_015.jpg", "Articles/VBAO/Images/Image_014.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_016.jpg" alt="" />
+            <figcaption>Image_016</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_016.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_018.jpg" alt="Off" />
+            <img src="Images/Image_017.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_018.jpg", "Articles/VBAO/Images/Image_017.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_019.jpg" alt="" />
+            <figcaption>Image_019</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_019.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_021.jpg" alt="Off" />
+            <img src="Images/Image_020.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_021.jpg", "Articles/VBAO/Images/Image_020.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_022.jpg" alt="" />
+            <figcaption>Image_022</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_022.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_024.jpg" alt="Off" />
+            <img src="Images/Image_023.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_024.jpg", "Articles/VBAO/Images/Image_023.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_025.jpg" alt="" />
+            <figcaption>Image_025</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_025.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_027.jpg" alt="Off" />
+            <img src="Images/Image_026.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_027.jpg", "Articles/VBAO/Images/Image_026.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_028.jpg" alt="" />
+            <figcaption>Image_028</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_028.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_030.jpg" alt="Off" />
+            <img src="Images/Image_029.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_030.jpg", "Articles/VBAO/Images/Image_029.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_031.jpg" alt="" />
+            <figcaption>Image_031</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_031.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_033.jpg" alt="Off" />
+            <img src="Images/Image_032.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_033.jpg", "Articles/VBAO/Images/Image_032.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_034.jpg" alt="" />
+            <figcaption>Image_034</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_034.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_036.jpg" alt="Off" />
+            <img src="Images/Image_035.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_036.jpg", "Articles/VBAO/Images/Image_035.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_037.jpg" alt="" />
+            <figcaption>Image_037</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_037.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_039.jpg" alt="Off" />
+            <img src="Images/Image_038.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_039.jpg", "Articles/VBAO/Images/Image_038.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_040.jpg" alt="" />
+            <figcaption>Image_040</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_040.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_042.jpg" alt="Off" />
+            <img src="Images/Image_041.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_042.jpg", "Articles/VBAO/Images/Image_041.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_043.jpg" alt="" />
+            <figcaption>Image_043</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_043.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_045.jpg" alt="Off" />
+            <img src="Images/Image_044.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_045.jpg", "Articles/VBAO/Images/Image_044.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_046.jpg" alt="" />
+            <figcaption>Image_046</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_046.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_048.jpg" alt="Off" />
+            <img src="Images/Image_047.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_048.jpg", "Articles/VBAO/Images/Image_047.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_049.jpg" alt="" />
+            <figcaption>Image_049</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_049.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_051.jpg" alt="Off" />
+            <img src="Images/Image_050.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_051.jpg", "Articles/VBAO/Images/Image_050.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_052.jpg" alt="" />
+            <figcaption>Image_052</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_052.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_054.jpg" alt="Off" />
+            <img src="Images/Image_053.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_054.jpg", "Articles/VBAO/Images/Image_053.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_055.jpg" alt="Image_055" />
+            <figcaption>Image_055</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_055.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_057.jpg" alt="Off" />
+            <img src="Images/Image_056.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_057.jpg", "Articles/VBAO/Images/Image_056.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_058.jpg" alt="Image_058" />
+            <figcaption>Image_058</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_058.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_060.jpg" alt="Off" />
+            <img src="Images/Image_059.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_060.jpg", "Articles/VBAO/Images/Image_059.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_061.jpg" alt="Image_061" />
+            <figcaption>Image_061</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_061.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_063.jpg" alt="Off" />
+            <img src="Images/Image_062.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_063.jpg", "Articles/VBAO/Images/Image_062.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"maximizable": true}'>
+            <img src="Images/Image_064.jpg" alt="Image_064" />
+            <figcaption>Image_064</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_064.jpg"]
             , "maximizable": true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 0, "maximizable": true, "alwaysVisibleMiddleBar" : false}'>
+            <img src="Images/Image_066.jpg" alt="Off" />
+            <img src="Images/Image_065.jpg" alt="On" />
+            <figcaption>VBAO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_066.jpg", "Articles/VBAO/Images/Image_065.jpg"]
             , "texts": ["Off", "On"]
             , "sliderValue": 0
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : false
-        }'></div>
+        }'></div>-->
 
         <h3>Conclusion</h3>
 
@@ -846,21 +1304,33 @@
             while VBAO has a better clue about regions where less light would reach.
         </p>
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 50, "maximizable": true, "alwaysVisibleMiddleBar" : true}'>
+            <img src="Images/Image_072.jpg" alt="Off" />
+            <img src="Images/Image_071.jpg" alt="On" />
+            <figcaption>SSAO vs VBAO</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_072.jpg", "Articles/VBAO/Images/Image_071.jpg"]
             , "texts": ["SSAO", "VBAO"]
             , "sliderValue": 50
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : true
-        }'></div>
+        }'></div>-->
 
-        <div data-image='{
+        <figure data-image='{"sliderValue": 50, "maximizable": true, "alwaysVisibleMiddleBar" : true}'>
+            <img src="Images/Image_074.jpg" alt="Off" />
+            <img src="Images/Image_073.jpg" alt="On" />
+            <figcaption>SSAO vs VBAO</figcaption>
+        </figure>
+
+        <!--<div data-image='{
             "images": ["Articles/VBAO/Images/Image_074.jpg", "Articles/VBAO/Images/Image_073.jpg"]
             , "texts": ["SSAO", "VBAO"]
             , "sliderValue": 50
             , "maximizable": true
             , "alwaysVisibleMiddleBar" : true
-        }'></div>
+        }'></div>-->
 
         <p>
             I honestly don't think it gets much better than this when it comes to screen-space Ambient Occlusion, but
