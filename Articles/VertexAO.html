@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertex Ambient Occlusion</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/main.css" />
+</head>
+<body>
+    <main>
+        <h1>Vertex Ambient Occlusion</h1>
+        <h2>
+            March 10th, 2025 <br />
+            Unreleased Project
+        </h2>
+
+        <h3>Motivation</h3>
+
+        <p>
+            Recently I found myself enjoying the world of Termina while playing <i>The Legend of Zelda: Majora's Mask 3D</i>. Each time I entered
+            a house in Clock Town I thought the lighting looked amazing for a 3DS game. Per vertex lighting was used in many 3DS games to minimize
+            shading cost, but that's not all that is going on in this game. Indirect lighting is baked into vertex attributes to speed up performance
+            while still getting a high quality approximation.
+        </p>
+
+        <figure data-image='{"sliderValue": 50, "maximizable": true}'>
+            <img src="VertexAO/Images/VertexAO_029_BombShop_Base.png" alt="Unlit" />
+            <img src="VertexAO/Images/VertexAO_031_BombShop_Lit.png" alt="AO + Light" />
+            <figcaption>Unlit vs AO + Light</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_029_BombShop_Base.png", "Articles/VertexAO/Images/VertexAO_031_BombShop_Lit.png"]
+        , "texts": ["Unlit", "AO + Light"]
+        , "sliderValue": 50
+        , "maximizable": true
+    }'></div>-->
+
+        <p>
+            I decided to split lighting calculations into two major factors:
+        </p>
+
+        <ul>
+            <li>
+                Realtime per vertex lighting: Since I'm using the Unity Engine, this lighting technique is already available.
+            </li>
+            <li>
+                Baked per vertex ambient occlusion: Instead of baking indirect lighting from actual light sources, I decided to calculate average occlusion
+                surrounding the vertex, which allows the result to be valid in any lighting scenario. This is similar to how SSAO works. Since this is not
+                implemented in Unity, it's up to me to come up with an algorithm to compute occlusion.
+            </li>
+        </ul>
+
+        <h3>Implementation</h3>
+
+        <p>The first idea that comes to mind seems very straightfoward:</p>
+
+        <ul>
+            <li>1: Iterate all vertices.</li>
+            <li>2: Raycast in many directions in the hemisphere pointing towards the vertex normal.</li>
+            <li>3: Average occlusion data based on hit count and distance between the vertex and the occluders.</li>
+        </ul>
+
+        <figure data-image='{"maximizable": false}'>
+            <img src="VertexAO/Images/VertexAO_Explanation2.png" />
+            <figcaption>Vertex AO Explanation (2)</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_Explanation2.png"]
+        , "maximizable": false
+    }'></div>-->
+
+        <p>I'm going to use a simple mesh to debug the results using the mentioned algorithm:</p>
+
+        <figure data-image='{"maximizable": false}'>
+            <img src="VertexAO/Images/VertexAO_001_NaiveApproach.png" />
+            <figcaption>Vertex AO Naive Approach</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_001_NaiveApproach.png"]
+        , "maximizable": false
+    }'></div>-->
+
+        <p>
+            A clear issue with this approach arises at corners&mdash;such as a vertex where a floor meets a vertical wall. Here, the ray
+            origin is coplanar with the wall and floor triangles, potencially causing false negatives during raycasting. We can mitigate this by offsetting
+            the ray origin, but where to?
+        </p>
+
+        <p>As I said, each ray origin is coplanar with its own triangle and potentially other triangles. We need to apply two different offsets:</p>
+
+        <ul>
+            <li>
+                <b>Normal offset:</b> Slightly displace the ray origin along its triangle normal. This way, it stops being coplanar with its own triangle.
+            </li>
+            <li>
+                <b>Tangent offset:</b> Shifting the ray origin along a triangle's tangent&mdash;a vector perpendicular to the normal&mdash;it from being
+                coplanar with other triangles at corners.
+            </li>
+        </ul>
+
+        <p>
+            Offseting the ray origin along a tangent is tricky though, because if the ray origin ends up outside the original triangle, leaking can occur at corners.
+            For example, a vertex situated at a corner in the floor, could be displaced inside a wall. What we need is to find a tangent direction that traverses the
+            triangle. When we move the ray origin along that tangent, we must ensure that the ray origin lies inside the triangle.
+        </p>
+
+        <ul>
+            <li>1: Calculate the bisector vector that splits the triangle in two triangles with equal angles at each side.</li>
+            <li>2: Calculate the intersection between the bisector vector and the line defined by the other two vertices of the current vertex triangle.</li>
+            <li>
+                3: Move along the bisector vector a certain distance. If it exceeds the calculated intersection, use the intersection to prevent stepping out
+                of the triangle.
+            </li>
+        </ul>
+
+        <figure data-image='{"maximizable": false}'>
+            <img src="VertexAO/Images/VertexAO_Explanation0.png" />
+            <figcaption>Vertex AO Explanation (0)</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_Explanation0.png"]
+        , "maximizable": false
+    }'></div>-->
+
+        <p>
+            This allows us to effectively raycast from an origin with a normal and tangent offset. However, a vertex may belong to more than one triangle, so I came up with a
+            way to use all those triangles to calculate occlusion:
+        </p>
+
+        <ul>
+            <li>1: Gather all the triangles in advance and store the angle for each of those triangles for the vertex corner.</li>
+            <li>2: Calculate the total angle by summing each triangle's angle and weigh each triangle's contribution based on the angle ratio.</li>
+            <li>3: Distribute the ray count across each triangle based on its weight, ensuring that triangles with larger angles perform more raycasts.</li>
+        </ul>
+
+        <figure data-image='{"maximizable": false}'>
+            <img src="VertexAO/Images/VertexAO_Explanation1.png" />
+            <figcaption>Vertex AO Explanation (1)</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_Explanation1.png"]
+        , "maximizable": false
+    }'></div>-->
+
+        <p>Let's check the previous example again with the updated algorithm:</p>
+
+        <figure data-image='{"maximizable": false}'>
+            <img src="VertexAO/Images/VertexAO_002_SampleNeighbourhood.png" />
+            <figcaption>Vertex AO Neighbourhood sampling</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_002_SampleNeighbourhood.png"]
+        , "maximizable": false
+    }'></div>-->
+
+        <p>Let's also check how the algorithm behaves with rounded shapes:</p>
+
+        <figure data-image='{"maximizable": false}'>
+            <img src="VertexAO/Images/VertexAO_003_RoundedShapes.png" />
+            <figcaption>Vertex AO Rounded Shapes</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_003_RoundedShapes.png"]
+        , "maximizable": false
+    }'></div>-->
+
+        <p>
+            There are many factors related to mesh topology that can affect the final look of this ambient
+            occlusion implementation. A lot of care must be put into crafting the meshes for them to
+            be baked in this manner. Therefore, I added some options to allow artists to fine-tune the algorithm
+            to each particular mesh:
+        </p>
+
+        <ul>
+            <li>
+                <b>Look:</b>
+                <ul>
+                    <li>Range: The radius of the hemisphere.</li>
+                    <li>Curve: Since the result of the AO is linear, this curve can be used to modify that look and make it smoother.</li>
+                </ul>
+            </li>
+            <li>
+                <b>Raycasting:</b>
+                <ul>
+                    <li>
+                        Max angle: The max angle of the hemisphere is 90 degrees by default, which may capture unintended occlusion. This variable allows the user to
+                        narrow the hemisphere's space as needed.
+                    </li>
+                    <li>Vertex and normal Offset: How far from the vertex the rays should originate.</li>
+                    <li>Double sided: Allows to configure the behaviour of raycasting when colliding against triangles that are not facing the vertex.</li>
+                </ul>
+            </li>
+            <li>
+                <b>Merging:</b>
+                <ul>
+                    <li>Smooth normals: Preprocess the mesh before calculating AO to average the normals of nearby vertices.</li>
+                    <li>Merge results: Postprocess the mesh after calculating AO to average the occlusion values of nearby vertices.</li>
+                </ul>
+            </li>
+        </ul>
+
+        <p>
+            Finally, these results must be saved. I chose to store the occlusion values in a byte array (8-bit depth for occlusion). The array also contains
+            information about mesh names and vertex counts so that occlusion values can be invalidated if the model changes significantly. Additionally,
+            there are different places where we might want to store the byte array:
+        </p>
+
+        <ul>
+            <li>
+                <b>Per model:</b> The occlusion values are stored in a binary file next to the original mode. Each time the model is
+                reimported the occlusion values are reapplied. If the model is deleted, the occlusion file and its meta file
+                are automatically removed from the project.
+            </li>
+            <li>
+                Per instance: The occlusion values are serialized in the component and reapplied on an instanced mesh when the game object is initialized for the first time.
+            </li>
+        </ul>
+
+        <h3>Results</h3>
+
+        <p>Let's move on to more complicated meshes, such as characters:</p>
+
+        <figure data-image='{"maximizable": true}'>
+            <img src="VertexAO/Images/VertexAO_CharactersAO.png" />
+            <figcaption>Vertex AO Characters</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_CharactersAO.png"]
+        , "maximizable": true
+    }'></div>-->
+
+        <figure data-image='{"sliderValue": 50, "maximizable": true}'>
+            <img src="VertexAO/Images/VertexAO_005_DekuLink_Base.png" alt="AO Off" />
+            <img src="VertexAO/Images/VertexAO_006_DekuLink_Final.png" alt="AO On" />
+            <figcaption>AO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_005_DekuLink_Base.png", "Articles/VertexAO/Images/VertexAO_006_DekuLink_Final.png"]
+        , "texts": ["AO Off", "AO On"]
+        , "sliderValue": 50
+        , "maximizable": true
+    }'></div>-->
+
+        <figure data-image='{"sliderValue": 50, "maximizable": true}'>
+            <img src="VertexAO/Images/VertexAO_012_Link_Base.png" alt="AO Off" />
+            <img src="VertexAO/Images/VertexAO_013_Link_Final.png" alt="AO On" />
+            <figcaption>AO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_012_Link_Base.png", "Articles/VertexAO/Images/VertexAO_013_Link_Final.png"]
+        , "texts": ["AO Off", "AO On"]
+        , "sliderValue": 50
+        , "maximizable": true
+    }'></div>-->
+
+        <p>
+            Alright, so characters have proper occlusion now, but what about environments? This is a more releveant use case because
+            character AO can easily be painted by an artist but doing so for an entire scene's ambient occlusion is much more complex. Thus, this
+            is where this algorithm can shine. Take into account that there are no lights in the following pictures, just ambient occlusion, so
+            they might seem a bit dark but it is to be expected.
+        </p>
+
+        <figure data-image='{"maximizable": true}'>
+            <img src="VertexAO/Images/VertexAO_014_MilkBar_AO.png" />
+            <figcaption>Vertex AO MilkBar</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_014_MilkBar_AO.png"]
+        , "maximizable": true
+    }'></div>-->
+
+        <figure data-image='{"sliderValue": 50, "maximizable": true}'>
+            <img src="VertexAO/Images/VertexAO_015_MilkBar_Base.png" alt="AO Off" />
+            <img src="VertexAO/Images/VertexAO_016_MilkBar_Final.png" alt="AO On" />
+            <figcaption>AO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_015_MilkBar_Base.png", "Articles/VertexAO/Images/VertexAO_016_MilkBar_Final.png"]
+        , "texts": ["AO Off", "AO On"]
+        , "sliderValue": 50
+        , "maximizable": true
+    }'></div>-->
+
+        <figure data-image='{"maximizable": true}'>
+            <img src="VertexAO/Images/VertexAO_025_CuriosityShop_AO.png" />
+            <figcaption>Vertex AO Curiosity Shop</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_025_CuriosityShop_AO.png"]
+        , "maximizable": true
+    }'></div>-->
+
+        <figure data-image='{"sliderValue": 50, "maximizable": true}'>
+            <img src="VertexAO/Images/VertexAO_026_CuriosityShop_Base.png" alt="AO Off" />
+            <img src="VertexAO/Images/VertexAO_027_CuriosityShop_Final.png" alt="AO On" />
+            <figcaption>AO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_026_CuriosityShop_Base.png", "Articles/VertexAO/Images/VertexAO_027_CuriosityShop_Final.png"]
+        , "texts": ["AO Off", "AO On"]
+        , "sliderValue": 50
+        , "maximizable": true
+    }'></div>-->
+
+        <figure data-image='{"maximizable": true}'>
+            <img src="VertexAO/Images/VertexAO_028_BombShop_AO.png" />
+            <figcaption>Vertex AO Bomb Shop</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_028_BombShop_AO.png"]
+        , "maximizable": true
+    }'></div>-->
+
+        <figure data-image='{"sliderValue": 50, "maximizable": true}'>
+            <img src="VertexAO/Images/VertexAO_029_BombShop_Base.png" alt="AO Off" />
+            <img src="VertexAO/Images/VertexAO_030_BombShop_Final.png" alt="AO On" />
+            <figcaption>AO Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/VertexAO/Images/VertexAO_029_BombShop_Base.png", "Articles/VertexAO/Images/VertexAO_030_BombShop_Final.png"]
+        , "texts": ["AO Off", "AO On"]
+        , "sliderValue": 50
+        , "maximizable": true
+    }'></div>-->
+
+        <h3>Conclusion</h3>
+
+        <p>
+            Baking ambient occlusion as vertex data is an elegant and simple solution to a complex problem. Calculating proper ambient occlusion
+            in realtime remains a major undertaking to this day. The best results can be achieved using raytracing, but it is very expensive. Another option is SSAO but it
+            becomes unstable if used with a large radius. Lightmaps could be considered, but they require modifying shaders to support them and take up a significant amount of memory.
+        </p>
+
+        <p>
+            At the end of the day, nothing beats storing data as vertex attributes in terms of performance, especially if you combine existing vertex color with occlusion values.
+            If you are going for a retro look or have a tight technical budget, this might be your best bet.
+        </p>
+
+        <p>
+            However, as I mentioned earlier, meshes need to be designed with a relatively uniform triangle density while minimizing clipping. If you're already deep into
+            development and your models weren't created with this in mind, adapting them could require a lot of time and effort. Additionally, since this is not a realtime
+            solution, you will have to add contact shadows to dynamic objects using a different technique, such as blob shadows.
+        </p>
+
+        <h3>Going forward</h3>
+
+        <p>
+            We could actually go a step forward and bake indirect and even direct lighting from static light sources into vertex data. As it's usually the case with lightmaps, most if not all lighting information would be baked and only dynamic objects would require realtime lighting calculations.
+        </p>
+
+        <p>
+            In the AO solution presented in this article, occlusion is not calculated by actually simulating the bounces of light rays, so that could be another potential area of research.
+        </p>
+    </main>
+    <script src="/main.js"></script>
+</body>
