@@ -18,9 +18,86 @@
 
         <h3>Motivation</h3>
 
+        <p>
+            Last year I implemented a lighting technique which consists of baking data into vertex attributes.
+        </p>
+
         <figure>
             <img src="BelsFanfareRendering/Images/PitOfOffering_Final.png" />
             <figcaption>Pit Of Offerings Unlit vs Lit</figcaption>
+        </figure>
+
+        <h3>A look at the past</h3>
+
+        <p>
+            Most games in the past relied heavily on baked lighting because it was necessary to depict complex scenes in realtime.
+            When we think of precalculated lighting nowadays, we think of lightmaps. However, many games had their lighting baked into vertices instead.
+            It required less memory, less time to precalculate, and offered better performance.
+        </p>
+
+        <p>
+            Take a look at a scene from <i>TLOZ: Skyward Sword</i> for example. Lighting is very smooth, without hard shadows. You could almost believe
+            that it is just good texture work.
+        </p>
+
+        <figure>
+            <img src="BelsFanfareRendering/Images/ZeldaSS_WaterfallCave.png" alt="Textures On" />
+            <figcaption>Zelda Skyward Sword, Waterfall Cave. Textures On.</figcaption>
+        </figure>
+
+        <p>
+            However, thanks to the website <a href="https://noclip.website/">noclip</a>, we can disable textures and uncover the truth:
+        </p>
+
+        <figure>
+            <img src="BelsFanfareRendering/Images/ZeldaSS_WaterfallCave_Vertex.png" alt="Textures Off" />
+            <figcaption>Zelda Skyward Sword, Waterfall Cave. Textures Off.</figcaption>
+        </figure>
+
+        <p>
+            Indeed, it's all just good old vertex colors. It is hard to put into words just how much baked vertex lighting contributes to the final look of older
+            Zelda games, so let's take a closer look. For instance, take a look at <i>TLOZ: The Wind waker</i>. It's a cell shaded game, surely it is just hard lights and cartoony textures, right?
+        </p>
+
+        <figure>
+            <img src="BelsFanfareRendering/Images/ZeldaWW_ForestOfFairies_Unlit.png" alt="Unlit" />
+            <img src="BelsFanfareRendering/Images/ZeldaWW_ForestOfFairies_Lit.png" alt="Lit" />
+            <figcaption>Zelda Wind Waker, Forest Of Fairies. Unlit vs Lit.</figcaption>
+        </figure>
+
+        <figure data-image='{"sliderValue":60, "alwaysShowMiddleBar":true}'>
+            <img src="BelsFanfareRendering/Images/ZeldaWW_WindfallIsland_Unlit.png" alt="Unlit" />
+            <img src="BelsFanfareRendering/Images/ZeldaWW_WindfallIsland_Lit.png" alt="Lit" />
+            <figcaption>Zelda Wind Waker, Windfall Island. Unlit vs Lit.</figcaption>
+        </figure>
+
+        <p>
+            As you can see, vertex color is used to add ambient occlusion to the scenes. It is completely essential to the game art's style as it would otherwise look completely flat, especially
+            in interiors. However, it is so subtle and smooth, that it can go unnoticed.
+        </p>
+
+        <p>
+            In Bel's Fanfare, our biggest inspirations are the Zelda games from the N64 and their 3DS remasters: <i>TLOZ: Ocarina Of Time</i> and <i>TLOZ: Majora's Mask</i>.
+            The art direction of Bel's Fanfare was very clear and specific from the very beginning. It was not about recreating the look of N64 games as they actually were, but about how people remember them.
+            That's why we looked at the Zelda remasters from the 3DS, because in our opinion, they achieved that goal. So, how was lighting rendered in those games?
+        </p>
+
+        <figure>
+            <img src="BelsFanfareRendering/Images/ZeldaMM_FairyFountain_Unlit.png" alt="Unlit" />
+            <img src="BelsFanfareRendering/Images/ZeldaMM_FairyFountain_Lit.png" alt="Lit" />
+            <figcaption>Zelda Majora's Mask, Fairy Fountain. Unlit vs Lit.</figcaption>
+        </figure>
+
+        <figure>
+            <img src="BelsFanfareRendering/Images/ZeldaMM_MayorsOffice_Unlit.png" alt="Unlit" />
+            <img src="BelsFanfareRendering/Images/ZeldaMM_MayorsOffice_Lit.png" alt="Lit" />
+            <figcaption>Zelda Majora's Mask, Mayor's Office. Unlit vs Lit.</figcaption>
+        </figure>
+
+        <figure>
+            <img src="BelsFanfareRendering/Images/ZeldaMM_StockPotInn_Unlit.png" alt="Unlit" />
+            <img src="BelsFanfareRendering/Images/ZeldaMM_StockPotInn_Lit.png" alt="Lit" />
+            <figcaption>Zelda Majora's Mask, Stock Pot Inn. Unlit vs Lit.</figcaption>
         </figure>
 
         <h3>Lighting</h3>
@@ -123,7 +200,15 @@
 
         <h3>Conclusion</h3>
 
+        <p>
+            To be honest, I didn't find the idea of reproducing 3DS graphics on modern hardware attractive at first. As a graphics programmer, I thought
+            it would not be a challenge, that I would not learn much. Well I was wrong. Not only did I learn a lot about lighting and geometry, but I also
+            understood why these ancient lighting techniques can still appeal to a lot of people, myself included. It's not just nostalgia or self-imposed technical limitations, it's an art style.
+        </p>
 
+        <p>
+
+        </p>
 
         <nav class="article-footer"><a href="/">See other articles</a></nav>
     </main>
