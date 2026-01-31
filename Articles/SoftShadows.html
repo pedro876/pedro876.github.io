@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soft Shadows</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/main.css" />
+</head>
+<body>
+    <main>
+        <h1>Soft Shadows</h1>
+        <h2>
+            September 7th, 2025 <br />
+            Unreleased Project
+        </h2>
+
+        <h3>Motivation</h3>
+
+        <p>
+            In the never-ending quest for compelling lighting in video games, I recently delved into rendering soft shadows.
+            Hard shadows are actually rare in real life, since they are only visible when the light source is very small compared to the occluder.
+            However, in video games we usually treat lights as point lights that lack any surface area, but that often isn't what we want to represent
+            artistically. In this article, I will explain how I solved this problem and offered artistic-driven parameters to my team.
+        </p>
+
+        <figure data-image='{"sliderValue": 50, "maximizable": true, "alwaysVisibleMiddleBar":true}'>
+            <img src="SoftShadows/Images/Image_021.jpg" alt="Off" />
+            <img src="SoftShadows/Images/Image_020.jpg" alt="On" />
+            <figcaption>Soft Shadows Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/SoftShadows/Images/Image_021.jpg", "Articles/SoftShadows/Images/Image_020.jpg"]
+        , "texts": ["Off", "On"]
+        , "sliderValue": 50
+        , "maximizable": true
+        , "alwaysVisibleMiddleBar" : true
+    }'></div>-->
+
+        <h3>Implementation</h3>
+
+        <p>
+            By default, Unity URP renders soft shadows using <i>Percentage Closer Filtering</i> (PCF). While it hides aliased edges
+            and provides more pleasant results than hard shadows, softness can't be configured. Therefore, light area can't be
+            configured or represented. Another way of rendering soft shadows is using <i>Percentage Closer Soft Shadows</i> (PCSS).
+            In that technique, a sampling step is performed before filtering the shadow map to identify the average distance to the occluder
+            and adjust the sampling pattern radius for filtering. You can read more on it <a target="_blank" href="https://developer.download.nvidia.com/shaderlibrary/docs/shadow_PCSS.pdf">here</a>.
+        </p>
+
+        <p>My implementation follows a similar structure to the one used in PCSS:</p>
+
+        <ul>
+            <li>
+                <b>Create a distribution of texture offsets</b>: In our case, we have used a Poisson distribution of 24 points.
+                This distribution is rotated per pixel and per frame using <i>Interleaved Gradient Noise</i>.
+            </li>
+            <li>
+                <b>Find the average occluder distance</b>: Using the maximum softness radius, iterate through the Poisson distribution
+                and average depths. In practice, I found out that using only 12 points is sufficient, so I just iterated the array of points
+                using i+=2 instead of i++, which greatly improves performance.
+            </li>
+            <li>
+                <b>Filter the shadow map</b>: Given the occluder distance and light softness parameters, calculate the sampling radius and
+                iterate through the Poisson distribution using PCF sampling to average the output.
+            </li>
+            <li>
+                <b>Temporally stabilize the output:</b> By treating direct shadows as a stochastic effect, it is possible to completely
+                denoise the shadows. Samples per pixel must still be generous to avoid ghosting.
+            </li>
+        </ul>
+
+        <pre><code data-lang="hlsl">
+        static float2 _PoissonDiskShadows[24] = 
+        {
+            float2(-0.07733, -0.67920),
+            float2(-0.71161, -0.26784),
+            float2(-0.52051, -0.11176),
+            float2(-0.26109, 0.01776),
+            float2(-0.03004, -0.34879),
+            float2(-0.48658, 0.50171),
+            float2(-0.74085, 0.37335),
+            float2(-0.05425, 0.04487),
+            float2(-0.52625, 0.12483),
+            float2(-0.18583, -0.17481),
+            float2(0.33716, 0.18172),
+            float2(-0.10199, 0.57954),
+            float2(0.53478, 0.66744),
+            float2(0.66503, 0.44478),
+            float2(0.41769, 0.44275),
+            float2(0.08899, 0.35702),
+            float2(0.38512, -0.56217),
+            float2(0.47295, -0.72390),
+            float2(0.16913, -0.18960),
+            float2(0.15327, -0.04767),
+            float2(-0.57868, 0.81125),
+            float2(0.37330, 0.78119),
+            float2(0.86544, -0.01258),
+            float2(0.18936, -0.95787),
+        };
+        </code></pre>
+
+        <!--<div class="code" data-lang="hlsl" data-url="Articles/SoftShadows/PoissonDistribution.hlsl"></div>-->
+
+        <h4>Dealing with aliasing</h4>
+
+        <p>
+            This would provide perfect smooth shadows if occlusion was a nice contiguous analytical function. However, it
+            is a numerical representation stored in a texture. Even using high resolution shadow maps, there are cases
+            where we will want to represent shadows with such hardness that the sampling area will only cover very few pixels,
+            or even less than one pixel.
+        </p>
+
+        <p>
+            This is especially troublesome in shadows near occluders when the shadow maps are set to a low resolution. So, instead of
+            trying to represent a level of fidelity that simply is not present in the shadow map, I decided to clamp the sampling radius so that
+            its minimum area covers at least 3x3 pixels. That way, hardness may be lost in some cases in exchange for softer shadows, but that is
+            still preferable compared to aliased edges near occluders.
+        </p>
+
+        <p>
+            Besides, screen space shadows can be introduced to recover hardness and detail near occluders, but I'll cover that
+            in a future article.
+        </p>
+
+        <h4>Cascaded shadow maps</h4>
+
+        <p>
+            In the case of directional lights, we are currently using cascaded shadow maps. Before, we used PCF filtering with varying radius
+            depending only on shadow quality (3x3, 5x5, etc). However, that made transitions between different cascades very apparent, because their
+            perceived softness varied substantially, especially when using low resolution shadow maps.
+        </p>
+
+        <p>
+            Using the new soft shadows implementation, that problem is mostly solved, because the softness radius in world space units does not depend
+            on shadow map resolution anymore. Some differences can still be appreciated between cascades of course, as details are lost in further cascades,
+            but that is a separate problem.
+        </p>
+
+        <figure data-image='{"sliderValue": 62, "maximizable": true, "alwaysVisibleMiddleBar":true}'>
+            <img src="SoftShadows/Images/Image_028.jpg" alt="PCF 5x5" />
+            <img src="SoftShadows/Images/Image_029.jpg" alt="Dithered" />
+            <figcaption>PCF 5x5 vs Dithered</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/SoftShadows/Images/Image_028.jpg", "Articles/SoftShadows/Images/Image_029.jpg"]
+        , "texts": ["PCF 5x5", "Dithered"]
+        , "sliderValue": 62
+        , "maximizable": true
+        , "alwaysVisibleMiddleBar" : true
+    }'></div>-->
+
+        <h4>Parametrization</h4>
+
+        <p>Softness is parametrized per light:</p>
+
+        <ul>
+            <li>
+                <b>Softness Range</b>: The minimum and maximum softness radius expressed in world units.
+            </li>
+            <li>
+                <b>Distance Range</b>: The distance range in which softness goes from minimum to maximum softness
+                in world units.
+            </li>
+        </ul>
+
+        <p>This is not physically based at all, but offers very intuitive controls and results.</p>
+
+        <h3>Results</h3>
+
+        <figure data-image='{"sliderValue": 50, "maximizable": true, "alwaysVisibleMiddleBar":true}'>
+            <img src="SoftShadows/Images/Image_018.jpg" alt="Off" />
+            <img src="SoftShadows/Images/Image_019.jpg" alt="On" />
+            <figcaption>Soft Shadows Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/SoftShadows/Images/Image_018.jpg", "Articles/SoftShadows/Images/Image_019.jpg"]
+        , "texts": ["Off", "On"]
+        , "sliderValue": 50
+        , "maximizable": true
+        , "alwaysVisibleMiddleBar" : true
+    }'></div>-->
+
+        <figure data-image='{"sliderValue": 50, "maximizable": true, "alwaysVisibleMiddleBar":true}'>
+            <img src="SoftShadows/Images/Image_022.jpg" alt="Off" />
+            <img src="SoftShadows/Images/Image_023.jpg" alt="On" />
+            <figcaption>Soft Shadows Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/SoftShadows/Images/Image_022.jpg", "Articles/SoftShadows/Images/Image_023.jpg"]
+        , "texts": ["Off", "On"]
+        , "sliderValue": 50
+        , "maximizable": true
+        , "alwaysVisibleMiddleBar" : true
+    }'></div>-->
+
+        <figure data-image='{"sliderValue": 50, "maximizable": true, "alwaysVisibleMiddleBar":true}'>
+            <img src="SoftShadows/Images/Image_024.jpg" alt="Off" />
+            <img src="SoftShadows/Images/Image_025.jpg" alt="On" />
+            <figcaption>Soft Shadows Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+        "images": ["Articles/SoftShadows/Images/Image_024.jpg", "Articles/SoftShadows/Images/Image_025.jpg"]
+        , "texts": ["Off", "On"]
+        , "sliderValue": 20
+        , "maximizable": true
+        , "alwaysVisibleMiddleBar" : true
+    }'></div>-->
+
+        <figure data-image='{"sliderValue": 50, "maximizable": true, "alwaysVisibleMiddleBar":true}'>
+            <img src="SoftShadows/Images/Image_026.jpg" alt="Off" />
+            <img src="SoftShadows/Images/Image_027.jpg" alt="On" />
+            <figcaption>Soft Shadows Off vs On</figcaption>
+        </figure>
+
+        <!--<div data-image='{
+    "images": ["Articles/SoftShadows/Images/Image_026.jpg", "Articles/SoftShadows/Images/Image_027.jpg"]
+    , "texts": ["Off", "On"]
+    , "sliderValue": 40
+    , "maximizable": true
+    , "alwaysVisibleMiddleBar" : true
+}'></div>-->
+
+        <h3>Conclusion</h3>
+
+        <p>
+            This implementation not only offers the capacity to render soft shadows, but also to scale softness
+            as the occluder-occludee distance grows. The exposed parameters for each light are highly intuitive for artists
+            and have been well received by the team.
+        </p>
+
+        <p>
+            It must be said that rendering shadows like this is more expensive than doing traditional PCF filtering, because
+            more samples are required and their distribution cause more cache misses. However, the improved fidelity and realism
+            are worth it in my opinion. It is not only about hiding aliased edges in shadows or achieving more realistic graphics,
+            these shadows also provide a sense of scale and better visual cues to easily understand the 3D environment.
+        </p>
+
+        <h3>Going Forward</h3>
+
+        <p>
+            We currently support directional, point and spot lights with shadows. In the future, I would like
+            to add support for other light shapes such as rectangle area lights. It will be interesting to see
+            how this approach to soft shadows fares in those scenarios, with lights that cover larger areas.
+        </p>
+
+        <p>
+            Additionally, it would be interesting to implement spatial denoising. Without it, we need a high amount
+            of samples per pixel to prevent ghosting in the TAA pass. Using a compute shader could allow us to calculate shadows
+            for every light and applying spatial denoising in a single compute pass. Potentially, that would allow us to use
+            less samples per pixel, reduce ghosting and improve overall performance. But for now, what's been achieved
+            is already quite good both visually and performance-wise.
+        </p>
+    </main>
+    <script src="/main.js"></script>
+</body>
+
