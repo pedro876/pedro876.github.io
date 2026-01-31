@@ -27,6 +27,7 @@ async function Main() {
     await LoadStructure();
     await LoadIndex();
     ResponsiveSetup();
+    document.documentElement.classList.remove("loading");
     FullScreenSetup();
     CodeSetup();
     TablesSetup();

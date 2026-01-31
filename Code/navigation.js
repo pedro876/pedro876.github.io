@@ -18,7 +18,11 @@ function ProcessArticleGrid() {
         button.className = "article-grid-element";
 
         let img = document.createElement("img");
-        let thumbnailPath = link.replace(".html", "_Thumbnail.jpg");
+        let fileName = link.substring(link.lastIndexOf('/')+1);
+        fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+        let directory = link.substring(0, link.lastIndexOf('/'));
+        console.log(fileName);
+        let thumbnailPath = directory + '/' + fileName + '/' + fileName + '_Thumbnail.jpg'; //link.replace(".html", "_Thumbnail.jpg");
         img.src = thumbnailPath;
         img.alt = name;
 

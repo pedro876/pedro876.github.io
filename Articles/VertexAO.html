@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="loading">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,11 +31,11 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_029_BombShop_Base.png", "Articles/VertexAO/Images/VertexAO_031_BombShop_Lit.png"]
-        , "texts": ["Unlit", "AO + Light"]
-        , "sliderValue": 50
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_029_BombShop_Base.png", "Articles/VertexAO/Images/VertexAO_031_BombShop_Lit.png"]
+            , "texts": ["Unlit", "AO + Light"]
+            , "sliderValue": 50
+            , "maximizable": true
+        }'></div>-->
 
         <p>
             I decided to split lighting calculations into two major factors:
@@ -68,9 +68,9 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_Explanation2.png"]
-        , "maximizable": false
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_Explanation2.png"]
+            , "maximizable": false
+        }'></div>-->
 
         <p>I'm going to use a simple mesh to debug the results using the mentioned algorithm:</p>
 
@@ -80,9 +80,9 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_001_NaiveApproach.png"]
-        , "maximizable": false
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_001_NaiveApproach.png"]
+            , "maximizable": false
+        }'></div>-->
 
         <p>
             A clear issue with this approach arises at corners&mdash;such as a vertex where a floor meets a vertical wall. Here, the ray
@@ -123,9 +123,9 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_Explanation0.png"]
-        , "maximizable": false
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_Explanation0.png"]
+            , "maximizable": false
+        }'></div>-->
 
         <p>
             This allows us to effectively raycast from an origin with a normal and tangent offset. However, a vertex may belong to more than one triangle, so I came up with a
@@ -144,9 +144,9 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_Explanation1.png"]
-        , "maximizable": false
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_Explanation1.png"]
+            , "maximizable": false
+        }'></div>-->
 
         <p>Let's check the previous example again with the updated algorithm:</p>
 
@@ -156,9 +156,9 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_002_SampleNeighbourhood.png"]
-        , "maximizable": false
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_002_SampleNeighbourhood.png"]
+            , "maximizable": false
+        }'></div>-->
 
         <p>Let's also check how the algorithm behaves with rounded shapes:</p>
 
@@ -168,9 +168,9 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_003_RoundedShapes.png"]
-        , "maximizable": false
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_003_RoundedShapes.png"]
+            , "maximizable": false
+        }'></div>-->
 
         <p>
             There are many factors related to mesh topology that can affect the final look of this ambient
@@ -234,9 +234,9 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_CharactersAO.png"]
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_CharactersAO.png"]
+            , "maximizable": true
+        }'></div>-->
 
         <figure data-image='{"sliderValue": 50, "maximizable": true}'>
             <img src="VertexAO/Images/VertexAO_005_DekuLink_Base.png" alt="AO Off" />
@@ -245,11 +245,11 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_005_DekuLink_Base.png", "Articles/VertexAO/Images/VertexAO_006_DekuLink_Final.png"]
-        , "texts": ["AO Off", "AO On"]
-        , "sliderValue": 50
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_005_DekuLink_Base.png", "Articles/VertexAO/Images/VertexAO_006_DekuLink_Final.png"]
+            , "texts": ["AO Off", "AO On"]
+            , "sliderValue": 50
+            , "maximizable": true
+        }'></div>-->
 
         <figure data-image='{"sliderValue": 50, "maximizable": true}'>
             <img src="VertexAO/Images/VertexAO_012_Link_Base.png" alt="AO Off" />
@@ -258,11 +258,11 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_012_Link_Base.png", "Articles/VertexAO/Images/VertexAO_013_Link_Final.png"]
-        , "texts": ["AO Off", "AO On"]
-        , "sliderValue": 50
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_012_Link_Base.png", "Articles/VertexAO/Images/VertexAO_013_Link_Final.png"]
+            , "texts": ["AO Off", "AO On"]
+            , "sliderValue": 50
+            , "maximizable": true
+        }'></div>-->
 
         <p>
             Alright, so characters have proper occlusion now, but what about environments? This is a more releveant use case because
@@ -277,9 +277,9 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_014_MilkBar_AO.png"]
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_014_MilkBar_AO.png"]
+            , "maximizable": true
+        }'></div>-->
 
         <figure data-image='{"sliderValue": 50, "maximizable": true}'>
             <img src="VertexAO/Images/VertexAO_015_MilkBar_Base.png" alt="AO Off" />
@@ -288,11 +288,11 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_015_MilkBar_Base.png", "Articles/VertexAO/Images/VertexAO_016_MilkBar_Final.png"]
-        , "texts": ["AO Off", "AO On"]
-        , "sliderValue": 50
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_015_MilkBar_Base.png", "Articles/VertexAO/Images/VertexAO_016_MilkBar_Final.png"]
+            , "texts": ["AO Off", "AO On"]
+            , "sliderValue": 50
+            , "maximizable": true
+        }'></div>-->
 
         <figure data-image='{"maximizable": true}'>
             <img src="VertexAO/Images/VertexAO_025_CuriosityShop_AO.png" />
@@ -300,9 +300,9 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_025_CuriosityShop_AO.png"]
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_025_CuriosityShop_AO.png"]
+            , "maximizable": true
+        }'></div>-->
 
         <figure data-image='{"sliderValue": 50, "maximizable": true}'>
             <img src="VertexAO/Images/VertexAO_026_CuriosityShop_Base.png" alt="AO Off" />
@@ -311,11 +311,11 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_026_CuriosityShop_Base.png", "Articles/VertexAO/Images/VertexAO_027_CuriosityShop_Final.png"]
-        , "texts": ["AO Off", "AO On"]
-        , "sliderValue": 50
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_026_CuriosityShop_Base.png", "Articles/VertexAO/Images/VertexAO_027_CuriosityShop_Final.png"]
+            , "texts": ["AO Off", "AO On"]
+            , "sliderValue": 50
+            , "maximizable": true
+        }'></div>-->
 
         <figure data-image='{"maximizable": true}'>
             <img src="VertexAO/Images/VertexAO_028_BombShop_AO.png" />
@@ -323,9 +323,9 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_028_BombShop_AO.png"]
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_028_BombShop_AO.png"]
+            , "maximizable": true
+        }'></div>-->
 
         <figure data-image='{"sliderValue": 50, "maximizable": true}'>
             <img src="VertexAO/Images/VertexAO_029_BombShop_Base.png" alt="AO Off" />
@@ -334,11 +334,11 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/VertexAO/Images/VertexAO_029_BombShop_Base.png", "Articles/VertexAO/Images/VertexAO_030_BombShop_Final.png"]
-        , "texts": ["AO Off", "AO On"]
-        , "sliderValue": 50
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/VertexAO/Images/VertexAO_029_BombShop_Base.png", "Articles/VertexAO/Images/VertexAO_030_BombShop_Final.png"]
+            , "texts": ["AO Off", "AO On"]
+            , "sliderValue": 50
+            , "maximizable": true
+        }'></div>-->
 
         <h3>Conclusion</h3>
 

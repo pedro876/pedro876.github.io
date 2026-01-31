@@ -13,8 +13,8 @@
     --codeBackgroundColor: rgb(26, 27, 29);
 }
 
-html {
-    
+html.loading body {
+    visibility: hidden;
 }
 
 body {

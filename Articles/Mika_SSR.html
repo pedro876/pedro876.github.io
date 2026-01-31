@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="loading">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,11 +32,11 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/Mika_SSR_0_Off.jpg", "Articles/Mika_SSR/Mika_SSR_0_On.jpg"]
-        , "texts": ["Reflections Off", "Reflections On"]
-        , "sliderValue": 50
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/Mika_SSR_0_Off.jpg", "Articles/Mika_SSR/Mika_SSR_0_On.jpg"]
+            , "texts": ["Reflections Off", "Reflections On"]
+            , "sliderValue": 50
+            , "maximizable": true
+        }'></div>-->
 
         <p>
             Up until this point, I had a lot of experience using reflection probes and had toyed a bit with ray tracing.
@@ -94,9 +94,9 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/DepthAndOpaqueBuffers.png"]
-        , "maximizable": false
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/DepthAndOpaqueBuffers.png"]
+            , "maximizable": false
+        }'></div>-->
 
         <p>
             Firstly, a reflection vector is calculated given the water normal and the direction from
@@ -122,9 +122,9 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/ReflectionAndRayMarching.png"]
-        , "maximizable": false
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/ReflectionAndRayMarching.png"]
+            , "maximizable": false
+        }'></div>-->
 
         <p>
             Getting a good result with this basic approach would require using a lot of samples per pixel (spp).
@@ -138,10 +138,10 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/Demonstration_Initial.jpg"]
-        , "maximizable": true
-        , "texts" : ["6 spp"]
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/Demonstration_Initial.jpg"]
+            , "maximizable": true
+            , "texts" : ["6 spp"]
+        }'></div>-->
 
         <p>
             Can you spot the issue? There is very visible banding, which is even worse in motion. This is
@@ -160,10 +160,10 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/Demonstration_Dither.jpg"]
-        , "maximizable": true
-        , "texts" : ["+ Dithering"]
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/Demonstration_Dither.jpg"]
+            , "maximizable": true
+            , "texts" : ["+ Dithering"]
+        }'></div>-->
 
         <p>
             That cleared banding to a great extent, but sacrificed clarity entirely at the same time. This is
@@ -179,9 +179,9 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/RaymarchingInterpolation.png"]
-        , "maximizable": false
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/RaymarchingInterpolation.png"]
+            , "maximizable": false
+        }'></div>-->
 
         <p>
             Of course, this is just an estimation and won't accurately represent highly irregular shapes. However,
@@ -194,10 +194,10 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/Demonstration_Dither_Interpolation.jpg"]
-        , "maximizable": true
-        , "texts" : ["+ Interpolation"]
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/Demonstration_Dither_Interpolation.jpg"]
+            , "maximizable": true
+            , "texts" : ["+ Interpolation"]
+        }'></div>-->
 
         <p>
             As you can see, noise is present around the silhouette of objects because that geometry is being skipped
@@ -213,10 +213,10 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/Demonstration_WaterNormals.jpg"]
-        , "maximizable": true
-        , "texts" : ["+ Distortion"]
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/Demonstration_WaterNormals.jpg"]
+            , "maximizable": true
+            , "texts" : ["+ Distortion"]
+        }'></div>-->
 
         <p>
             Noise is now mitigated even more thanks to the irregularity of the reflection. However, it doesn't eliminate it
@@ -231,10 +231,10 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/Demonstration_Final.jpg"]
-        , "maximizable": true
-        , "texts" : ["+ Blending"]
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/Demonstration_Final.jpg"]
+            , "maximizable": true
+            , "texts" : ["+ Blending"]
+        }'></div>-->
 
         <h3>Results</h3>
 
@@ -245,11 +245,11 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/Mika_SSR_1_Off.jpg", "Articles/Mika_SSR/Mika_SSR_1_On.jpg"]
-        , "texts": ["SSR Off", "SSR On"]
-        , "sliderValue": 0
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/Mika_SSR_1_Off.jpg", "Articles/Mika_SSR/Mika_SSR_1_On.jpg"]
+            , "texts": ["SSR Off", "SSR On"]
+            , "sliderValue": 0
+            , "maximizable": true
+        }'></div>-->
 
         <figure data-image='{"sliderValue": 0, "maximizable": true}'>
             <img src="Mika_SSR/Mika_SSR_2_Off.jpg" alt="SSR Off" />
@@ -258,11 +258,11 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/Mika_SSR_2_Off.jpg", "Articles/Mika_SSR/Mika_SSR_2_On.jpg"]
-        , "texts": ["SSR Off", "SSR On"]
-        , "sliderValue": 0
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/Mika_SSR_2_Off.jpg", "Articles/Mika_SSR/Mika_SSR_2_On.jpg"]
+            , "texts": ["SSR Off", "SSR On"]
+            , "sliderValue": 0
+            , "maximizable": true
+        }'></div>-->
 
         <figure data-image='{"sliderValue": 0, "maximizable": true}'>
             <img src="Mika_SSR/Mika_SSR_3_Off.jpg" alt="SSR Off" />
@@ -271,11 +271,11 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/Mika_SSR_3_Off.jpg", "Articles/Mika_SSR/Mika_SSR_3_On.jpg"]
-        , "texts": ["SSR Off", "SSR On"]
-        , "sliderValue": 0
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/Mika_SSR_3_Off.jpg", "Articles/Mika_SSR/Mika_SSR_3_On.jpg"]
+            , "texts": ["SSR Off", "SSR On"]
+            , "sliderValue": 0
+            , "maximizable": true
+        }'></div>-->
 
         <figure data-image='{"sliderValue": 0, "maximizable": true}'>
             <img src="Mika_SSR/Mika_SSR_4_Off.jpg" alt="SSR Off" />
@@ -284,11 +284,11 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/Mika_SSR_4_Off.jpg", "Articles/Mika_SSR/Mika_SSR_4_On.jpg"]
-        , "texts": ["SSR Off", "SSR On"]
-        , "sliderValue": 0
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/Mika_SSR_4_Off.jpg", "Articles/Mika_SSR/Mika_SSR_4_On.jpg"]
+            , "texts": ["SSR Off", "SSR On"]
+            , "sliderValue": 0
+            , "maximizable": true
+        }'></div>-->
 
         <figure data-image='{"sliderValue": 0, "maximizable": true}'>
             <img src="Mika_SSR/Mika_SSR_5_Off.jpg" alt="SSR Off" />
@@ -297,11 +297,11 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/Mika_SSR_5_Off.jpg", "Articles/Mika_SSR/Mika_SSR_5_On.jpg"]
-        , "texts": ["SSR Off", "SSR On"]
-        , "sliderValue": 0
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/Mika_SSR_5_Off.jpg", "Articles/Mika_SSR/Mika_SSR_5_On.jpg"]
+            , "texts": ["SSR Off", "SSR On"]
+            , "sliderValue": 0
+            , "maximizable": true
+        }'></div>-->
 
         <figure data-image='{"sliderValue": 0, "maximizable": true}'>
             <img src="Mika_SSR/Mika_SSR_6_Off.jpg" alt="SSR Off" />
@@ -310,11 +310,11 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/Mika_SSR_6_Off.jpg", "Articles/Mika_SSR/Mika_SSR_6_On.jpg"]
-        , "texts": ["SSR Off", "SSR On"]
-        , "sliderValue": 0
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/Mika_SSR_6_Off.jpg", "Articles/Mika_SSR/Mika_SSR_6_On.jpg"]
+            , "texts": ["SSR Off", "SSR On"]
+            , "sliderValue": 0
+            , "maximizable": true
+        }'></div>-->
 
         <figure data-image='{"sliderValue": 0, "maximizable": true}'>
             <img src="Mika_SSR/Mika_SSR_7_Off.jpg" alt="SSR Off" />
@@ -323,11 +323,11 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/Mika_SSR_7_Off.jpg", "Articles/Mika_SSR/Mika_SSR_7_On.jpg"]
-        , "texts": ["SSR Off", "SSR On"]
-        , "sliderValue": 0
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/Mika_SSR_7_Off.jpg", "Articles/Mika_SSR/Mika_SSR_7_On.jpg"]
+            , "texts": ["SSR Off", "SSR On"]
+            , "sliderValue": 0
+            , "maximizable": true
+        }'></div>-->
 
         <figure data-image='{"sliderValue": 0, "maximizable": true}'>
             <img src="Mika_SSR/Mika_SSR_8_Off.jpg" alt="SSR Off" />
@@ -336,11 +336,11 @@
         </figure>
 
         <!--<div data-image='{
-        "images": ["Articles/Mika_SSR/Mika_SSR_8_Off.jpg", "Articles/Mika_SSR/Mika_SSR_8_On.jpg"]
-        , "texts": ["SSR Off", "SSR On"]
-        , "sliderValue": 0
-        , "maximizable": true
-    }'></div>-->
+            "images": ["Articles/Mika_SSR/Mika_SSR_8_Off.jpg", "Articles/Mika_SSR/Mika_SSR_8_On.jpg"]
+            , "texts": ["SSR Off", "SSR On"]
+            , "sliderValue": 0
+            , "maximizable": true
+        }'></div>-->
 
         <figure data-image='{"sliderValue": 0, "maximizable": true}'>
             <img src="Mika_SSR/Mika_SSR_9_Off.jpg" alt="SSR Off" />
@@ -349,11 +349,11 @@
         </figure>
 
         <!--<div data-image='{
-    "images": ["Articles/Mika_SSR/Mika_SSR_9_Off.jpg", "Articles/Mika_SSR/Mika_SSR_9_On.jpg"]
-    , "texts": ["SSR Off", "SSR On"]
-    , "sliderValue": 0
-    , "maximizable": true
-}'></div>-->
+            "images": ["Articles/Mika_SSR/Mika_SSR_9_Off.jpg", "Articles/Mika_SSR/Mika_SSR_9_On.jpg"]
+            , "texts": ["SSR Off", "SSR On"]
+            , "sliderValue": 0
+            , "maximizable": true
+        }'></div>-->
 
         <h3>Conclusion</h3>
 
