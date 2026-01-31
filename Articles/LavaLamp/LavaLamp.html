@@ -1,190 +1,238 @@
-﻿<h1>Lava lamp</h1>
-<h2>December 1st, 2024</h2>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lava Lamp Shader</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/main.css" />
+</head>
+<body>
+    <main>
+        <h1>Lava lamp</h1>
+        <h2>December 1st, 2024</h2>
 
 
-<h3>Motivation</h3>
+        <h3>Motivation</h3>
 
-<p>
-    In a world where you are a very small creature inside a human-sized
-    house, how you interact with ordinary decoration elements becomes very important.
-    My team and I were looking for interesting objects to add some motion and style to
-    a rather static scene. For this project in particular, <i>It Takes Two</i> was a
-    very important reference and a very cool asset got our attention: The lava lamp.
-</p>
-
-
-<div data-image="Articles/LavaLamp/Image Sequence_012_0000.jpg"></div>
-
-<p>
-    The baseline was the effect achieved in <i>It takes two</i>:
-</p>
-
-<div data-image="Articles/LavaLamp/ItTakesTwoRef.png"></div>
-
-<h3>Implementation</h3>
-
-<p>
-    A very simple approach to this could have been using emissive spheres and mask them
-    using stencil or something similar. But I don't think that would've captured the look
-    that we were aiming for quite well. I started looking for resources on how to recreate
-    this effect and came upon two great sources:
-</p>
-
-<ul>
-    <li>
-        <a href="https://youtu.be/jH0MD8obOCQ?si=p3Kb8U09MF718btH">Martin Donald's tutorial</a>:
-        This video explained how one could shade a lava lamp's interior and used
-        <i>It Takes Two</i> as a reference as well.
-    </li>
-
-    <li>
-        <a href="https://iquilezles.org/articles/distfunctions/">Inigo Quilez's Article on Distance Functions</a>:
-        Inigo describes how to calculate distance functions and provides a very valuable set
-        of functions for different shapes.
-    </li>
-</ul>
+        <p>
+            In a world where you are a very small creature inside a human-sized
+            house, how you interact with ordinary decoration elements becomes very important.
+            My team and I were looking for interesting objects to add some motion and style to
+            a rather static scene. For this project in particular, <i>It Takes Two</i> was a
+            very important reference and a very cool asset got our attention: The lava lamp.
+        </p>
 
 
-<p>
-    To model the inner shapes we needed three different elements:
-</p>
+        <figure>
+            <img src="Image Sequence_012_0000.jpg" />
+        </figure>
 
-<ul>
-    <li>Two static infinite cones to represent the lava lamp's outer shape.</li>
-    <li>Two static spheres, one for each side of the lamp (top and bottom).</li>
-    <li>
-        Several dynamic spheres that were animated by hand. A script was used to
-        set the animated transforms on the material every frame.
-    </li>
-</ul>
+        <!--<div data-image="Articles/LavaLamp/Image Sequence_012_0000.jpg"></div>-->
 
-<div data-image="Articles/LavaLamp/ShapeExplanation.png"></div>
+        <p>
+            The baseline was the effect achieved in <i>It takes two</i>:
+        </p>
+
+        <figure>
+            <img src="ItTakesTwoRef.png" />
+        </figure>
+
+        <!--<div data-image="Articles/LavaLamp/ItTakesTwoRef.png"></div>-->
+
+        <h3>Implementation</h3>
+
+        <p>
+            A very simple approach to this could have been using emissive spheres and mask them
+            using stencil or something similar. But I don't think that would've captured the look
+            that we were aiming for quite well. I started looking for resources on how to recreate
+            this effect and came upon two great sources:
+        </p>
+
+        <ul>
+            <li>
+                <a href="https://youtu.be/jH0MD8obOCQ?si=p3Kb8U09MF718btH">Martin Donald's tutorial</a>:
+                This video explained how one could shade a lava lamp's interior and used
+                <i>It Takes Two</i> as a reference as well.
+            </li>
+
+            <li>
+                <a href="https://iquilezles.org/articles/distfunctions/">Inigo Quilez's Article on Distance Functions</a>:
+                Inigo describes how to calculate distance functions and provides a very valuable set
+                of functions for different shapes.
+            </li>
+        </ul>
 
 
-<p>
-    First, a union is performed between all spheres. Secondly, an intersection
-    is calculated for the exterior cones. Finally, the tracing function
-    returns the intersection between the spheres union and the cones
-    intersection, as shown in the code below:
-</p>
+        <p>
+            To model the inner shapes we needed three different elements:
+        </p>
 
-<div class="code" data-lang="hlsl">float GetDist(float3 p)
-{
-    float spheres = 99999.9;
+        <ul>
+            <li>Two static infinite cones to represent the lava lamp's outer shape.</li>
+            <li>Two static spheres, one for each side of the lamp (top and bottom).</li>
+            <li>
+                Several dynamic spheres that were animated by hand. A script was used to
+                set the animated transforms on the material every frame.
+            </li>
+        </ul>
 
-    for(int i = 0; i < _ShapeCount; i++)
-    {
-        Shape shape = _Shapes[i];
-        float sp = sdSphere(p, shape.position, shape.size);
-        spheres = UnionSmooth(spheres, sp, _ShapeSmoothness);
-    }
+        <figure>
+            <img src="ShapeExplanation.png" />
+        </figure>
 
-    float cn1 = sdConeInfinite(p+_ConePositionTop, _ConeTopSinCos, 1);
-    float cn2 = sdConeInfinite(p+_ConePositionBottom, _ConeBottomSinCos, -1);
-    float cones = IntersectionSmooth(cn1, cn2, 0.02);
-    return IntersectionSmooth(spheres, cones, _ConeSmoothness);
-    return spheres;
-}</div>
+        <!--<div data-image="Articles/LavaLamp/ShapeExplanation.png"></div>-->
 
-<p>Using the function above, each pixel raymarchs until a collision is determined:</p>
 
-<div class="code" data-lang="hlsl">float RayMarch(float3 rayOrigin, float3 rayDirection, float maxDistance)
-{
-    float currentDistance = 0.0; //d = current distance
-    for(int i = 0; i < MAX_STEPS; i++)
-    {
-        float3 p = rayOrigin + rayDirection * d;
-        float surfaceToDistance = GetDist(p);
-        currentDistance += surfaceToDistance;
-        if(currentDistance > maxDistance || surfaceToDistance < SURF_DIST) break;
-    }
-    return d;
-}</div>
+        <p>
+            First, a union is performed between all spheres. Secondly, an intersection
+            is calculated for the exterior cones. Finally, the tracing function
+            returns the intersection between the spheres union and the cones
+            intersection, as shown in the code below:
+        </p>
 
-<p>Once the collision point is calculated, the normal is computed:</p>
+        <pre><code data-lang="hlsl">
+        float GetDist(float3 p)
+        {
+            float spheres = 99999.9;
 
-<div class="code" data-lang="hlsl">float3 GetNormal(float3 p)
-{
-    float d = GetDist(p);
-    float2 e = float2(0.01,0.0);
-    float3 n = d - float3(GetDist(p-e.xyy), GetDist(p-e.yxy), GetDist(p-e.yyx));
-    return normalize(n);
-}</div>
+            for(int i = 0; i < _ShapeCount; i++)
+            {
+                Shape shape = _Shapes[i];
+                float sp = sdSphere(p, shape.position, shape.size);
+                spheres = UnionSmooth(spheres, sp, _ShapeSmoothness);
+            }
 
-<p>
-    Finally, a position and a normal are available and using that information
-    shading begins:
-</p>
+            float cn1 = sdConeInfinite(p+_ConePositionTop, _ConeTopSinCos, 1);
+            float cn2 = sdConeInfinite(p+_ConePositionBottom, _ConeBottomSinCos, -1);
+            float cones = IntersectionSmooth(cn1, cn2, 0.02);
+            return IntersectionSmooth(spheres, cones, _ConeSmoothness);
+            return spheres;
+        }
+        </code></pre>
 
-<ul>
-    <li>Use a vertical fade to fake lighting inside the lamp coming from the bottom side.</li>
-    <li>Use a fresnel effect to approximate subsurface scattering around the edges of the spheres.</li>
-    <li>Shade the background of the lamp using a vertical fade between two user-defined colors.</li>
-</ul>
+        <p>Using the function above, each pixel raymarchs until a collision is determined:</p>
 
-<div class="code" data-lang="hlsl">void ShapeShading_half(in half Alpha, in half3 LightOS, in half3 PositionOS, in half3 NormalOS, in half3 ViewDirOS, out half3 LitColor, out half OutAlpha)
-{
-    half Intensity = 0;
-    half Height;
-    Height = abs(LightOS.y-PositionOS.y)*_HeightScale;
-    Height = 1.0-saturate(Height);
-    Height = smoothstep(_HeightEdge0, _HeightEdge1, Height);
-    Height *= _HeightWeight;
-    Intensity = Height;
-    Intensity += 0.25;
-    Intensity = saturate(Intensity);
-    
-    half fresnel = pow(1.0-saturate(dot(NormalOS, ViewDirOS)), _FresnelPower);
-    half4 fresnelColor = lerp(_BaseColor, _OuterColor, fresnel);
-    LitColor = Intensity * fresnelColor.rgb;
-    OutAlpha = fresnelColor.a;
-    
-    LitColor = saturate(LitColor);
-    OutAlpha = saturate(OutAlpha * Alpha);
-    
-    #if _BACKGROUND
-        half4 bgColor = lerp(_BackgroundColorTop, _BackgroundColorBottom, Height);
-        
-        LitColor = LitColor * OutAlpha + bgColor.rgb * (1-OutAlpha);
-        OutAlpha = OutAlpha + bgColor.a * (1-OutAlpha);
-    #endif
-}</div>
+        <pre><code data-lang="hlsl">
+        float RayMarch(float3 rayOrigin, float3 rayDirection, float maxDistance)
+        {
+            float currentDistance = 0.0; //d = current distance
+            for(int i = 0; i < MAX_STEPS; i++)
+            {
+                float3 p = rayOrigin + rayDirection * d;
+                float surfaceToDistance = GetDist(p);
+                currentDistance += surfaceToDistance;
+                if(currentDistance > maxDistance || surfaceToDistance < SURF_DIST) break;
+            }
+            return d;
+        }
+        </code></pre>
 
-<h3>Results</h3>
+        <p>Once the collision point is calculated, the normal is computed:</p>
 
-<p>
-    Since we wanted the lamp to be an interactable element, we added a button that changed
-    the color scheme of the lamp when pressed.
-</p>
+        <pre><code data-lang="hlsl">
+        float3 GetNormal(float3 p)
+        {
+            float d = GetDist(p);
+            float2 e = float2(0.01,0.0);
+            float3 n = d - float3(GetDist(p-e.xyy), GetDist(p-e.yxy), GetDist(p-e.yyx));
+            return normalize(n);
+        }
+        </code></pre>
 
-<div data-image="Articles/LavaLamp/Image Sequence_036_0000.jpg"></div>
-<div data-image="Articles/LavaLamp/Image Sequence_030_0000.jpg"></div>
-<div data-image="Articles/LavaLamp/Image Sequence_035_0000.jpg"></div>
+        <p>
+            Finally, a position and a normal are available and using that information
+            shading begins:
+        </p>
 
-<p>Here you can see the transition in real-time:</p>
+        <ul>
+            <li>Use a vertical fade to fake lighting inside the lamp coming from the bottom side.</li>
+            <li>Use a fresnel effect to approximate subsurface scattering around the edges of the spheres.</li>
+            <li>Shade the background of the lamp using a vertical fade between two user-defined colors.</li>
+        </ul>
 
-<div data-video='{
-    "video" : "Articles/LavaLamp/Movie_007.mp4"
-     , "poster" : "Articles/LavaLamp/Movie_007_Poster.jpg"
-}'></div>
+        <pre><code data-lang="hlsl">
+        void ShapeShading_half(in half Alpha, in half3 LightOS, in half3 PositionOS, in half3 NormalOS, in half3 ViewDirOS, out half3 LitColor, out half OutAlpha)
+        {
+            half Intensity = 0;
+            half Height;
+            Height = abs(LightOS.y-PositionOS.y)*_HeightScale;
+            Height = 1.0-saturate(Height);
+            Height = smoothstep(_HeightEdge0, _HeightEdge1, Height);
+            Height *= _HeightWeight;
+            Intensity = Height;
+            Intensity += 0.25;
+            Intensity = saturate(Intensity);
 
-<h3>Going forward</h3>
+            half fresnel = pow(1.0-saturate(dot(NormalOS, ViewDirOS)), _FresnelPower);
+            half4 fresnelColor = lerp(_BaseColor, _OuterColor, fresnel);
+            LitColor = Intensity * fresnelColor.rgb;
+            OutAlpha = fresnelColor.a;
 
-<p>
-    Sometimes certain things just don't need to be iterated further on, and this is one of those cases.
-    Sure, there are some details that could be improved. For example, the subsurface scattering aproximation
-    using normal angles clearly fails when a sphere is merging in front of another. However, it doesn't
-    really detract from the experience unless you know that is supposedly a mistake.
-</p>
+            LitColor = saturate(LitColor);
+            OutAlpha = saturate(OutAlpha * Alpha);
 
-<p>
-    At the end of the day, what matters most is the overall impression and functionality.
-    The imperfections are overshadowed by the simplicity and efficiency of the approach,
-    making it a worthwhile trade-off. Not every solution needs to be perfect, sometimes
-    good enough is exactly what’s needed.
-</p>
+            #if _BACKGROUND
+                half4 bgColor = lerp(_BackgroundColorTop, _BackgroundColorBottom, Height);
 
-<h3>Credits</h3>
+                LitColor = LitColor * OutAlpha + bgColor.rgb * (1-OutAlpha);
+                OutAlpha = OutAlpha + bgColor.a * (1-OutAlpha);
+            #endif
+        }
+        </code></pre>
 
-<p>3D Artist: <a href="https://www.artstation.com/callado_monica">Mónica Callado</a></p>
-<p>3D Animator: <a href="https://bsky.app/profile/nardarkk.bsky.social">Enric López Amorós</a></p>
+        <h3>Results</h3>
+
+        <p>
+            Since we wanted the lamp to be an interactable element, we added a button that changed
+            the color scheme of the lamp when pressed.
+        </p>
+
+        <figure>
+            <img src="Image Sequence_036_0000.jpg" />
+        </figure>
+
+        <figure>
+            <img src="Image Sequence_030_0000.jpg" />
+        </figure>
+
+        <figure>
+            <img src="Image Sequence_035_0000.jpg" />
+        </figure>
+
+        <!--<div data-image="Articles/LavaLamp/Image Sequence_036_0000.jpg"></div>
+    <div data-image="Articles/LavaLamp/Image Sequence_030_0000.jpg"></div>
+    <div data-image="Articles/LavaLamp/Image Sequence_035_0000.jpg"></div>-->
+
+        <p>Here you can see the transition in real-time:</p>
+
+        <video src="Movie_007.mp4" poster="Movie_007_Poster.jpg"></video>
+
+        <!--<div data-video='{
+        "video" : "Articles/LavaLamp/Movie_007.mp4"
+         , "poster" : "Articles/LavaLamp/Movie_007_Poster.jpg"
+    }'></div>-->
+
+        <h3>Going forward</h3>
+
+        <p>
+            Sometimes certain things just don't need to be iterated further on, and this is one of those cases.
+            Sure, there are some details that could be improved. For example, the subsurface scattering aproximation
+            using normal angles clearly fails when a sphere is merging in front of another. However, it doesn't
+            really detract from the experience unless you know that is supposedly a mistake.
+        </p>
+
+        <p>
+            At the end of the day, what matters most is the overall impression and functionality.
+            The imperfections are overshadowed by the simplicity and efficiency of the approach,
+            making it a worthwhile trade-off. Not every solution needs to be perfect, sometimes
+            good enough is exactly what’s needed.
+        </p>
+
+        <h3>Credits</h3>
+
+        <p>3D Artist: <a href="https://www.artstation.com/callado_monica">Mónica Callado</a></p>
+        <p>3D Animator: <a href="https://bsky.app/profile/nardarkk.bsky.social">Enric López Amorós</a></p>
+    </main>
+    <script src="/main.js"></script>
+</body>
