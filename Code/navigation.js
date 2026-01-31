@@ -21,7 +21,6 @@ function ProcessArticleGrid() {
         let fileName = link.substring(link.lastIndexOf('/')+1);
         fileName = fileName.substring(0, fileName.lastIndexOf('.'));
         let directory = link.substring(0, link.lastIndexOf('/'));
-        console.log(fileName);
         let thumbnailPath = directory + '/' + fileName + '/' + fileName + '_Thumbnail.jpg'; //link.replace(".html", "_Thumbnail.jpg");
         img.src = thumbnailPath;
         img.alt = name;
@@ -77,6 +76,16 @@ async function LoadIndex() {
 
         // Now we want to populate the left side index using the nav element of index.html
         var structureNav = document.querySelector("#index");
+
+        let aboutElem = document.createElement("button");
+        aboutElem.setAttribute("data-url", "/");
+        aboutElem.innerHTML = "About";
+        aboutElem.addEventListener("click", () => {
+            window.location.href = "/";
+        });
+        aboutElem.disabled = window.location.pathname == "/";
+        structureNav.appendChild(aboutElem);
+
         var indexNav = indexDoc.querySelector("nav").firstElementChild;
         for (const child of indexNav.children) {
             let elem = document.createElement("button");
@@ -90,6 +99,11 @@ async function LoadIndex() {
             elem.disabled = window.location.href == link;
             structureNav.appendChild(elem);
         }
+
+        var homeInput = document.querySelector("#raccoonImg");
+        homeInput.addEventListener("click", () => {
+            window.location.href = "/";
+        });
 
     }).catch(error => {
         console.error("There was a problem with the fetch operation: " + error);

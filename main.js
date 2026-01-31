@@ -22,12 +22,16 @@ async function LoadScriptSequentially() {
     }
 }
 
+function MakeSiteVisible() {
+    document.documentElement.classList.remove("loading");
+}
+
 async function Main() {
     await LoadScriptSequentially();
     await LoadStructure();
     await LoadIndex();
     ResponsiveSetup();
-    document.documentElement.classList.remove("loading");
+    MakeSiteVisible();
     FullScreenSetup();
     CodeSetup();
     TablesSetup();

@@ -69,7 +69,7 @@ function AddInputToImageComparisons() {
         }
 
         //if (isJson) {
-            if (data != null && imageElems != null) {
+            if (imageElems != null) {
                 // Add the first text
                 const text1 = document.createElement('p');
                 text1.textContent = imageElems[0].alt;

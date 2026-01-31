@@ -30,9 +30,14 @@
     align-items: center;
 }
 
-#topBarLeftContent img {
+#topBarLeftContent input {
     height: 64px;
     margin-right: 16px;
+    transition: transform 0.2s ease;
+}
+
+#topBarLeftContent input:hover {
+    transform: scale(1.15);
 }
 
 #topBarLeftTexts {
