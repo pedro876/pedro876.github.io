@@ -50,6 +50,10 @@ figure{
     clip-path: inset(0 0 0 50%);
 }
 
+.image-container + p {
+    margin-top: 32px;
+}
+
 .image-slider {
     padding: 0px;
     border: 0px;

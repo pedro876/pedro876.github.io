@@ -19,7 +19,10 @@
         <h3>Motivation</h3>
 
         <p>
-            Last year I implemented a lighting technique which consists of baking data into vertex attributes.
+            In Bel's Fanfare, our biggest inspirations are the Zelda games from the N64: <i>TLOZ: Ocarina Of Time</i> and <i>TLOZ: Majora's Mask</i>.
+            The art direction of this project was very clear and specific from the very beginning. It was not about recreating the look of those N64 games as they actually were, but about how people remember them,
+            which is why we looked at the Zelda remasters from the 3DS instead. In this article I will explain the lighting techniques used in those games and our approach
+            to replicate them in the Unity Engine.
         </p>
 
         <figure>
@@ -30,9 +33,9 @@
         <h3>A look at the past</h3>
 
         <p>
-            Most games in the past relied heavily on baked lighting because it was necessary to depict complex scenes in realtime.
+            In the past, most games relied heavily on baked lighting because it was necessary to depict complex scenes in realtime.
             When we think of precalculated lighting nowadays, we think of lightmaps. However, many games had their lighting baked into vertices instead.
-            It required less memory, less time to precalculate, and offered better performance.
+            It required less memory, shorter baking iterations, and offered better performance.
         </p>
 
         <p>
@@ -56,7 +59,7 @@
 
         <p>
             Indeed, it's all just good old vertex colors. It is hard to put into words just how much baked vertex lighting contributes to the final look of older
-            Zelda games, so let's take a closer look. For instance, take a look at <i>TLOZ: The Wind waker</i>. It's a cell shaded game, surely it is just hard lights and cartoony textures, right?
+            Zelda games. For instance, take a look at <i>TLOZ: The Wind waker</i>. It's a cel shaded game, surely it is just hard lights and cartoony textures, right?
         </p>
 
         <figure>
@@ -72,14 +75,12 @@
         </figure>
 
         <p>
-            As you can see, vertex color is used to add ambient occlusion to the scenes. It is completely essential to the game art's style as it would otherwise look completely flat, especially
-            in interiors. However, it is so subtle and smooth, that it can go unnoticed.
+            As you can see, vertex color is used to add shadows and ambient occlusion to the scenes. It is completely essential to the game's art style as it would otherwise look much flatter, especially
+            in interiors. However, it is so subtle and smooth, that it can easily go unnoticed.
         </p>
 
         <p>
-            In Bel's Fanfare, our biggest inspirations are the Zelda games from the N64 and their 3DS remasters: <i>TLOZ: Ocarina Of Time</i> and <i>TLOZ: Majora's Mask</i>.
-            The art direction of Bel's Fanfare was very clear and specific from the very beginning. It was not about recreating the look of N64 games as they actually were, but about how people remember them.
-            That's why we looked at the Zelda remasters from the 3DS, because in our opinion, they achieved that goal. So, how was lighting rendered in those games?
+            While vertex colors had already been used in older Zelda games, I think they reached new heights in the 3DS Zelda remasters. Take a look at these images from <i>TLOZ: Majora's Mask</i>:
         </p>
 
         <figure>
@@ -100,13 +101,59 @@
             <figcaption>Zelda Majora's Mask, Stock Pot Inn. Unlit vs Lit.</figcaption>
         </figure>
 
-        <h3>Lighting</h3>
+        <p>
+            As you can see, vertex colors are not just used to add a bit of depth to the scene. Direct and indirect lighting are masterfully baked into vertex colors in these games,
+            which greatly contributes to their characteristic look.
+        </p>
 
-        <h3>Ambient Occlusion</h3>
+        <h3>Implementation</h3>
 
-        <h3>Baking Process</h3>
+        <p>
+            Since the game is being developed in Unity using the Universal Render Pipeline, the entire lighting system had to be implemented from the ground up taking into account how its results
+            would be injected in the pipeline.
+        </p>
+
+        <p>
+            There are two different lighting phenomenons that were required:
+        </p>
+
+        <ul>
+            <li><b>Ambient Occlusion</b>: An estimation of how occluded a vertex is taking into account only its surrounding geometry.</li>
+            <li><b>Lighting</b>: A combined result of all the colors that reach the vertex from all lights weighted by distance.</li>
+        </ul>
+
+        <p>
+            While I initially implemented a baking algorithm that ran in the CPU, it was soon clear that it didn't scale well when using large meshes and many
+            lights. We are a small team, so we couln't afford to waste hours looking at a progress bar. We needed a way to see how assets would look in-engine fast.
+            To achieve that, I reimplemented the entire algorithm to make use of hardware raytracing. This change allows us to bake all
+            lighting and ambient occlusion in an instant by pressing a single button. While hardware raytracing is usually associated with high-end graphics, it can actually be
+            used for anything, including an editor tool to bake per-vertex lighting.
+        </p>
+
+        <p>
+            Once lighting and occlusion are calculated and stored as vertex colors, a custom shader is employed to abuse the emissive property of materials
+            by adding baked lighting to it.
+        </p>
+
+        <p>
+            If you're interested in reading an in-depth explanation of these systems, last year I wrote a couple of articles in which I detailed how I implemented both
+            <a href="/Articles/VertexAO.html">Vertex Ambient Occlusion</a> and <a href="/Articles/VertexLighting.html">Vertex Lighting</a>.
+        </p>
 
         <h3>Integration of dynamic objects</h3>
+
+        <p>
+            While baked lighting looks great, it can only be applied to static meshes. How dynamic objects are lit is just as important though.
+            In our case, we have a system that generates realtime lights that match their baked counterparts. These lights use a
+            culling mask to affect only dynamics objects such as characters. Additionally, we have configured the render pipeline to use vertex lighting
+            to better match the 3DS Zelda games.
+        </p>
+
+        <figure data-image='{"sliderValue":48}'>
+            <img src="BelsFanfareRendering/Images/VertexLight_Off.png" alt="Off" />
+            <img src="BelsFanfareRendering/Images/VertexLight_On.png" alt="On" />
+            <figcaption>Vertex Lights Off vs On</figcaption>
+        </figure>
 
         <h3>Results</h3>
 
@@ -201,13 +248,26 @@
         <h3>Conclusion</h3>
 
         <p>
-            To be honest, I didn't find the idea of reproducing 3DS graphics on modern hardware attractive at first. As a graphics programmer, I thought
-            it would not be a challenge, that I would not learn much. Well I was wrong. Not only did I learn a lot about lighting and geometry, but I also
-            understood why these ancient lighting techniques can still appeal to a lot of people, myself included. It's not just nostalgia or self-imposed technical limitations, it's an art style.
+            To be honest, I didn't find the idea of reproducing 3DS graphics on modern hardware attractive at first.
+            Well, I was wrong. Not only did I learn a lot about lighting and geometry, I also
+            understood why these ancient lighting techniques can still appeal to a lot of people, myself included.
         </p>
 
         <p>
+            Low-poly games are not just about nostalgia or self-imposed technical limitations, it's an art style just like pixel-art is. However, doing low-poly assets is just
+            a part of it. Back in the day, developers were not trying to do low-poly assets intentionally. In fact, it was the opposite, they tried to squeeze as much performance
+            and fidelity as possible from their hardware. This mindset included shading of course, which is why baked lighting was so predominant.
+        </p>
 
+        <p>
+            While per-vertex lighting is accurate for each vertex individually, it isn't when interpolated across the triangles's surfaces. However, there is a certain beauty in the linearity of the interpolation and the patterns
+            that originate from it even on flat surfaces. If you look at intersections between objects, lighting varies slightly due to interpolation. It is still coherent, but the subtle difference
+            reveals the polygonal nature of the scene. What might have been a technical limitation back in the day, has become essential to accomplish the art direction of Bel's Fanfare.
+        </p>
+
+        <p>
+            Just as we saw a resurgence of pixel-art games in the last decade, something tells me that the same is about to happen with low-poly games. While we have focused particularly on the 3DS Zelda remasters, there are many other frontiers 
+            to explore. What about a shooter that emulates DS graphics? Or an RPG that uses PS1 graphics? I guess we'll see.
         </p>
 
         <nav class="article-footer"><a href="/">See other articles</a></nav>
