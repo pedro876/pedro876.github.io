@@ -21,7 +21,7 @@
         <p>
             In Bel's Fanfare, our biggest inspirations are the Zelda games from the N64: <i>TLOZ: Ocarina Of Time</i> and <i>TLOZ: Majora's Mask</i>.
             The art direction of this project was very clear and specific from the very beginning. It was not about recreating the look of those N64 games as they actually were, but about how people remember them,
-            which is why we looked at the Zelda remasters from the 3DS instead. In this article I will explain the lighting techniques used in those games and our approach
+            which is why we looked at the Zelda remasters from the 3DS instead. In this article, I will explain the lighting techniques used in those games and our approach
             to replicate them in the Unity Engine.
         </p>
 
@@ -114,19 +114,19 @@
         </p>
 
         <p>
-            There are two different lighting phenomenons that were required:
+            There were two different lighting phenomena that were required:
         </p>
 
         <ul>
             <li><b>Ambient Occlusion</b>: An estimation of how occluded a vertex is taking into account only its surrounding geometry.</li>
-            <li><b>Lighting</b>: A combined result of all the colors that reach the vertex from all lights weighted by distance.</li>
+            <li><b>Lighting</b>: A combined result of all the colors that reach a vertex from all lights, weighted by distance.</li>
         </ul>
 
         <p>
             While I initially implemented a baking algorithm that ran in the CPU, it was soon clear that it didn't scale well when using large meshes and many
-            lights. We are a small team, so we couln't afford to waste hours looking at a progress bar. We needed a way to see how assets would look in-engine fast.
-            To achieve that, I reimplemented the entire algorithm to make use of hardware raytracing. This change allows us to bake all
-            lighting and ambient occlusion in an instant by pressing a single button. While hardware raytracing is usually associated with high-end graphics, it can actually be
+            lights. We are a small team, so we couldn't afford to waste hours looking at a progress bar. We needed a way to see how assets would look in-engine fast.
+            To achieve that, I reimplemented the entire algorithm to make use of hardware ray tracing. This change allows us to bake all
+            lighting and ambient occlusion in an instant by pressing a single button. While hardware ray tracing is usually associated with high-end graphics, it can actually be
             used for anything, including an editor tool to bake per-vertex lighting.
         </p>
 
@@ -260,7 +260,7 @@
         </p>
 
         <p>
-            While per-vertex lighting is accurate for each vertex individually, it isn't when interpolated across the triangles's surfaces. However, there is a certain beauty in the linearity of the interpolation and the patterns
+            While per-vertex lighting is accurate for each vertex individually, it becomes less accurate when interpolated across triangles’ surfaces. However, there is a certain beauty in the linearity of the interpolation and the patterns
             that originate from it even on flat surfaces. If you look at intersections between objects, lighting varies slightly due to interpolation. It is still coherent, but the subtle difference
             reveals the polygonal nature of the scene. What might have been a technical limitation back in the day, has become essential to accomplish the art direction of Bel's Fanfare.
         </p>
